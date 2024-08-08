@@ -1,7 +1,4 @@
-interface MainLayoutProps {
-  children: React.ReactNode
-}
-const MainLayout = ({ children }: MainLayoutProps) => {
+const MainLayout = ({ children }: { children: React.ReactNode }): JSX.Element => {
   return <>{children}</>
 }
 

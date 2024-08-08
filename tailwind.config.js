@@ -2,8 +2,9 @@
 module.exports = {
   darkMode: ['class'],
   content: [
-    './pages/**/*.{ts,tsx}',
-    './app/**/*.{ts,tsx}',
+    './pages/auth/**/*.{ts,tsx}',
+    './pages/site/**/*.{ts,tsx}',
+    './components/**/*.{ts,tsx}',
     './src/**/*.{ts,tsx}'
   ],
   prefix: '',
@@ -29,7 +30,7 @@ module.exports = {
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out'
-      },
+      }
     }
   },
   plugins: [require('tailwindcss-animate')]
