@@ -1,7 +1,6 @@
 import { Route, Routes } from 'react-router-dom'
-import routes from './routes'
-import MainLayout from './layouts/MainLayout'
 import { IRoute } from './interface/route'
+import routes from './routes'
 const App = () => {
   return (
     <Routes location={location} key={location.pathname}>
