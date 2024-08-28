@@ -8,7 +8,7 @@ import Signup from '@/pages/(auth)/Signup'
 import page404 from '@/pages/(site)/404/404'
 
 import Dashboard from '@/pages/(site)/Dashboard/Dashboard'
-import ProductList from '@/pages/(site)/ProductList/ProductList'
+import ProductList from '@/pages/(site)/Product/ProductList'
 
 const routes: IRoute[] = [
   { path: '/', component: Signin, layout: AuthLayout },
