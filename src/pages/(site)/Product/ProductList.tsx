@@ -1,4 +1,3 @@
-import React from 'react'
 import { Edit, Search, Trash } from 'lucide-react'
 import { Table, TableBody, TableCell, TableHeader, TableRow } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
@@ -41,11 +40,11 @@ const ProductList = () => {
       <div className='flex justify-between items-center mb-7'>
         <div className='text-2xl font-semibold'>Product List</div>
         <div className='flex items-center space-x-2 relative'>
-          <Search className='text-gray-500 absolute left-4' size={16} />
+          <Search className='text-gray-700 absolute left-5' size={16} />
           <input
             type='text'
             placeholder='Search product name'
-            className='border rounded-3xl py-2 px-8 focus:outline-none focus:ring-2 focus:ring-blue-500'
+            className='border rounded-3xl py-2 px-9 focus:outline-none focus:ring-2 focus:ring-blue-500'
           />
         </div>
       </div>
@@ -97,7 +96,6 @@ const ProductList = () => {
       <div className='flex justify-between items-center mt-7'>
         <p className='text-[14px] font-light'>Showing 1-09 of 78</p>
         <div>
-          {' '}
           <Button variant='outline'>
             <ChevronLeft size={18} className='mx-2' />
           </Button>
