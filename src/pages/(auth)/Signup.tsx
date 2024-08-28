@@ -49,7 +49,7 @@ const Signup = () => {
 
   return (
     <>
-      <div className='max-w-2xl w-full h-full sm:h-auto bg-white px-14 py-[60px] sm:rounded-3xl container sm:mx-32'>
+      <div className='max-w-2xl w-full h-full sm:h-auto my-8 bg-white px-14 py-[60px] sm:rounded-3xl container sm:mx-32'>
         <div className='text-center flex flex-col gap-y-4'>
           <h1 className='text-[32px] font-bold text-[#202224]'>Create an Account</h1>
           <p className='text-lg text-[#202224] opacity-80'>Create a account to continue</p>

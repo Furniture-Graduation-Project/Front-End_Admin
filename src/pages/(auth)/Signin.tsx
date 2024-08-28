@@ -34,7 +34,7 @@ const Signin = () => {
 
   return (
     <>
-      <div className='max-w-2xl w-full h-full sm:h-[736px] bg-white px-14 py-[90px] sm:rounded-3xl container sm:mx-32'>
+      <div className='max-w-2xl w-full h-full sm:h-auto bg-white px-14 py-[90px] sm:rounded-3xl container sm:mx-32'>
         <div className='text-center flex flex-col gap-y-4'>
           <h1 className='text-[32px] font-bold text-[#202224]'>Login to Account</h1>
           <p className='text-lg text-[#202224] opacity-80'>Please enter your email and password to continue</p>
