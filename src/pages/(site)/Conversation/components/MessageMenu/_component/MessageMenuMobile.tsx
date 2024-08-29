@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -15,9 +16,27 @@ import {
 import { IMessageMenu } from '@/interface/messageMenu'
 
 const MessageMenuMobile = ({ menu }: { menu: IMessageMenu }) => {
+  const [isOpen, setIsOpen] = useState(false)
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(min-width: 640px)')
+
+    const handleMediaChange = (e: MediaQueryListEvent) => {
+      if (e.matches) {
+        setIsOpen(false)
+      }
+    }
+
+    mediaQuery.addEventListener('change', handleMediaChange)
+
+    return () => {
+      mediaQuery.removeEventListener('change', handleMediaChange)
+    }
+  }, [])
+
   return (
     <div className='flex justify-between sm:hidden relative '>
-      <DropdownMenu>
+      <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
         <DropdownMenuTrigger asChild>
           <Button variant='outline'>Tin nhắn của tôi</Button>
         </DropdownMenuTrigger>
