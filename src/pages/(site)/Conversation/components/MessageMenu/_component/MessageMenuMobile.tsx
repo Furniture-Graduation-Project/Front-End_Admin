@@ -40,7 +40,7 @@ const MessageMenuMobile = ({ menu }: { menu: IMessageMenu }) => {
         <DropdownMenuTrigger asChild>
           <Button variant='outline'>Tin nhắn của tôi</Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className='w-56'>
+        <DropdownMenuContent className='w-56 ml-5'>
           <DropdownMenuLabel>Thư mục</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
