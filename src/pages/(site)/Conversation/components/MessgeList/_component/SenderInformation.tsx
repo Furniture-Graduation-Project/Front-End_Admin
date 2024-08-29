@@ -17,7 +17,7 @@ const SenderInformation = () => {
 
   return (
     <>
-      <Link to={`/dashboard/conversation/textting`}>
+      <Link to={`/conversation/texting`}>
         <div className='flex items-center space-x-6 mt-7'>
           <div className='cursor-pointer' onClick={handleCheckboxToggle}>
             <Input
@@ -34,8 +34,8 @@ const SenderInformation = () => {
               stroke={starChecked ? '#FFD700' : 'gray'}
             />
           </div>
-          <p className='font-bold'>Jullu Jalal</p>
-          <p className='font-bold'>Our Bachelor of Commerce program is ACBSP-accredited.</p>
+          <p className='font-bold line-clamp-1'>Jullu Jalal</p>
+          <p className='font-bold line-clamp-1'>Our Bachelor of Commerce program is ACBSP-accredited.</p>
           <p>8:38 AM</p>
         </div>
       </Link>
