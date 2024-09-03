@@ -12,11 +12,13 @@ import MessageList from '@/pages/(site)/Conversation/components/MessgeList/Messa
 
 import Dashboard from '@/pages/(site)/Dashboard/Dashboard'
 import ProductList from '@/pages/(site)/Product/ProductList'
+import CategoryList from '@/pages/(site)/Category/CategoryList'
 
 const routes: IRoute[] = [
   { path: '/', component: Signin, layout: AuthLayout },
   { path: '/signup', component: Signup, layout: AuthLayout },
   { path: '/dashboard', component: Dashboard, layout: MainLayout },
+  { path: '/category', component: CategoryList, layout: MainLayout },
   { path: '/product', component: ProductList, layout: MainLayout, 
     children: [{ path: '', component: ProductList }] },
   {
