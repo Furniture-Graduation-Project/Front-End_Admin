@@ -14,6 +14,7 @@ import Dashboard from '@/pages/(site)/Dashboard/Dashboard'
 import ProductList from '@/pages/(site)/Product/ProductList'
 import ProductAdd from '@/pages/(site)/Product/ProductAdd'
 import ProductEdit from '@/pages/(site)/Product/ProductEdit'
+import Product from '@/pages/(site)/Product/Product'
 
 const routes: IRoute[] = [
   { path: '/', component: Signin, layout: AuthLayout },
@@ -21,12 +22,12 @@ const routes: IRoute[] = [
   { path: '/dashboard', component: Dashboard, layout: MainLayout },
   {
     path: '/product',
-    component: ProductList,
+    component: Product,
     layout: MainLayout,
     children: [
       { path: '', component: ProductList },
-      { path: '/product/add', component: ProductAdd, layout: MainLayout },
-      { path: '/product/edit', component: ProductEdit, layout: MainLayout }
+      { path: 'add', component: ProductAdd },
+      { path: 'edit', component: ProductEdit }
     ]
   },
   {
