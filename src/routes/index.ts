@@ -16,12 +16,23 @@ import CategoryList from '@/pages/(site)/Category/CategoryList'
 import ProductAdd from '@/pages/(site)/Product/ProductAdd'
 import ProductEdit from '@/pages/(site)/Product/ProductEdit'
 import Product from '@/pages/(site)/Product/Product'
+import CategoryAdd from '@/pages/(site)/Category/CategoryAdd'
+import Category from '@/pages/(site)/Category/Category'
+import CategoryEdit from '@/pages/(site)/Category/CategoryEdit'
 
 const routes: IRoute[] = [
   { path: '/', component: Signin, layout: AuthLayout },
   { path: '/signup', component: Signup, layout: AuthLayout },
   { path: '/dashboard', component: Dashboard, layout: MainLayout },
-  { path: '/category', component: CategoryList, layout: MainLayout },
+  { path: '/category',
+    component: Category,
+    layout: MainLayout,
+    children: [
+      { path: '', component: CategoryList },
+      { path: 'add', component: CategoryAdd, },
+      { path: 'edit/:id', component: CategoryEdit, },
+    ]
+   },
   {
     path: '/product',
     component: Product,
