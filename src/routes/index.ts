@@ -13,14 +13,25 @@ import MessageList from '@/pages/(site)/Conversation/components/MessgeList/Messa
 import Dashboard from '@/pages/(site)/Dashboard/Dashboard'
 import ProductList from '@/pages/(site)/Product/ProductList'
 import CategoryList from '@/pages/(site)/Category/CategoryList'
+import ProductAdd from '@/pages/(site)/Product/ProductAdd'
+import ProductEdit from '@/pages/(site)/Product/ProductEdit'
+import Product from '@/pages/(site)/Product/Product'
 
 const routes: IRoute[] = [
   { path: '/', component: Signin, layout: AuthLayout },
   { path: '/signup', component: Signup, layout: AuthLayout },
   { path: '/dashboard', component: Dashboard, layout: MainLayout },
   { path: '/category', component: CategoryList, layout: MainLayout },
-  { path: '/product', component: ProductList, layout: MainLayout, 
-    children: [{ path: '', component: ProductList }] },
+  {
+    path: '/product',
+    component: Product,
+    layout: MainLayout,
+    children: [
+      { path: '', component: ProductList },
+      { path: 'add', component: ProductAdd },
+      { path: 'edit', component: ProductEdit }
+    ]
+  },
   {
     path: '/conversation',
     component: Conversation,
