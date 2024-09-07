@@ -24,7 +24,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }): JSX.Element =>
         </div>
       </div>
       <div className='flex flex-col'>
-        <header className='flex h-[70px] items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6'>
+        <header className='flex h-[70px] items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-8'>
           <Sheet>
             <SheetTrigger asChild>
               <Button variant='outline' size='icon' className='shrink-0 md:hidden'>
