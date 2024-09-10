@@ -22,6 +22,10 @@ import CategoryEdit from '@/pages/(site)/Category/CategoryEdit'
 import AccountList from '@/pages/(site)/Account/components/AccountList/AccountList'
 import AccountDetail from '@/pages/(site)/Account/components/AccountDetail/AccountDetail'
 import Account from '@/pages/(site)/Account/Account'
+import Voucher from '@/pages/(site)/Voucher/Voucher'
+import VoucherList from '@/pages/(site)/Voucher/VoucherList'
+import VoucherAdd from '@/pages/(site)/Voucher/VoucherAdd'
+import VoucherEdit from '@/pages/(site)/Voucher/VoucherEdit'
 
 const routes: IRoute[] = [
   { path: '/', component: Signin, layout: AuthLayout },
@@ -62,6 +66,16 @@ const routes: IRoute[] = [
     children: [
       { path: '', component: MessageList },
       { path: 'texting', component: MessageTexting }
+    ]
+  },
+  {
+    path: '/voucher',
+    component: Voucher,
+    layout: MainLayout,
+    children: [
+      { path: '', component: VoucherList },
+      { path: 'add', component: VoucherAdd },
+      { path: 'edit', component: VoucherEdit }
     ]
   },
   { path: '/*', component: page404, layout: AuthLayout }
