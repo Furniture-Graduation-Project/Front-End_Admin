@@ -23,6 +23,10 @@ import Voucher from '@/pages/(site)/Voucher/Voucher'
 import VoucherList from '@/pages/(site)/Voucher/VoucherList'
 import VoucherAdd from '@/pages/(site)/Voucher/VoucherAdd'
 import VoucherEdit from '@/pages/(site)/Voucher/VoucherEdit'
+import Promotion from '@/pages/(site)/Promotion/Promotion'
+import PromotionList from '@/pages/(site)/Promotion/PromotionList'
+import PromotionAdd from '@/pages/(site)/Promotion/PromotionAdd'
+import PromotionEdit from '@/pages/(site)/Promotion/PromotionEdit'
 
 const routes: IRoute[] = [
   { path: '/', component: Signin, layout: AuthLayout },
@@ -75,6 +79,16 @@ const routes: IRoute[] = [
       { path: '', component: VoucherList },
       { path: 'add', component: VoucherAdd },
       { path: 'edit', component: VoucherEdit }
+    ]
+  },
+  {
+    path: '/promotion',
+    component: Promotion,
+    layout: MainLayout,
+    children: [
+      { path: '', component: PromotionList },
+      { path: 'add', component: PromotionAdd },
+      { path: 'edit', component: PromotionEdit }
     ]
   },
   { path: '/*', component: page404, layout: AuthLayout }
