@@ -15,6 +15,13 @@ import ProductList from '@/pages/(site)/Product/ProductList'
 import AccountList from '@/pages/(site)/Account/components/AccountList/AccountList'
 import AccountDetail from '@/pages/(site)/Account/components/AccountDetail/AccountDetail'
 import Account from '@/pages/(site)/Account/Account'
+import CategoryList from '@/pages/(site)/Category/CategoryList'
+import ProductAdd from '@/pages/(site)/Product/ProductAdd'
+import ProductEdit from '@/pages/(site)/Product/ProductEdit'
+import Product from '@/pages/(site)/Product/Product'
+import CategoryAdd from '@/pages/(site)/Category/CategoryAdd'
+import Category from '@/pages/(site)/Category/Category'
+import CategoryEdit from '@/pages/(site)/Category/CategoryEdit'
 
 const routes: IRoute[] = [
   { path: '/', component: Signin, layout: AuthLayout },
@@ -28,6 +35,26 @@ const routes: IRoute[] = [
     children: [
       { path: '', component: AccountList },
       { path: ':id', component: AccountDetail }
+    ]
+  },
+  {
+    path: '/category',
+    component: Category,
+    layout: MainLayout,
+    children: [
+      { path: '', component: CategoryList },
+      { path: 'add', component: CategoryAdd },
+      { path: 'edit/:id', component: CategoryEdit }
+    ]
+  },
+  {
+    path: '/product',
+    component: Product,
+    layout: MainLayout,
+    children: [
+      { path: '', component: ProductList },
+      { path: 'add', component: ProductAdd },
+      { path: 'edit', component: ProductEdit }
     ]
   },
   {
