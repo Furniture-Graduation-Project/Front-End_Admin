@@ -11,19 +11,19 @@ export const useConversationMutation = (key: ConversationMutation) => {
         case 'CREATE':
           return await ConversationService.create()
         case 'UPDATE':
-          if (!params.id) throw new Error('ID is required for update')
+          if (!params.id) throw new Error('Cần có ID để cập nhật')
           return await ConversationService.update(params.id, params.data)
         case 'DELETE':
-          if (!params.id) throw new Error('ID is required for delete')
+          if (!params.id) throw new Error('Cần phải có ID để xóa')
           return await ConversationService.delete(params.id)
         case 'UPDATE_BY_USER':
-          if (!params.userId) throw new Error('User ID is required for update by user')
+          if (!params.userId) throw new Error('Người dùng cần phải nhập ID người dùng để cập nhật')
           return await ConversationService.updateByUserId(params.userId, params.data)
         case 'SET_STAR':
-          if (!params.id) throw new Error('ID is required to set star')
+          if (!params.id) throw new Error('Cần có ID để thiết lập star')
           return await ConversationService.setStar(params.id)
         default:
-          throw new Error('Invalid mutation key')
+          throw new Error('Khóa không hợp lệ')
       }
     }
   })

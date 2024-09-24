@@ -11,13 +11,13 @@ export const useVoucherMutation = (key: VoucherMutation) => {
         case 'CREATE':
           return await VoucherService.create()
         case 'UPDATE':
-          if (!params.id) throw new Error('ID is required for update')
+          if (!params.id) throw new Error('Cần có ID để cập nhật')
           return await VoucherService.update(params.id, params.data)
         case 'DELETE':
-          if (!params.id) throw new Error('ID is required for delete')
+          if (!params.id) throw new Error('Cần phải có ID để xóa')
           return await VoucherService.delete(params.id)
         default:
-          throw new Error('Invalid mutation key')
+          throw new Error('Khóa không hợp lệ')
       }
     }
   })
