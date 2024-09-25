@@ -18,7 +18,6 @@ import Category from '@/pages/(site)/Category/Category'
 import CategoryEdit from '@/pages/(site)/Category/CategoryEdit'
 import AccountList from '@/pages/(site)/Account/components/AccountList/AccountList'
 import AccountDetail from '@/pages/(site)/Account/components/AccountDetail/AccountDetail'
-import Account from '@/pages/(site)/Account/Account'
 import Voucher from '@/pages/(site)/Voucher/Voucher'
 import VoucherList from '@/pages/(site)/Voucher/VoucherList'
 import VoucherAdd from '@/pages/(site)/Voucher/VoucherAdd'
@@ -27,6 +26,11 @@ import Promotion from '@/pages/(site)/Promotion/Promotion'
 import PromotionList from '@/pages/(site)/Promotion/PromotionList'
 import PromotionAdd from '@/pages/(site)/Promotion/PromotionAdd'
 import PromotionEdit from '@/pages/(site)/Promotion/PromotionEdit'
+import AccountLayout from '@/pages/(site)/Account/layout'
+import AccountPage from '@/pages/(site)/Account/page'
+import EmployeeLayout from '@/pages/(site)/Employee/layout'
+import EmployeePage from '@/pages/(site)/Employee/page'
+import EmployeeDetail from '@/pages/(site)/Employee/EmployeeDetail/page'
 
 const routes: IRoute[] = [
   { path: '/', component: Signin, layout: AuthLayout },
@@ -35,11 +39,26 @@ const routes: IRoute[] = [
   { path: '/product', component: ProductList, layout: MainLayout, children: [{ path: '', component: ProductList }] },
   {
     path: '/account',
-    component: Account,
+    component: AccountLayout,
     layout: MainLayout,
     children: [
-      { path: '', component: AccountList },
+      { path: '', component: AccountPage },
       { path: ':id', component: AccountDetail }
+    ]
+  },
+  {
+    path: '/employee',
+    component: EmployeeLayout,
+    layout: MainLayout,
+    children: [
+      {
+        path: '',
+        component: EmployeePage
+      },
+      {
+        path: ':id',
+        component: EmployeeDetail
+      }
     ]
   },
   {
