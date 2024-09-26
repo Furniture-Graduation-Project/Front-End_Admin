@@ -3,7 +3,7 @@ import { Mail, MessageCircleQuestion, Pencil, Send, Star, Trash2, TriangleAlert 
 
 const messageMenup: IMessageMenu = {
   buttons: [
-    { icon: Mail, text: 'Hộp thư đến', count: 123 }, // Inbox -> Hộp thư đến
+    { icon: Mail, text: 'Hộp thư thoại', count: 123 }, // Inbox -> Hộp thư đến
     { icon: Star, text: 'Đã đánh dấu', count: 123 }, // Starred -> Đã đánh dấu
     { icon: Send, text: 'Đã gửi', count: 123 }, // Send -> Đã gửi
     { icon: Pencil, text: 'Nháp', count: 123 }, // Draft -> Nháp

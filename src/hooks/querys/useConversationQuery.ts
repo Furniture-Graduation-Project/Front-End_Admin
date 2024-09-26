@@ -22,17 +22,23 @@ export const useConversationQuery = (
               : ['Conversation'],
     queryFn: async () => {
       if (id) {
-        return await ConversationService.getById(id)
+        const response = await ConversationService.getById(id)
+        return response.data
       } else if (userId) {
-        return await ConversationService.getByUserId(userId)
+        const response = await ConversationService.getByUserId(userId)
+        return response.data
       } else if (label) {
-        return await ConversationService.getByLabel(label)
+        const response = await ConversationService.getByLabel(label)
+        return response.data
       } else if (category) {
-        return await ConversationService.getByCategory(category)
+        const response = await ConversationService.getByCategory(category)
+        return response.data
       } else if (status) {
-        return await ConversationService.getByStatus(status)
+        const response = await ConversationService.getByStatus(status)
+        return response.data
       } else {
-        return await ConversationService.getAll()
+        const response = await ConversationService.getAll()
+        return response.data
       }
     }
   })
@@ -40,6 +46,7 @@ export const useConversationQuery = (
     data,
     isLoading,
     isError,
+    error,
     ...rest
   }
 }

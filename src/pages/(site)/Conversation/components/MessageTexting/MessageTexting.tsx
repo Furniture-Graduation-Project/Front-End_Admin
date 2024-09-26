@@ -1,9 +1,11 @@
 import React from 'react'
 import { Button } from '@/components/ui/button'
-import { ArrowLeft, FileImage, Mic, Paperclip, PrinterIcon, Send, Star, Trash } from 'lucide-react'
-import { Input } from '@/components/ui/input'
+import { ArrowLeft, CornerDownLeft, Mic, Paperclip, PrinterIcon, Star, Trash } from 'lucide-react'
+import { Textarea } from "@/components/ui/textarea"
 import MessageContent from './_component/MessageContent'
 import { Link } from 'react-router-dom'
+import { Label } from '@/components/ui/label'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
 const MessageTexting: React.FC = () => {
   return (
@@ -51,17 +53,42 @@ const MessageTexting: React.FC = () => {
           avatarSrc='/404.png'
         />
       </div>
-
-      <div className='absolute bottom-5 left-5 right-5 flex justify-center items-center space-x-6'>
-        <Mic />
-        <Input placeholder='Write message' className='border-none' />
-        <Paperclip />
-        <FileImage />
-        <Button className='bg-blue-600 w-[150px]'>
-          Send <Send className='w-[15px] h-[15px] ml-1' />
-        </Button>
-      </div>
-      <div className='absolute bottom-16 left-5 right-5 h-[1px] bg-gray-300 mb-4 -m-5'></div>
+      <form
+        className="relative overflow-hidden rounded-lg border bg-background focus-within:ring-1 focus-within:ring-ring"
+      >
+        <Label htmlFor="message" className="sr-only">
+          Message
+        </Label>
+        <Textarea
+          id="message"
+          placeholder="Type your message here..."
+          className="min-h-12 resize-none border-0 p-3 shadow-none focus-visible:ring-0"
+        />
+        <div className="flex items-center p-3 pt-0">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <Paperclip className="size-4" />
+                <span className="sr-only">Attach file</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="top">Attach File</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <Mic className="size-4" />
+                <span className="sr-only">Use Microphone</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="top">Use Microphone</TooltipContent>
+          </Tooltip>
+          <Button type="submit" size="sm" className="ml-auto gap-1.5">
+            Send Message
+            <CornerDownLeft className="size-3.5" />
+          </Button>
+        </div>
+      </form>
     </div>
   )
 }
