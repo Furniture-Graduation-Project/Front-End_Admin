@@ -31,11 +31,7 @@ const MessageList = () => {
       action: <ToastAction altText='Hoàn tác'>Undo</ToastAction>
     })
   }
-
   const { table } = useDataTable(data, columnsConversation, { openDeleteModal })
-  if (isError) {
-  }
-
   return (
     <>
       <Card className='bg-white rounded-lg w-full max-h-full h-full'>

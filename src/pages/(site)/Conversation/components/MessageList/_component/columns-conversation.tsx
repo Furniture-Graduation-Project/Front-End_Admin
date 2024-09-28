@@ -1,3 +1,4 @@
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
@@ -61,11 +62,7 @@ export const columnsConversation: ColumnDef<IConversation>[] = [
       if (messages && messages.length > 0 && conversationId) {
         return (
           <Link to={`/conversation/texting/${conversationId}`}>
-            {messages[0].status === 'read' ? (
-              <div className='lowercase'>{userId.name}</div>
-            ) : (
-              <div className='lowercase font-bold'>{userId.name}</div>
-            )}
+            {messages[0].status === 'read' ? <div>{userId.name}</div> : <div className='font-bold'>{userId.name}</div>}
           </Link>
         )
       }
@@ -80,7 +77,7 @@ export const columnsConversation: ColumnDef<IConversation>[] = [
   {
     accessorKey: 'label',
     header: () => <div>Nhãn</div>,
-    cell: ({ row }) => <div className='lowercase'>{row.getValue('label')}</div>
+    cell: ({ row }) => <Badge className='lowercase'>{row.getValue('label')}</Badge>
   },
   {
     accessorKey: 'messages',

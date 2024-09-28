@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from 'react'
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -11,24 +11,19 @@ import {
   RowSelectionState,
   SortingState,
   useReactTable,
-  VisibilityState,
-} from '@tanstack/react-table';
+  VisibilityState
+} from '@tanstack/react-table'
 
-export const useDataTable = <T>(
-  data: T[],
-  columns: ColumnDef<T>[],
-  meta: any
-) => {
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
-  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
+export const useDataTable = <T>(data: T[], columns: ColumnDef<T>[], meta: any) => {
+  const [sorting, setSorting] = useState<SortingState>([])
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
+  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 })
   const table = useReactTable({
     data,
     columns,
     enableRowSelection: true,
-    manualPagination: true, 
     manualSorting: true,
     onRowSelectionChange: setRowSelection,
     onPaginationChange: setPagination,
@@ -46,10 +41,10 @@ export const useDataTable = <T>(
       sorting,
       columnVisibility,
       rowSelection,
-      columnFilters,
+      columnFilters
     },
-    meta : meta
-  });
+    meta: meta
+  })
 
-  return { table };
-};
+  return { table }
+}
