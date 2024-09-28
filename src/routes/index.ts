@@ -16,51 +16,12 @@ import CategoryList from '@/pages/(site)/Category/CategoryList'
 import CategoryAdd from '@/pages/(site)/Category/CategoryAdd'
 import Category from '@/pages/(site)/Category/Category'
 import CategoryEdit from '@/pages/(site)/Category/CategoryEdit'
-import AccountList from '@/pages/(site)/Account/components/AccountList/AccountList'
-import AccountDetail from '@/pages/(site)/Account/components/AccountDetail/AccountDetail'
-import Voucher from '@/pages/(site)/Voucher/Voucher'
-import VoucherList from '@/pages/(site)/Voucher/VoucherList'
-import VoucherAdd from '@/pages/(site)/Voucher/VoucherAdd'
-import VoucherEdit from '@/pages/(site)/Voucher/VoucherEdit'
-import Promotion from '@/pages/(site)/Promotion/Promotion'
-import PromotionList from '@/pages/(site)/Promotion/PromotionList'
-import PromotionAdd from '@/pages/(site)/Promotion/PromotionAdd'
-import PromotionEdit from '@/pages/(site)/Promotion/PromotionEdit'
-import AccountLayout from '@/pages/(site)/Account/layout'
-import AccountPage from '@/pages/(site)/Account/page'
-import EmployeeLayout from '@/pages/(site)/Employee/layout'
-import EmployeePage from '@/pages/(site)/Employee/page'
-import EmployeeDetail from '@/pages/(site)/Employee/EmployeeDetail/page'
 
 const routes: IRoute[] = [
   { path: '/', component: Signin, layout: AuthLayout },
   { path: '/signup', component: Signup, layout: AuthLayout },
   { path: '/dashboard', component: Dashboard, layout: MainLayout },
-  { path: '/product', component: ProductList, layout: MainLayout, children: [{ path: '', component: ProductList }] },
-  {
-    path: '/account',
-    component: AccountLayout,
-    layout: MainLayout,
-    children: [
-      { path: '', component: AccountPage },
-      { path: ':id', component: AccountDetail }
-    ]
-  },
-  {
-    path: '/employee',
-    component: EmployeeLayout,
-    layout: MainLayout,
-    children: [
-      {
-        path: '',
-        component: EmployeePage
-      },
-      {
-        path: ':id',
-        component: EmployeeDetail
-      }
-    ]
-  },
+
   {
     path: '/category',
     component: Category,
@@ -88,26 +49,6 @@ const routes: IRoute[] = [
     children: [
       { path: '', component: MessageList },
       { path: 'texting/:id', component: MessageTexting }
-    ]
-  },
-  {
-    path: '/voucher',
-    component: Voucher,
-    layout: MainLayout,
-    children: [
-      { path: '', component: VoucherList },
-      { path: 'add', component: VoucherAdd },
-      { path: 'edit', component: VoucherEdit }
-    ]
-  },
-  {
-    path: '/promotion',
-    component: Promotion,
-    layout: MainLayout,
-    children: [
-      { path: '', component: PromotionList },
-      { path: 'add', component: PromotionAdd },
-      { path: 'edit', component: PromotionEdit }
     ]
   },
   { path: '/*', component: page404, layout: AuthLayout }
