@@ -15,11 +15,10 @@ import { ITable } from '@/interface/table'
 import { CircleAlert, FileDown, Settings2, Trash2 } from 'lucide-react'
 
 const MessageListHeader = ({ table }: ITable<IConversation>) => {
-  const pageSizeOptions = [10, 20, 30, 40, 50]
-
+  const pageSizeOptions: number[] = [10, 20, 30, 40, 50]
   return (
     <CardHeader className='grid grid-cols-2 sm:grid-cols-3'>
-      <ToggleGroup className='w-fit sm:w-full mt-[6px]' variant='outline' type='multiple'>
+      <ToggleGroup className='w-fit mt-[6px] order-first' variant='outline' type='multiple'>
         <Button variant='outline'>
           <FileDown />
         </Button>
@@ -31,11 +30,15 @@ const MessageListHeader = ({ table }: ITable<IConversation>) => {
         </Button>
       </ToggleGroup>
       <Input
-        placeholder='Tìm kiếm tên khách hàng...'
-        value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
-        onChange={(event) => table.getColumn('name')?.setFilterValue(event.target.value)}
-        className='max-w-md col-span-2 sm:col-span-1 order-last sm:order-first'
+        placeholder='Tìm kiếm...'
+        value={(table.getColumn('userId')?.getFilterValue() as string) ?? ''}
+        onChange={(event) => {
+          console.log('Giá trị mới:', event.target.value) // Log giá trị mới
+          table.getColumn('userId')?.setFilterValue(event.target.value)
+        }}
+        className='order-last sm:order-first'
       />
+
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant='outline' className='ml-auto'>

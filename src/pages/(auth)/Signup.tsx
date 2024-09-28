@@ -2,10 +2,11 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import useAccountMutation from '@/hooks/mutations/useAccountMutation'
 import { Link } from 'react-router-dom'
 
 const signUpSchema = z
@@ -32,30 +33,33 @@ const signUpSchema = z
   })
 
 const Signup = () => {
+  const { onSubmit } = useAccountMutation({
+    action: 'SIGNUP'
+  })
   const form = useForm<z.infer<typeof signUpSchema>>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
       email: '',
       name: '',
       password: '',
-      confirmPassword: '',
-      check: true
+      confirmPassword: ''
     }
   })
 
-  const onSubmit = (data: z.infer<typeof signUpSchema>) => {
-    console.log(data)
+  const handleSubmit = (data: z.infer<typeof signUpSchema>) => {
+    const { check, ...dataWithoutCheck } = data
+    onSubmit(dataWithoutCheck)
   }
 
   return (
     <>
-      <div className='max-w-2xl w-full h-full sm:h-auto bg-white px-14 py-[60px] sm:rounded-3xl container sm:mx-32'>
+      <div className='max-w-2xl w-full h-full sm:h-auto my-8 bg-white px-14 py-[20px] sm:rounded-3xl container sm:mx-32'>
         <div className='text-center flex flex-col gap-y-4'>
           <h1 className='text-[32px] font-bold text-[#202224]'>Create an Account</h1>
           <p className='text-lg text-[#202224] opacity-80'>Create a account to continue</p>
         </div>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-10 mt-9'>
+          <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-10 mt-9'>
             <div className='grid grid-cols-2 gap-x-5'>
               <FormField
                 control={form.control}

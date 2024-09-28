@@ -24,3 +24,7 @@ export interface IConversation {
   status: 'normal' | 'spam' | 'important' | 'deleted';
   category: 'inbox' | 'sent' | 'draft';
 }
+
+export interface ITableMetaConversation {
+  openDeleteModal: (id :string) => void;
+}

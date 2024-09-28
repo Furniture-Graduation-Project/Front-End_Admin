@@ -1,4 +1,3 @@
-// useDataTable.ts
 import { useState } from 'react';
 import {
   ColumnDef,
@@ -18,6 +17,7 @@ import {
 export const useDataTable = <T>(
   data: T[],
   columns: ColumnDef<T>[],
+  meta: any
 ) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -28,9 +28,8 @@ export const useDataTable = <T>(
     data,
     columns,
     enableRowSelection: true,
-    manualPagination: true,
+    manualPagination: true, 
     manualSorting: true,
-    manualFiltering: true,
     onRowSelectionChange: setRowSelection,
     onPaginationChange: setPagination,
     onSortingChange: setSorting,
@@ -49,6 +48,7 @@ export const useDataTable = <T>(
       rowSelection,
       columnFilters,
     },
+    meta : meta
   });
 
   return { table };
