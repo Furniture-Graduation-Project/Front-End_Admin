@@ -7,7 +7,6 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 const TopBar = () => {
   return (
     <div className='bg-[#FFFFFF] sticky  w-full h-[70px] flex items-center justify-between'>
-      
       <div className='relative'>
         <Input
           type='text'
@@ -22,7 +21,6 @@ const TopBar = () => {
       </div>
 
       <div className='flex items-center space-x-4 sm:space-x-8'>
-      
         <div className='md:flex hidden items-center space-x-4 lg:space-x-8'>
           <Button variant='ghost' className='p-2 text-black focus:outline-none hover:text-blue-500'>
             <Scan />
@@ -42,7 +40,6 @@ const TopBar = () => {
           </Button>
         </div>
 
-       
         <div className='flex items-center space-x-2 bg-[#F5F6FA] px-4 py-[10px]'>
           <Avatar>
             <AvatarImage src='https://github.com/shadcn.png' alt='@shadcn' />
