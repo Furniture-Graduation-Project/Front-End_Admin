@@ -6,7 +6,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 
 const TopBar = () => {
   return (
-    <div className='bg-[#FFFFFF] sticky  w-full h-[70px] flex items-center justify-between'>
+    <div className='sticky w-full h-[70px] flex items-center justify-between'>
       <div className='relative'>
         <Input
           type='text'
