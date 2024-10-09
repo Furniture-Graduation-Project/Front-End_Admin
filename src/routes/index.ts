@@ -97,7 +97,7 @@ const routes: IRoute[] = [
     children: [
       { path: '', component: VoucherList },
       { path: 'add', component: VoucherAdd },
-      { path: 'edit', component: VoucherEdit }
+      { path: ':id/edit', component: VoucherEdit }
     ]
   },
   {

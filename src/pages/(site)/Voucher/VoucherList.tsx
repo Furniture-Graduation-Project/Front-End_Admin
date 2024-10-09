@@ -1,120 +1,233 @@
-import { Edit, Search, Trash, Plus } from 'lucide-react'
-import { Table, TableBody, TableCell, TableHeader, TableRow } from '@/components/ui/table'
-import { Button } from '@/components/ui/button'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { Edit, Search, Trash, Plus } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import axios from 'axios';
+import { useState, useMemo } from 'react';
+import { Link } from 'react-router-dom';
+import { useReactTable, ColumnDef, flexRender, getCoreRowModel, getPaginationRowModel,} from '@tanstack/react-table';
 
-const VoucherList = () => {
-  const vouchers = [
-    {
-      _id: '64f58e5c4e1e9b0012cabc12',
-      code: 'SAVE10',
-      description: 'Giảm 10% cho tất cả các sản phẩm',
-      type: 'Percent',
-      value: 10,
-      startDate: '2024-09-01T00:00:00Z',
-      endDate: '2024-09-30T23:59:59Z',
-      usageLimit: 100,
-      usedCount: 25,
-      status: 'active'
+const VoucherList: React.FC = () => {
+  const queryClient = useQueryClient();
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [search, setSearch] = useState('');
+
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['VOUCHERS'],
+    queryFn: async () => {
+      const response = await axios.get('http://localhost:3000/vouchers');
+      return response.data;
     },
-    {
-      _id: '64f58f5c4e1e9b0012cacd12',
-      code: 'FIXED50',
-      description: 'Giảm giá 50.000 VND cho đơn hàng từ 500.000 VND',
-      type: 'Fixed',
-      value: 50000,
-      startDate: '2024-09-05T00:00:00Z',
-      endDate: '2024-09-25T23:59:59Z',
-      usageLimit: 50,
-      usedCount: 10,
-      status: 'inactive'
-    }
-  ]
+  });
+
+  const { mutate } = useMutation({
+    mutationFn: async (id: string) => {
+      const confirmed = window.confirm('Bạn chắc chắn muốn xóa chứ ?');
+      if (!confirmed) {
+        return Promise.reject('User canceled the deletion.');
+      }
+      await axios.delete(`http://localhost:3000/vouchers/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['VOUCHERS'] });
+      setSuccessMessage('Voucher đã được xóa thành công!');
+      setTimeout(() => setSuccessMessage(null), 3000);
+    },
+  });
+
+  // Đảm bảo columns luôn được gọi trước render
+  const columns: ColumnDef<any>[] = useMemo(
+    () => [
+      {
+        header: 'Voucher Code',
+        accessorKey: 'code',
+        cell: (info) => info.getValue(),
+      },
+      {
+        header: 'Description',
+        accessorKey: 'description',
+      },
+      {
+        header: 'Type',
+        accessorKey: 'type',
+      },
+      {
+        header: 'Value',
+        accessorKey: 'value',
+      },
+      {
+        header: 'Start Date',
+        accessorKey: 'startDate',
+        cell: (info) =>
+          new Date(info.getValue() as string).toLocaleDateString(),
+      },
+      {
+        header: 'End Date',
+        accessorKey: 'endDate',
+        cell: (info) =>
+          new Date(info.getValue() as string).toLocaleDateString(),
+      },
+      {
+        header: 'Usage Limit',
+        accessorKey: 'usageLimit',
+      },
+      {
+        header: 'Used Count',
+        accessorKey: 'usedCount',
+      },
+      {
+        header: 'Status',
+        accessorKey: 'status',
+        cell: (info) => {
+          const status = info.getValue() || 'unknown';
+          return (
+            <span
+              className={`px-2 py-1 rounded-full text-white ${
+                status === 'active' ? 'bg-green-500' : 'bg-red-500'
+              }`}>
+              {status}
+            </span>
+          );
+        },
+      },
+      {
+        header: 'Actions',
+        cell: (info) => {
+          const voucher = info.row.original;
+          return (
+            <>
+              <Link to={`${voucher.id}/edit`}>
+                <button className='text-gray-600 hover:text-gray-800 transition-colors border border-gray-200 px-3 py-1 rounded-s-lg'>
+                  <Edit size={18} />
+                </button>
+              </Link>
+              <button
+                className='text-red-600 hover:text-red-800 transition-colors border border-gray-200 px-3 py-1 rounded-e-lg'
+                onClick={() => mutate(voucher.id)}>
+                <Trash size={18} />
+              </button>
+            </>
+          );
+        },
+      },
+    ],
+    [mutate]
+  );
+
+  // Bộ lọc dữ liệu dựa trên tìm kiếm
+  const filteredVouchers = useMemo(
+    () =>
+      data?.filter((voucher: any) =>
+        voucher.code.toLowerCase().includes(search.toLowerCase())
+      ) || [],
+    [data, search]
+  );
+
+  const table = useReactTable({
+    data: filteredVouchers,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+  });
+
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) {
+    console.error('Error loading vouchers:', isError);
+    return <div>Error loading vouchers</div>;
+  }
 
   return (
     <div className='container mx-auto p-7 bg-[#f5f6fa]'>
-      {/* Thanh tìm kiếm */}
+      {successMessage && (
+        <div className='bg-green-500 text-white p-2 rounded-lg mb-4'>
+          {successMessage}
+        </div>
+      )}
+
       <div className='flex justify-between items-center mb-7'>
         <div className='text-2xl font-semibold'>Voucher List</div>
       </div>
       <div className='w-full flex justify-between pb-7'>
-        <a href='/voucher/add'>
+        <Link to='add'>
           <Button variant='primary' className='flex items-center space-x-2'>
             <Plus size={18} />
             <span>Add Voucher</span>
           </Button>
-        </a>
+        </Link>
         <div className='flex items-center space-x-2'>
           <div className='flex items-center space-x-2 relative'>
             <Search className='text-gray-700 absolute left-5' size={16} />
             <input
               type='text'
               placeholder='Search voucher name'
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
               className='border rounded-3xl py-2 px-9 focus:outline-none focus:ring-2 focus:ring-blue-500'
             />
           </div>
         </div>
       </div>
-      {/* Bảng danh sách voucher */}
-      <Table className='w-full bg-white shadow-md rounded-lg overflow-hidden'>
-        <TableHeader className='border-b-2'>
-          <TableRow className='text-left'>
-            <TableCell className='p-4 font-bold'>Voucher Code</TableCell>
-            <TableCell className='p-4 font-bold'>Description</TableCell>
-            <TableCell className='p-4 font-bold'>Type</TableCell>
-            <TableCell className='p-4 font-bold'>Value</TableCell>
-            <TableCell className='p-4 font-bold'>Start Date</TableCell>
-            <TableCell className='p-4 font-bold'>End Date</TableCell>
-            <TableCell className='p-4 font-bold'>Usage Limit</TableCell>
-            <TableCell className='p-4 font-bold'>Used Count</TableCell>
-            <TableCell className='p-4 font-bold'>Status</TableCell>
-            <TableCell className='p-4 font-bold'>Actions</TableCell>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {vouchers.map((voucher) => (
-            <TableRow key={voucher._id} className='border-t hover:bg-gray-50 transition-colors'>
-              <TableCell className='p-4 font-medium'>{voucher.code}</TableCell>
-              <TableCell className='p-4'>{voucher.description}</TableCell>
-              <TableCell className='p-4'>{voucher.type}</TableCell>
-              <TableCell className='p-4'>{voucher.value}</TableCell>
-              <TableCell className='p-4'>{new Date(voucher.startDate).toLocaleDateString()}</TableCell>
-              <TableCell className='p-4'>{new Date(voucher.endDate).toLocaleDateString()}</TableCell>
-              <TableCell className='p-4'>{voucher.usageLimit}</TableCell>
-              <TableCell className='p-4'>{voucher.usedCount}</TableCell>
-              <TableCell className='p-4'>
-                <span
-                  className={`px-2 py-1 rounded-full text-white ${voucher.status === 'active' ? 'bg-green-500' : 'bg-red-500'}`}
-                >
-                  {voucher.status}
-                </span>
-              </TableCell>
-              <TableCell className='p-4'>
-                <button className=' text-gray-600 hover:text-gray-800 transition-colors border border-gray-200 px-3 py-1 rounded-s-lg'>
-                  <Edit size={18} />
-                </button>
-                <button className='text-red-600 hover:text-red-800 transition-colors border border-gray-200 px-3 py-1 rounded-e-lg'>
-                  <Trash size={18} />
-                </button>
-              </TableCell>
-            </TableRow>
+
+      <table className='w-full bg-white shadow-md rounded-lg overflow-hidden'>
+        <thead className='border-b-2'>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <tr key={headerGroup.id} className='text-left'>
+              {headerGroup.headers.map((header) => (
+                <th key={header.id} className='p-4 font-bold'>
+                  {flexRender(
+                    header.column.columnDef.header,
+                    header.getContext()
+                  )}
+                </th>
+              ))}
+            </tr>
           ))}
-        </TableBody>
-      </Table>
-      {/* Phân trang */}
+        </thead>
+        <tbody>
+          {table.getRowModel().rows.length > 0 ? (
+            table.getRowModel().rows.map((row) => (
+              <tr
+                key={row.id}
+                className='border-t hover:bg-gray-50 transition-colors'>
+                {row.getVisibleCells().map((cell) => (
+                  <td key={cell.id} className='p-4'>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan={10} className='text-center py-4'>
+                No vouchers available
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+
       <div className='flex justify-between items-center mt-7'>
-        <p className='text-[14px] font-light'>Showing 1-2 of 2</p>
+        <p className='text-[14px] font-light'>
+          Showing {table.getState().pagination.pageIndex + 1} of{' '}
+          {table.getPageCount()} pages
+        </p>
         <div>
-          <Button variant='outline'>
+          <Button
+            variant='outline'
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}>
             <ChevronLeft size={18} className='mx-2' />
           </Button>
-          <Button variant='outline'>
+          <Button
+            variant='outline'
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}>
             <ChevronRight size={18} className='mx-2' />
           </Button>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default VoucherList
+export default VoucherList;

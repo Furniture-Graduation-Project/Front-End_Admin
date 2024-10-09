@@ -1,0 +1,149 @@
+{
+  "vouchers": [
+    {
+      "id": "1",
+      "code": "VOUCHER1",
+      "description": "Description 1",
+      "type": "Discount",
+      "value": 10,
+      "startDate": "2024-01-01T00:00:00Z",
+      "endDate": "2024-12-31T00:00:00Z",
+      "usageLimit": 100,
+      "usedCount": 5,
+      "status": "active"
+    },
+    {
+      "id": "2",
+      "code": "VOUCHER2",
+      "description": "Description 2",
+      "type": "Discount",
+      "value": 15,
+      "startDate": "2024-02-01T00:00:00Z",
+      "endDate": "2024-11-30T00:00:00Z",
+      "usageLimit": 150,
+      "usedCount": 3,
+      "status": "active"
+    },
+    {
+      "id": "f06c",
+      "code": "Voucher 3",
+      "description": "Sale 100%",
+      "type": "Fixed",
+      "value": "20",
+      "startDate": "2024-09-27",
+      "endDate": "2024-09-29",
+      "usageLimit": "10",
+      "status": "active"
+    },
+    {
+      "id": "5e99",
+      "code": "Voucher  4",
+      "description": "sale 90%",
+      "type": "Fixed",
+      "value": "30",
+      "startDate": "2024-09-25",
+      "endDate": "2024-09-30",
+      "usageLimit": "10",
+      "status": "active"
+    },
+    {
+      "id": "d6e3",
+      "code": "Voucher  5",
+      "description": "sale 70%",
+      "type": "Fixed",
+      "value": "10",
+      "startDate": "2024-09-11",
+      "endDate": "2024-09-14",
+      "usageLimit": "10",
+      "status": "inactive"
+    },
+    {
+      "id": "b36f",
+      "code": "Voucher  6",
+      "description": "ádasd",
+      "type": "Fixed",
+      "value": "100",
+      "startDate": "2024-10-04",
+      "endDate": "2024-10-06",
+      "usageLimit": "2",
+      "status": "inactive"
+    },
+    {
+      "id": "afca",
+      "code": "Voucher  7",
+      "description": "đasad",
+      "type": "Percent",
+      "value": "20",
+      "startDate": "2024-10-06",
+      "endDate": "2024-10-09",
+      "usageLimit": "11",
+      "status": "inactive"
+    },
+    {
+      "id": "6e21",
+      "code": "Voucher  8",
+      "description": "eqweqwe",
+      "type": "Fixed",
+      "value": "10",
+      "startDate": "2024-10-01",
+      "endDate": "2024-10-03",
+      "usageLimit": "5",
+      "status": "active"
+    },
+    {
+      "id": "7a1f",
+      "code": "Voucher  9",
+      "description": "adsadasd",
+      "type": "Percent",
+      "value": "9",
+      "startDate": "2024-10-05",
+      "endDate": "2024-10-05",
+      "usageLimit": "5",
+      "status": "inactive"
+    },
+    {
+      "id": "11ce",
+      "code": "Voucher  10",
+      "description": "ádasd",
+      "type": "Percent",
+      "value": "12",
+      "startDate": "2024-10-05",
+      "endDate": "2024-10-06",
+      "usageLimit": 1,
+      "status": "active"
+    },
+    {
+      "id": "c100",
+      "code": "Voucher  11",
+      "description": "dấda",
+      "type": "Fixed",
+      "value": "13",
+      "startDate": "2024-10-13",
+      "endDate": "2024-10-20",
+      "usageLimit": 1,
+      "status": "active"
+    },
+    {
+      "id": "4737",
+      "code": "Voucher 12",
+      "description": "Đẹp zai zim to",
+      "type": "Percent",
+      "value": "15",
+      "startDate": "2024-10-12",
+      "endDate": "2024-10-19",
+      "usageLimit": 1,
+      "status": "inactive"
+    },
+    {
+      "id": "d22f",
+      "code": "Sản phẩm 13",
+      "description": "dsadsad",
+      "type": "Fixed",
+      "value": "33",
+      "startDate": "2024-10-09",
+      "endDate": "2024-10-11",
+      "usageLimit": 1,
+      "status": "inactive"
+    }
+  ]
+}

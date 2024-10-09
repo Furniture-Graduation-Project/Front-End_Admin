@@ -1,16 +1,19 @@
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Plus } from 'lucide-react'
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Plus } from 'lucide-react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 interface Voucher {
-  code: string
-  description: string
-  type: 'Percent' | 'Fixed'
-  value: number
-  startDate: string
-  endDate: string
-  usageLimit: number
-  status: 'active' | 'inactive'
+  code: string;
+  description: string;
+  type: 'Percent' | 'Fixed';
+  value: number;
+  startDate: string;
+  endDate: string;
+  usageLimit: number;
+  status: 'active' | 'inactive';
 }
 
 const VoucherAdd: React.FC = () => {
@@ -22,19 +25,32 @@ const VoucherAdd: React.FC = () => {
     startDate: '',
     endDate: '',
     usageLimit: 1,
-    status: 'active'
-  })
+    status: 'active',
+  });
+
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+
+  const { mutate } = useMutation({
+    mutationFn: async (newVoucher: Voucher) => {
+      await axios.post('http://localhost:3000/vouchers', newVoucher);
+    },
+    onSuccess: () => {
+      alert('Thêm sản phẩm thành công')
+      queryClient.invalidateQueries({ queryKey: ['VOUCHERS'] });
+      navigate('/voucher');
+    },
+  });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setVoucherData({ ...voucherData, [name]: value })
-  }
+    const { name, value } = e.target;
+    setVoucherData({ ...voucherData, [name]: value });
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    // Gửi yêu cầu thêm voucher tới API
-    console.log('Voucher Added:', voucherData)
-  }
+    e.preventDefault();
+    mutate(voucherData);
+  };
 
   return (
     <div className='container mx-auto p-7 bg-[#f5f6fa]'>
@@ -135,7 +151,7 @@ const VoucherAdd: React.FC = () => {
         </Button>
       </form>
     </div>
-  )
-}
+  );
+};
 
-export default VoucherAdd
+export default VoucherAdd;

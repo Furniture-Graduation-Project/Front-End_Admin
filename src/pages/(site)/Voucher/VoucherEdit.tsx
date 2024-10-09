@@ -1,59 +1,70 @@
-import { useState, useEffect } from 'react'
-import { useParams } from 'react-router-dom' // Nếu bạn đang dùng react-router
-import { Button } from '@/components/ui/button'
-import { Edit } from 'lucide-react'
+import { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Edit } from 'lucide-react';
+import axios from 'axios';
 
 interface Voucher {
-  code: string
-  description: string
-  type: 'Percent' | 'Fixed'
-  value: number
-  startDate: string
-  endDate: string
-  usageLimit: number
-  status: 'active' | 'inactive'
+  code: string;
+  description: string;
+  type: 'Percent' | 'Fixed';
+  value: number;
+  startDate: string;
+  endDate: string;
+  usageLimit: number;
+  status: 'active' | 'inactive';
 }
 
 const VoucherEdit: React.FC = () => {
-  const { voucherId } = useParams<{ voucherId: string }>()
-  const [voucherData, setVoucherData] = useState<Voucher | null>(null)
+  const { id } = useParams<{ id: string }>();
+  const [voucherData, setVoucherData] = useState<Voucher | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch voucher details từ API với voucherId
-    // Giả lập API call
-    const fetchedVoucher: Voucher = {
-      code: 'SAVE10',
-      description: 'Giảm 10% cho tất cả các sản phẩm',
-      type: 'Percent',
-      value: 10,
-      startDate: '2024-09-01',
-      endDate: '2024-09-30',
-      usageLimit: 100,
-      status: 'active'
-    }
-    setVoucherData(fetchedVoucher)
-  }, [voucherId])
+    const fetchVoucher = async () => {
+      try {
+        const response = await axios.get(`http://localhost:3000/vouchers/${id}`);
+        setVoucherData(response.data);
+      } catch (error) {
+        console.error("Error fetching voucher:", error);
+      }
+    };
+
+    fetchVoucher();
+  }, [id]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     if (voucherData) {
-      const { name, value } = e.target
-      setVoucherData({ ...voucherData, [name]: value })
+      const { name, value } = e.target;
+      setVoucherData({ ...voucherData, [name]: value });
     }
-  }
+  };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    // Gửi yêu cầu cập nhật voucher tới API
-    console.log('Voucher Updated:', voucherData)
-  }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await axios.put(`http://localhost:3000/vouchers/${id}`, voucherData);
+      console.log('Voucher Updated:', voucherData);
+      alert ('Sửa sản phẩm thành công')
+      navigate('/voucher');
+    } catch (error) {
+      console.error("Error updating voucher:", error);
+    }
+  };
 
   if (!voucherData) {
-    return <div>Loading...</div>
+    return <div>Loading...</div>;
   }
 
   return (
     <div className='container mx-auto p-7 bg-[#f5f6fa]'>
       <div className='text-2xl font-semibold mb-7'>Edit Voucher</div>
+      {message && (
+        <div className='bg-green-200 text-green-800 p-4 rounded-md mb-4'>
+          {message}
+        </div>
+      )}
       <form onSubmit={handleSubmit} className='space-y-6 bg-white p-6 rounded-md shadow-lg'>
         <div>
           <label className='block font-medium'>Voucher Code</label>
@@ -150,7 +161,7 @@ const VoucherEdit: React.FC = () => {
         </Button>
       </form>
     </div>
-  )
+  );
 }
 
-export default VoucherEdit
+export default VoucherEdit;
