@@ -1,13 +1,11 @@
 import { DEFAULT_PAGE_SIZE } from '@/constants/pagination'
 import { ConversationService } from '@/services/conversation'
 import { useQuery } from '@tanstack/react-query'
-import { IApiResponse } from '@/interface/apiRespose'
-import { IConversation } from './../../interface/message'
 
 export const useSingleConversationQuery = (id?: string, userId?: string) => {
-  return useQuery<IApiResponse<IConversation>, Error>({
+  const { data, ...rest } = useQuery({
     queryKey: id ? ['Conversation', id] : userId ? ['Conversation', 'User', userId] : [null],
-    queryFn: async (): Promise<IApiResponse<IConversation>> => {
+    queryFn: async () => {
       if (id) {
         const response = await ConversationService.getById(id)
         return response.data
@@ -19,6 +17,11 @@ export const useSingleConversationQuery = (id?: string, userId?: string) => {
     },
     enabled: !!(id || userId)
   })
+
+  return {
+    data,
+    ...rest
+  }
 }
 
 export const useMultipleConversationsQuery = ({
@@ -37,7 +40,7 @@ export const useMultipleConversationsQuery = ({
 }) => {
   const { pageIndex = DEFAULT_PAGE_SIZE.pageIndex, pageSize = DEFAULT_PAGE_SIZE.pageSize } = pagination || {}
 
-  return useQuery<IApiResponse<IConversation[]>, Error>({
+  const { data, ...rest } = useQuery({
     queryKey: label
       ? ['Conversation', 'Label', label]
       : category
@@ -47,7 +50,7 @@ export const useMultipleConversationsQuery = ({
           : pagination
             ? ['Conversation', pageIndex]
             : ['Conversation'],
-    queryFn: async (): Promise<IApiResponse<IConversation[]>> => {
+    queryFn: async () => {
       if (label) {
         const response = await ConversationService.getByLabel(label, { pageIndex, pageSize })
         return response.data
@@ -66,4 +69,9 @@ export const useMultipleConversationsQuery = ({
       }
     }
   })
+
+  return {
+    data,
+    ...rest
+  }
 }

@@ -3,5 +3,4 @@ export interface IApiResponse<T> {
   message: string
   totalData?: number
   totalPage?: number
-  page?: number
 }

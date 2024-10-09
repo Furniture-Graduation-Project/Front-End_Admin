@@ -16,9 +16,9 @@ export const ConversationService = {
     }
   },
 
-  getById: async (id: string): Promise<AxiosResponse<IApiResponse<IConversation>>> => {
+  getById: async (id: string) => {
     try {
-      const response: AxiosResponse<IApiResponse<IConversation>> = await axiosInstance.get(`${API}/${id}`)
+      const response = await axiosInstance.get(`${API}/${id}`)
       return response
     } catch (error) {
       console.error(`Lỗi khi lấy cuộc trò chuyện với ID ${id}:`, error)
