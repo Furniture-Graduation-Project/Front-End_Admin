@@ -1,4 +1,7 @@
 export interface IApiResponse<T> {
-    data: T
-    message: string
+  data: T
+  message: string
+  totalData?: number
+  totalPage?: number
+  page?: number
 }

@@ -8,23 +8,47 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  OnChangeFn,
+  PaginationState,
   RowSelectionState,
   SortingState,
   useReactTable,
   VisibilityState
 } from '@tanstack/react-table'
 
-export const useDataTable = <T>(data: T[], columns: ColumnDef<T>[], meta: any) => {
+export const useDataTable = <T>({
+  data,
+  columns,
+  meta,
+  totalPage,
+  totalData,
+  pagination,
+  setPagination
+}: {
+  data: T[]
+  columns: ColumnDef<T>[]
+  meta?: any
+  totalPage?: number
+  totalData?: number
+  pagination: { pageIndex: number; pageSize: number }
+  setPagination: OnChangeFn<PaginationState>
+}) => {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
-  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 })
+
+  const rowCount = totalData || 0
+  const pageCount = totalPage || 0
+
   const table = useReactTable({
     data,
     columns,
+    rowCount,
+    pageCount,
     enableRowSelection: true,
     manualSorting: true,
+    manualPagination: true,
     onRowSelectionChange: setRowSelection,
     onPaginationChange: setPagination,
     onSortingChange: setSorting,

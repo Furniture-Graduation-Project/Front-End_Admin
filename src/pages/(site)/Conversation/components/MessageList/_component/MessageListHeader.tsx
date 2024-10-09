@@ -11,10 +11,17 @@ import {
 import { Input } from '@/components/ui/input'
 import { ToggleGroup } from '@/components/ui/toggle-group'
 import { IConversation } from '@/interface/message'
-import { ITable } from '@/interface/table'
+import { Table } from '@tanstack/react-table'
 import { CircleAlert, FileDown, Settings2, Trash2 } from 'lucide-react'
 
-const MessageListHeader = ({ table }: ITable<IConversation>) => {
+const MessageListHeader = ({
+  table,
+  setPagination
+}: {
+  table: Table<IConversation>
+  isLoading: boolean
+  setPagination: (pagination: { pageIndex: number; pageSize: number }) => void
+}) => {
   const pageSizeOptions: number[] = [10, 20, 30, 40, 50]
   return (
     <CardHeader className='grid grid-cols-2 sm:grid-cols-3'>
@@ -33,7 +40,7 @@ const MessageListHeader = ({ table }: ITable<IConversation>) => {
         placeholder='Tìm kiếm...'
         value={(table.getColumn('userId')?.getFilterValue() as string) ?? ''}
         onChange={(event) => {
-          console.log('Giá trị mới:', event.target.value) // Log giá trị mới
+          console.log('Giá trị mới:', event.target.value)
           table.getColumn('userId')?.setFilterValue(event.target.value)
         }}
         className='order-last sm:order-first'
@@ -70,7 +77,12 @@ const MessageListHeader = ({ table }: ITable<IConversation>) => {
             <DropdownMenuCheckboxItem
               key={pageSize}
               checked={table.getState().pagination.pageSize === pageSize}
-              onCheckedChange={() => table.setPageSize(pageSize)}
+              onCheckedChange={() =>
+                setPagination({
+                  pageIndex: 0,
+                  pageSize: pageSize
+                })
+              }
             >
               {pageSize}
             </DropdownMenuCheckboxItem>

@@ -2,7 +2,7 @@ import { TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { ITable } from '@/interface/table'
 import { flexRender } from '@tanstack/react-table'
 
-const DataTableHeader = ({ table }: ITable<any>) => {
+const DataTableHead = ({ table }: ITable<any>) => {
   return (
     <TableHeader>
       {table.getHeaderGroups().map((headerGroup) => (
@@ -18,4 +18,4 @@ const DataTableHeader = ({ table }: ITable<any>) => {
   )
 }
 
-export default DataTableHeader
+export default DataTableHead

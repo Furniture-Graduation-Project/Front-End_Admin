@@ -5,24 +5,9 @@ import { TableBody, TableCell, TableRow } from '@/components/ui/table'
 import { ITableCustom } from '@/interface/table'
 import { flexRender } from '@tanstack/react-table'
 import { AlertCircle } from 'lucide-react'
-import { useQuery } from '@tanstack/react-query'
-const DataTableBody = ({ table, columns, isLoading, isError }: ITableCustom) => {
-  const { refetch } = useQuery({
-    queryKey: ['data']
-  })
+const DataTableBody = ({ table, columns, isLoading, isError, refetch }: ITableCustom) => {
   const rowCount = 10
   const columnCount = columns.length
-
-  const allRows = table.getRowModel().rows
-  const filteredRows = table.getFilteredRowModel().rows
-  console.log('Giá trị lọc hiện tại:', table.getColumn('userId')?.getFilterValue())
-  if (!allRows.length) {
-    console.warn('Không có bản ghi nào trong dữ liệu.')
-  }
-  if (filteredRows.length !== allRows.length) {
-    console.log(`Có ${allRows.length} bản ghi nhưng chỉ ${filteredRows.length} bản ghi được lọc.`)
-  }
-  console.log('Filtered Rows:', table.getFilteredRowModel().rows)
   return (
     <TableBody className='overflow-x-auto'>
       {isLoading ? (

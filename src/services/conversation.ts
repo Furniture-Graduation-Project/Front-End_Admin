@@ -1,9 +1,9 @@
 import { axiosInstance } from '@/config/axios'
 import { IApiResponse } from '@/interface/apiRespose'
-import { IConversation } from '@/interface/conversation'
+import { IConversation } from '@/interface/message'
 import { AxiosResponse } from 'axios'
 
-const API = 'conversation'
+const API = 'message'
 
 export const ConversationService = {
   getAll: async (): Promise<AxiosResponse<IApiResponse<IConversation[]>>> => {
@@ -56,9 +56,9 @@ export const ConversationService = {
     }
   },
 
-  getByUserId: async (userId: string): Promise<AxiosResponse<IApiResponse<IConversation[]>>> => {
+  getByUserId: async (userId: string): Promise<AxiosResponse<IApiResponse<IConversation>>> => {
     try {
-      const response: AxiosResponse<IApiResponse<IConversation[]>> = await axiosInstance.get(`${API}/user/${userId}`)
+      const response: AxiosResponse<IApiResponse<IConversation>> = await axiosInstance.get(`${API}/user/${userId}`)
       return response
     } catch (error) {
       console.error(`Lỗi khi lấy cuộc trò chuyện cho người dùng với ID ${userId}:`, error)
@@ -66,9 +66,15 @@ export const ConversationService = {
     }
   },
 
-  updateByUserId: async (userId: string, data: Partial<IConversation>): Promise<AxiosResponse<IApiResponse<IConversation>>> => {
+  updateByUserId: async (
+    userId: string,
+    data: Partial<IConversation>
+  ): Promise<AxiosResponse<IApiResponse<IConversation>>> => {
     try {
-      const response: AxiosResponse<IApiResponse<IConversation>> = await axiosInstance.put(`${API}/user/${userId}`, data)
+      const response: AxiosResponse<IApiResponse<IConversation>> = await axiosInstance.put(
+        `${API}/user/${userId}`,
+        data
+      )
       return response
     } catch (error) {
       console.error(`Lỗi khi cập nhật cuộc trò chuyện cho người dùng với ID ${userId}:`, error)
@@ -76,9 +82,14 @@ export const ConversationService = {
     }
   },
 
-  getByLabel: async (label: string): Promise<AxiosResponse<IApiResponse<IConversation[]>>> => {
+  getByLabel: async (
+    label: string,
+    panigation: { pageIndex: number; pageSize: number }
+  ): Promise<AxiosResponse<IApiResponse<IConversation[]>>> => {
     try {
-      const response: AxiosResponse<IApiResponse<IConversation[]>> = await axiosInstance.get(`${API}/label/${label}`)
+      const response: AxiosResponse<IApiResponse<IConversation[]>> = await axiosInstance.get(
+        `${API}/label/${label}?page=${panigation.pageIndex}&limit=${panigation.pageSize}`
+      )
       return response
     } catch (error) {
       console.error(`Lỗi khi lấy cuộc trò chuyện theo nhãn ${label}:`, error)
@@ -86,9 +97,14 @@ export const ConversationService = {
     }
   },
 
-  getByCategory: async (category: string): Promise<AxiosResponse<IApiResponse<IConversation[]>>> => {
+  getByCategory: async (
+    category: string,
+    panigation: { pageIndex: number; pageSize: number }
+  ): Promise<AxiosResponse<IApiResponse<IConversation[]>>> => {
     try {
-      const response: AxiosResponse<IApiResponse<IConversation[]>> = await axiosInstance.get(`${API}/category/${category}`)
+      const response: AxiosResponse<IApiResponse<IConversation[]>> = await axiosInstance.get(
+        `${API}/category/${category}?page=${panigation.pageIndex}&limit=${panigation.pageSize}`
+      )
       return response
     } catch (error) {
       console.error(`Lỗi khi lấy cuộc trò chuyện theo thể loại ${category}:`, error)
@@ -96,9 +112,14 @@ export const ConversationService = {
     }
   },
 
-  getByStatus: async (status: string): Promise<AxiosResponse<IApiResponse<IConversation[]>>> => {
+  getByStatus: async (
+    status: string,
+    panigation: { pageIndex: number; pageSize: number }
+  ): Promise<AxiosResponse<IApiResponse<IConversation[]>>> => {
     try {
-      const response: AxiosResponse<IApiResponse<IConversation[]>> = await axiosInstance.get(`${API}/status/${status}`)
+      const response: AxiosResponse<IApiResponse<IConversation[]>> = await axiosInstance.get(
+        `${API}/status/${status}?page=${panigation.pageIndex}&limit=${panigation.pageSize}`
+      )
       return response
     } catch (error) {
       console.error(`Lỗi khi lấy cuộc trò chuyện theo trạng thái ${status}:`, error)
@@ -112,6 +133,20 @@ export const ConversationService = {
       return response
     } catch (error) {
       console.error(`Lỗi khi đánh dấu sao cho cuộc trò chuyện với ID ${id}:`, error)
+      throw error
+    }
+  },
+  getLimited: async (panigation: {
+    pageIndex: number
+    pageSize: number
+  }): Promise<AxiosResponse<IApiResponse<IConversation[]>>> => {
+    try {
+      const response: AxiosResponse<IApiResponse<IConversation[]>> = await axiosInstance.get(
+        `${API}/limited?page=${panigation.pageIndex}&limit=${panigation.pageSize}`
+      )
+      return response
+    } catch (error) {
+      console.error(`Lỗi khi lấy cuộc trò chuyện :`, error)
       throw error
     }
   }
