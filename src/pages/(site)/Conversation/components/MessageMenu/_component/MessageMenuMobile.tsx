@@ -14,6 +14,7 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { IMessageMenu } from '@/interface/messageMenu'
+import { AlignJustify } from 'lucide-react'
 
 const MessageMenuMobile = ({ menu }: { menu: IMessageMenu }) => {
   const [isOpen, setIsOpen] = useState(false)
@@ -38,7 +39,9 @@ const MessageMenuMobile = ({ menu }: { menu: IMessageMenu }) => {
     <div className='flex justify-between sm:hidden relative '>
       <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
         <DropdownMenuTrigger asChild>
-          <Button variant='outline'>Tin nhắn của tôi</Button>
+          <Button variant='outline'>
+            <AlignJustify />
+          </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className='w-56 ml-5'>
           <DropdownMenuLabel>Thư mục</DropdownMenuLabel>

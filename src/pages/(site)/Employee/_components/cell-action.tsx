@@ -38,7 +38,7 @@ export const CellAction = ({ data }: CellActionProps) => {
       toast({
         title: 'Xoá thành công',
         description: `Người dùng ${data.fullName} đã được xoá thành công.`,
-        variant: 'success'
+        variant: 'default'
       })
     } catch (error) {
       toast({
