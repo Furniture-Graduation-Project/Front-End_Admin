@@ -5,6 +5,7 @@ import { CircleChevronDown, LogOut, Scan, Search, Settings } from 'lucide-react'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu'
 
 const TopBar = () => {
+  //nút chức năng
   return (
     <div className='sticky w-full h-[70px] flex items-center justify-between'>
       <div className='relative'>
