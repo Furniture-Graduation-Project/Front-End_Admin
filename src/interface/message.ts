@@ -2,14 +2,17 @@ export interface ISender {
   senderId: string
   senderType: 'User' | 'Employee'
   name: string
-  avatar?: string
 }
 
-export interface IMessage {
+export interface IMessage extends IMessageNew {
+  status: 'sent' | 'read'
+  timestamp: string
+}
+
+export interface IMessageNew {
   sender: ISender
   content: string
-  status: 'sent' | 'received' | 'read'
-  timestamp: string
+  type: 'text' | 'product' | 'voucher'
 }
 
 export interface IConversation {
@@ -21,8 +24,11 @@ export interface IConversation {
   messages: IMessage[]
   star: boolean
   label: 'service' | 'feedback' | 'order'
-  status: 'normal' | 'spam' | 'important' | 'deleted'
-  category: 'inbox' | 'sent' | 'draft'
+}
+
+export interface IConversationNew {
+  userId: string
+  label: 'service' | 'feedback' | 'order'
 }
 
 export interface ITableMetaConversation {
@@ -32,4 +38,18 @@ export interface ITableMetaConversation {
 export interface IDateKey {
   key?: string
   param?: string
+}
+
+export interface IMessageButton {
+  icon: any
+  text: string
+  count: number
+}
+
+export interface IMessageLabel {
+  text: string
+}
+export interface IMessageMenu {
+  buttons: IMessageButton[]
+  labels: IMessageLabel[]
 }

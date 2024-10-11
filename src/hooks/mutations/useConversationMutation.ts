@@ -6,22 +6,19 @@ type ConversationMutation = 'CREATE' | 'UPDATE' | 'DELETE' | 'UPDATE_BY_USER' | 
 export const useConversationMutation = (key: ConversationMutation) => {
   const { mutate } = useMutation({
     mutationKey: ['Conversation'],
-    mutationFn: async (params: { id?: string; userId?: string; data?: any }) => {
+    mutationFn: async ({ id, data }: { id: string; data?: any }) => {
       switch (key) {
         case 'CREATE':
-          return await ConversationService.create()
+          return await ConversationService.create(id, data)
         case 'UPDATE':
-          if (!params.id) throw new Error('Cần có ID để cập nhật')
-          return await ConversationService.update(params.id, params.data)
+          return await ConversationService.update(id, data)
         case 'DELETE':
-          if (!params.id) throw new Error('Cần phải có ID để xóa')
-          return await ConversationService.delete(params.id)
+          return await ConversationService.delete(id)
         case 'UPDATE_BY_USER':
-          if (!params.userId) throw new Error('Người dùng cần phải nhập ID người dùng để cập nhật')
-          return await ConversationService.updateByUserId(params.userId, params.data)
+          return await ConversationService.updateByUserId(id, data)
         case 'SET_STAR':
-          if (!params.id) throw new Error('Cần có ID để thiết lập star')
-          return await ConversationService.setStar(params.id)
+          if (!id) throw new Error('Cần có ID để thiết lập star')
+          return await ConversationService.setStar(id)
         default:
           throw new Error('Khóa không hợp lệ')
       }

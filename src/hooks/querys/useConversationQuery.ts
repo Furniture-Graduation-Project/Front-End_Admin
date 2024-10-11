@@ -1,11 +1,13 @@
 import { DEFAULT_PAGE_SIZE } from '@/constants/pagination'
+import { IApiResponse } from '@/interface/apiRespose'
+import { IConversation } from '@/interface/message'
 import { ConversationService } from '@/services/conversation'
 import { useQuery } from '@tanstack/react-query'
 
 export const useSingleConversationQuery = (id?: string, userId?: string) => {
   const { data, ...rest } = useQuery({
     queryKey: id ? ['Conversation', id] : userId ? ['Conversation', 'User', userId] : [null],
-    queryFn: async () => {
+    queryFn: async (): Promise<IApiResponse<IConversation>> => {
       if (id) {
         const response = await ConversationService.getById(id)
         return response.data

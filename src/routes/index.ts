@@ -16,6 +16,7 @@ import CategoryList from '@/pages/(site)/Category/CategoryList'
 import CategoryAdd from '@/pages/(site)/Category/CategoryAdd'
 import Category from '@/pages/(site)/Category/Category'
 import CategoryEdit from '@/pages/(site)/Category/CategoryEdit'
+import Order from '@/pages/(site)/Order/Order'
 
 const routes: IRoute[] = [
   { path: '/', component: Signin, layout: AuthLayout },
@@ -50,6 +51,11 @@ const routes: IRoute[] = [
       { path: '', component: MessageList },
       { path: 'texting/:id', component: MessageTexting }
     ]
+  },
+  {
+    path: '/order',
+    component: Order,
+    layout: MainLayout
   },
   { path: '/*', component: page404, layout: AuthLayout }
 ]

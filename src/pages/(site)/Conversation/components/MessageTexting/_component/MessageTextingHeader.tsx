@@ -6,8 +6,8 @@ import { Link } from 'react-router-dom'
 
 const MessageTextingHeader = () => {
   return (
-    <div className='flex justify-between items-center  border-b py-4'>
-      <div className='flex gap-3 mt-2'>
+    <div className='flex justify-between items-center border-b p-3 sm:p-5 text-sm sm:text-base'>
+      <div className='flex gap-3 items-center'>
         <Link to={`/conversation`}>
           <ArrowLeft className='bg-slate-200 rounded-lg' />
         </Link>
@@ -15,7 +15,7 @@ const MessageTextingHeader = () => {
         <Badge variant={'default'}>Service</Badge>
       </div>
 
-      <ToggleGroup className='w-fit mt-[6px]' variant='outline' type='multiple'>
+      <ToggleGroup className='w-fit mt-[6px] hidden sm:flex' variant='outline' type='multiple'>
         <Button variant='outline'>
           <FileDown />
         </Button>
