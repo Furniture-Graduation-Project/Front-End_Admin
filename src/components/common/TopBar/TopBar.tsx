@@ -3,6 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Input } from '@/components/ui/input'
 import { CircleChevronDown, LogOut, Scan, Search, Settings } from 'lucide-react'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu'
+import { bell, cart, chat } from '@/assets'
 
 const TopBar = () => {
   //nút chức năng
@@ -28,16 +29,16 @@ const TopBar = () => {
           </Button>
 
           <Button variant='ghost' className='p-2 text-black focus:outline-none hover:text-blue-500 '>
-            <img src='/public/bell.svg' alt='Notification' />
+            <img src={bell} alt='Notification' />
             <span className='absolute top-0 right-0 inline-block w-2 h-2 rounded-ful'></span>
           </Button>
 
           <Button variant='ghost' className='p-2 text-black focus:outline-none hover:text-blue-500'>
-            <img src='/public/cart.svg' alt='Cart' />
+            <img src={cart} alt='Cart' />
           </Button>
 
           <Button variant='ghost' className='p-2 text-black focus:outline-none hover:text-blue-500'>
-            <img src='/public/chat.svg' alt='Chat' />
+            <img src={chat} alt='Chat' />
           </Button>
         </div>
 
