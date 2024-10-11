@@ -43,14 +43,14 @@ const MessageListHeader = ({
           console.log('Giá trị mới:', event.target.value)
           table.getColumn('userId')?.setFilterValue(event.target.value)
         }}
-        className='order-last sm:order-first'
+        className='order-last sm:order-first col-span-2 sm:col-span-1'
       />
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant='outline' className='ml-auto'>
             <Settings2 />
-            Hiển thị
+            <span className='sr-only'> Hiển thị</span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align='end'>

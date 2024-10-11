@@ -2,24 +2,20 @@ import React from 'react'
 
 interface MessageProps {
   text: string
-  sender: 'me' | 'other'
+  sender: string
   time: string
   avatarSrc?: string
 }
 
-const MessageContent: React.FC<MessageProps> = ({ text, sender, time, avatarSrc }) => {
+const MessageContent: React.FC<MessageProps> = ({ text, sender, time }) => {
   return (
-    <div className={`flex ${sender === 'me' ? 'justify-end' : 'justify-start'} mb-4`}>
-      {sender === 'other' && avatarSrc && (
-        <div className='flex flex-col items-start mr-2'>
-          <div className='flex-grow' />
-          <img src={avatarSrc} alt='Avatar' className='w-10 h-10 rounded-full object-cover' />
-        </div>
-      )}
-      <div className={`flex p-3 ${sender === 'me' ? 'ml-auto' : 'mr-auto'} ${sender === 'me' ? 'w-3/4' : 'w-3/4'}`}>
-        <div className={`p-3 rounded-lg ${sender === 'me' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}>
+    <div className={`w-full flex text-sm md:text-base ${sender !== 'User' ? 'justify-end' : 'justify-start'}`}>
+      <div
+        className={`flex p-2 ${sender !== 'User' ? 'ml-auto justify-end ' : 'mr-auto'} ${sender !== 'User' ? 'w-3/4' : 'w-3/4'}`}
+      >
+        <div className={`p-2 rounded-lg ${sender === 'Employee' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}>
           <p>{text}</p>
-          <p className={`text-sm ${sender === 'me' ? 'text-right' : 'text-right'}`}>{time}</p>
+          <p className={`text-sm ${sender !== 'User' ? 'text-right' : 'text-right'}`}>{time}</p>
         </div>
       </div>
     </div>

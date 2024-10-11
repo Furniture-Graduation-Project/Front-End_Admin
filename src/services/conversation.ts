@@ -1,6 +1,6 @@
 import { axiosInstance } from '@/config/axios'
 import { IApiResponse } from '@/interface/apiRespose'
-import { IConversation } from '@/interface/message'
+import { IConversation, IConversationNew } from '@/interface/message'
 import { AxiosResponse } from 'axios'
 
 const API = 'message'
@@ -16,9 +16,9 @@ export const ConversationService = {
     }
   },
 
-  getById: async (id: string) => {
+  getById: async (id: string): Promise<AxiosResponse<IApiResponse<IConversation>>> => {
     try {
-      const response = await axiosInstance.get(`${API}/${id}`)
+      const response: AxiosResponse<IApiResponse<IConversation>> = await axiosInstance.get(`${API}/${id}`)
       return response
     } catch (error) {
       console.error(`Lỗi khi lấy cuộc trò chuyện với ID ${id}:`, error)
@@ -26,9 +26,12 @@ export const ConversationService = {
     }
   },
 
-  create: async (): Promise<AxiosResponse<IApiResponse<IConversation>>> => {
+  create: async (id : string, data: IConversationNew): Promise<AxiosResponse<IApiResponse<IConversation>>> => {
     try {
-      const response: AxiosResponse<IApiResponse<IConversation>> = await axiosInstance.post(API)
+      const response: AxiosResponse<IApiResponse<IConversation>> = await axiosInstance.post(API, {
+        id,
+        ...data
+      })
       return response
     } catch (error) {
       console.error('Lỗi khi tạo cuộc trò chuyện mới:', error)
