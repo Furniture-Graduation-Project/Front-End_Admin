@@ -6,7 +6,7 @@ import Signup from '@/pages/(auth)/Signup'
 import page404 from '@/pages/(site)/404/404'
 import MessageTexting from '@/pages/(site)/Conversation/components/MessageTexting/MessageTexting'
 import Conversation from '@/pages/(site)/Conversation/Conversation'
-import MessageList from '@/pages/(site)/Conversation/components/MessgeList/MessageList'
+import MessageList from '@/pages/(site)/Conversation/components/MessageList/MessageList'
 import Dashboard from '@/pages/(site)/Dashboard/Dashboard'
 import ProductList from '@/pages/(site)/Product/ProductList'
 import ProductAdd from '@/pages/(site)/Product/ProductAdd'
@@ -49,7 +49,7 @@ const routes: IRoute[] = [
     layout: MainLayout,
     children: [
       { path: '', component: MessageList },
-      { path: 'texting', component: MessageTexting }
+      { path: 'texting/:id', component: MessageTexting }
     ]
   },
   {

@@ -4,10 +4,10 @@ import MessageMenuSide from './_component/MessageMenuSide'
 
 const MessLeft = () => {
   return (
-    <div>
+    <>
       <MessageMenuSide menu={messageMenup} />
       <MessageMenuMobile menu={messageMenup} />
-    </div>
+    </>
   )
 }
 
