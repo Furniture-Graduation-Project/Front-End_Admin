@@ -42,7 +42,7 @@ const TopBar = () => {
           </Button>
         </div>
 
-        <div className='flex items-center space-x-2 bg-[#F5F6FA] px-4 py-[10px]'>
+        <div className='flex items-center space-x-2  px-4 py-[10px]'>
           <Avatar>
             <AvatarImage src='https://github.com/shadcn.png' alt='@shadcn' />
             <AvatarFallback>CN</AvatarFallback>
