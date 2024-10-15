@@ -39,7 +39,7 @@ const TopBar = () => {
             <AvatarImage src='https://github.com/shadcn.png' alt='@shadcn' />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
-          <div className='hidden  lg:block text-[#404040]'>
+          <div className='hidden  xl:block text-[#404040]'>
             <p className='text-sm font-medium'>Admin Name</p>
             <p className='text-xs text-gray-400'>Admin Role</p>
           </div>
