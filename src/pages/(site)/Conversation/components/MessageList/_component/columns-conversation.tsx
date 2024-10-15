@@ -102,7 +102,7 @@ export const columnsConversation: ColumnDef<IConversation>[] = [
           </Link>
         )
       }
-      return <div className='font-medium'>##Nội dung không có sẵn</div>
+      return <div className='font-medium  line-clamp-1'>#Trống</div>
     }
   },
   {
@@ -120,12 +120,13 @@ export const columnsConversation: ColumnDef<IConversation>[] = [
         const formattedDate = format(date, 'Pp', { locale: vi })
         return <div className='font-medium'>{formattedDate}</div>
       }
-      return <div className='font-medium'>##Nội dung không có sẵn</div>
+      return <div className='font-medium line-clamp-1'>#Trống</div>
     }
   },
   {
     id: 'actions',
     enableHiding: false,
+    header: () => <div>Thao tác</div>,
     cell: ({ row, table }) => {
       const meta = table.options.meta as ITableMetaConversation | undefined
       const conversationId = row.original._id || ''

@@ -1,44 +1,51 @@
+import { useEffect, useRef } from 'react'
 import { useSingleConversationQuery } from '@/hooks/querys/useConversationQuery'
-import MessageContent from './_component/MessageContent'
 import MessageTextingForm from './_component/MessageTextingForm'
 import MessageTextingHeader from './_component/MessageTextingHeader'
-import { useParams } from 'react-router-dom'
+import { Params, useParams } from 'react-router-dom'
 import { IMessage } from '@/interface/message'
+import MessageContent from './_component/MessageContent'
+import useListenMessage from '@/hooks/useListenMessage'
 
 const MessageTexting = () => {
-  const { id } = useParams()
+  const { id } = useParams<Readonly<Params<string>>>()
   const { data, isLoading, isError } = useSingleConversationQuery(id)
+  useListenMessage(id)
+  const messageEndRef = useRef<HTMLDivElement>(null)
 
-  if (isLoading) {
+  useEffect(() => {
+    if (messageEndRef.current) {
+      messageEndRef.current.scrollIntoView({ behavior: 'smooth' })
+    }
+  }, [data])
+
+  if (isLoading && !id) {
     return <div>Loading...</div>
   }
-
   if (isError) {
     return <div>Error</div>
   }
 
-  console.log(data)
-
   return (
-    <div className='bg-white rounded-lg w-full px-6'>
+    <div className='bg-white rounded-lg w-full min-h-full flex flex-col'>
       <MessageTextingHeader />
-      <div className='mb-16'>
-        {data && data.messages.length > 0 ? (
-          data.messages.map((message: IMessage) => (
-            <h1 key={message.timestamp}>dhdscdshjcb</h1>
-            // <MessageContent
-            //   key={message.timestamp}
-            //   text={message.content}
-            //   sender={message.sender.senderType === 'User' ? 'me' : 'other'}
-            //   time={new Date(message.timestamp).toLocaleTimeString()}
-            //   avatarSrc={message.sender.avatar || '/404.png'}
-            // />
+      <div className='flex-grow overflow-y-scroll w-full max-h-[550px] px-2'>
+        {data && data.data.messages.length > 0 ? (
+          data.data.messages.map((message: IMessage) => (
+            <div key={message.timestamp} className='message-content'>
+              <MessageContent
+                text={message.content}
+                sender={message.sender.senderType}
+                time={new Date(message.timestamp).toLocaleTimeString()}
+              />
+            </div>
           ))
         ) : (
           <h1>Chưa có tin nhắn</h1>
         )}
+        <div ref={messageEndRef} />
       </div>
-      <MessageTextingForm />
+      <MessageTextingForm idUser={data?.data.userId._id} />
     </div>
   )
 }

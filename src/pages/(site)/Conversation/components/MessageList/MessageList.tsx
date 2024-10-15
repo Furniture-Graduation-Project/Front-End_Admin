@@ -16,6 +16,8 @@ const MessageList = () => {
   const { toast } = useToast()
   const [pagination, setPagination] = useState<PaginationState>(DEFAULT_PAGE_SIZE)
   const { data, isLoading, isError, refetch } = useMultipleConversationsQuery({ pagination })
+  console.log(data)
+
   const [openDelete, setOpenDelete] = useState(false)
   const [conversationId, setConversationId] = useState<String>('')
   const openDeleteModal = (id: string): void => {
@@ -46,7 +48,7 @@ const MessageList = () => {
   }, [table.getState().pagination])
   return (
     <>
-      <Card className='bg-white rounded-lg w-full max-h-full h-full'>
+      <Card className='bg-white rounded-lg w-full max-h-full flex-grow'>
         <MessageListHeader table={table} isLoading={isLoading} setPagination={setPagination} />
         <CardContent>
           <DataTableCustom
