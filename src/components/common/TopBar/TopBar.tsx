@@ -34,12 +34,12 @@ const TopBar = () => {
           <img src={chat} alt='Chat' />
         </div>
 
-        <div className='flex items-center space-x-2  px-4 py-[10px]'>
+        <div className='flex bg-white lg:bg-[#F5F6FA] items-center space-x-2 px-4 py-[10px]'>
           <Avatar>
             <AvatarImage src='https://github.com/shadcn.png' alt='@shadcn' />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
-          <div className='hidden  xl:block text-[#404040]'>
+          <div className='hidden xl:block text-[#404040]'>
             <p className='text-sm font-medium'>Admin Name</p>
             <p className='text-xs text-gray-400'>Admin Role</p>
           </div>
