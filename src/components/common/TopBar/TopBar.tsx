@@ -3,10 +3,11 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Input } from '@/components/ui/input'
 import { CircleChevronDown, LogOut, Scan, Search, Settings } from 'lucide-react'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu'
+import { bell, cart, chat } from '@/assets'
 
 const TopBar = () => {
   return (
-    <div className='bg-[#FFFFFF] sticky  w-full h-[70px] flex items-center justify-between'>
+    <div className='sticky top-0 z-50 w-full flex items-center justify-between bg-white '>
       <div className='relative'>
         <Input
           type='text'
@@ -26,26 +27,19 @@ const TopBar = () => {
             <Scan />
           </Button>
 
-          <Button variant='ghost' className='p-2 text-black focus:outline-none hover:text-blue-500 '>
-            <img src='/public/bell.svg' alt='Notification' />
-            <span className='absolute top-0 right-0 inline-block w-2 h-2 rounded-ful'></span>
-          </Button>
+          <img src={bell} alt='Notification' />
 
-          <Button variant='ghost' className='p-2 text-black focus:outline-none hover:text-blue-500'>
-            <img src='/public/cart.svg' alt='Cart' />
-          </Button>
+          <img src={cart} alt='Cart' />
 
-          <Button variant='ghost' className='p-2 text-black focus:outline-none hover:text-blue-500'>
-            <img src='/public/chat.svg' alt='Chat' />
-          </Button>
+          <img src={chat} alt='Chat' />
         </div>
 
-        <div className='flex items-center space-x-2 bg-[#F5F6FA] px-4 py-[10px]'>
+        <div className='flex bg-white lg:bg-[#F5F6FA] items-center space-x-2 px-4 py-[10px]'>
           <Avatar>
             <AvatarImage src='https://github.com/shadcn.png' alt='@shadcn' />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
-          <div className='hidden sm:block text-[#404040]'>
+          <div className='hidden xl:block text-[#404040]'>
             <p className='text-sm font-medium'>Admin Name</p>
             <p className='text-xs text-gray-400'>Admin Role</p>
           </div>
