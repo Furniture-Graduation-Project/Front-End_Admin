@@ -1,17 +1,15 @@
-import { IMessageMenu } from '@/interface/messageMenu'
-import { Mail, MessageCircleQuestion, Pencil, Send, Star, Trash2, TriangleAlert } from 'lucide-react'
+import { IMessageMenu } from '@/interface/message'
+import { Mail, MessageCircleQuestion, Pencil, Send, Star } from 'lucide-react'
 
 const messageMenup: IMessageMenu = {
   buttons: [
-    { icon: Mail, text: 'Hộp thư thoại', count: 123 },
-    { icon: Star, text: 'Đã đánh dấu', count: 123 },
-    { icon: Send, text: 'Đã gửi', count: 123 },
-    { icon: Pencil, text: 'Nháp', count: 123 },
-    { icon: TriangleAlert, text: 'Thư rác', count: 123 },
-    { icon: MessageCircleQuestion, text: 'Quan trọng', count: 123 },
-    { icon: Trash2, text: 'Thùng rác', count: 123 }
-  ],
-  labels: [{ text: 'Quan trọng' }, { text: 'Xã hội' }, { text: 'Bạn bè' }]
+    { icon: Mail, path: '/conversation', text: 'Hộp thư chung', count: 123 },
+    { icon: Star, path: '/conversation', text: 'Hộp thư cá nhân', count: 123 },
+    { icon: Star, path: '/conversation?filter=star', text: 'Đã đánh dấu', count: 123 },
+    { icon: Send, path: '/conversation?filter=send', text: 'service', count: 123 },
+    { icon: Pencil, path: '/conversation?filter=draft', text: 'feedback', count: 123 },
+    { icon: MessageCircleQuestion, path: '/conversation?filter=order', text: 'Quan trọng', count: 123 }
+  ]
 }
 
 export default messageMenup

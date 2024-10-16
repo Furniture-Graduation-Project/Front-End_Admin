@@ -44,6 +44,7 @@ export interface IMessageButton {
   icon: any
   text: string
   count: number
+  path: string
 }
 
 export interface IMessageLabel {
@@ -51,5 +52,4 @@ export interface IMessageLabel {
 }
 export interface IMessageMenu {
   buttons: IMessageButton[]
-  labels: IMessageLabel[]
 }

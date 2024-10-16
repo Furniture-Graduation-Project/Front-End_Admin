@@ -6,15 +6,12 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuPortal,
   DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import { IMessageMenu } from '@/interface/messageMenu'
+import { IMessageMenu } from '@/interface/message'
 import { AlignJustify } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 const MessageMenuMobile = ({ menu }: { menu: IMessageMenu }) => {
   const [isOpen, setIsOpen] = useState(false)
@@ -47,35 +44,21 @@ const MessageMenuMobile = ({ menu }: { menu: IMessageMenu }) => {
           <DropdownMenuLabel>Thư mục</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
-            {menu.buttons.map(({ icon: Icon, text, count }) => (
+            {menu.buttons.map(({ icon: Icon, text, count, path }) => (
               <DropdownMenuItem key={text}>
-                <Icon className='mr-2 h-4 w-4' />
-                <span>{text}</span>
-                <span className='ml-auto'>{count}</span>
+                <Link
+                  to={path}
+                  key={text}
+                  className={`w-full p-[2px] bg-white hover:bg-blue-300 text-black rounded-md flex items-center justify-between`}
+                >
+                  <div className='flex items-center'>
+                    <Icon />
+                    <p className='ml-2'>{text}</p>
+                  </div>
+                  <p>{count}</p>
+                </Link>
               </DropdownMenuItem>
             ))}
-          </DropdownMenuGroup>
-          <DropdownMenuSeparator />
-          <DropdownMenuGroup>
-            <DropdownMenuSub>
-              <DropdownMenuSubTrigger>
-                <span>Nhãn</span>
-              </DropdownMenuSubTrigger>
-              <DropdownMenuPortal>
-                <DropdownMenuSubContent>
-                  {menu.labels.map(({ text }) => (
-                    <DropdownMenuItem key={text} className='flex items-center'>
-                      <input type='checkbox' className='mr-2 h-4 w-4' />
-                      <span>{text}</span>
-                    </DropdownMenuItem>
-                  ))}
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <span>Thêm...</span>
-                  </DropdownMenuItem>
-                </DropdownMenuSubContent>
-              </DropdownMenuPortal>
-            </DropdownMenuSub>
           </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>
