@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { IMessageButton, IMessageLabel, IMessageMenu } from '@/interface/messageMenu'
+import { IMessageButton, IMessageLabel, IMessageMenu } from '@/interface/message'
 
 const MessageMenuSide = ({ menu }: { menu: IMessageMenu }) => {
   return (
@@ -12,7 +12,6 @@ const MessageMenuSide = ({ menu }: { menu: IMessageMenu }) => {
         <Button
           key={text}
           className={`bg-white hover:bg-blue-300 text-black w-[255px] h-[43px] flex items-center justify-between mt-1 ${index === 0 ? 'bg-blue-300' : ''}`}
-
         >
           <div className='flex items-center'>
             <Icon />
