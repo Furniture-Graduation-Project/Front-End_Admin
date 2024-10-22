@@ -17,12 +17,16 @@ import CategoryAdd from '@/pages/(site)/Category/CategoryAdd'
 import Category from '@/pages/(site)/Category/Category'
 import CategoryEdit from '@/pages/(site)/Category/CategoryEdit'
 import Order from '@/pages/(site)/Order/Order'
+import EmployeePage from '@/pages/(site)/Employee/EmployeePage'
+import AddEmployeeForm from '@/pages/(site)/Employee/_components/EmployeeAdd'
+import EmployeeEdit from '@/pages/(site)/Employee/_components/EmployeeEdit'
+import EmployeeList from '@/pages/(site)/Employee/_components/EmployeeList'
+// import EmployeeSignIn from '@/pages/(site)/Employee/_components/EmployeeSignIn'
 
 const routes: IRoute[] = [
   { path: '/', component: Signin, layout: AuthLayout },
   { path: '/signup', component: Signup, layout: AuthLayout },
   { path: '/dashboard', component: Dashboard, layout: MainLayout },
-
   {
     path: '/category',
     component: Category,
@@ -40,7 +44,7 @@ const routes: IRoute[] = [
     children: [
       { path: '', component: ProductList },
       { path: 'add', component: ProductAdd },
-      { path: 'edit', component: ProductEdit }
+      { path: 'edit/:id', component: ProductEdit }
     ]
   },
   {
@@ -57,6 +61,17 @@ const routes: IRoute[] = [
     component: Order,
     layout: MainLayout
   },
+  {
+    path: '/employee',
+    component: EmployeePage,
+    layout: MainLayout,
+    children: [
+      { path: '', component: EmployeeList },
+      { path: 'add', component: AddEmployeeForm },
+      { path: 'edit/:id', component: EmployeeEdit }
+    ]
+  },
+
   { path: '/*', component: page404, layout: AuthLayout }
 ]
 
