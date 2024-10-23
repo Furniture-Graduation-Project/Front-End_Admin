@@ -17,10 +17,10 @@ import CategoryAdd from '@/pages/(site)/Category/CategoryAdd'
 import Category from '@/pages/(site)/Category/Category'
 import CategoryEdit from '@/pages/(site)/Category/CategoryEdit'
 import Order from '@/pages/(site)/Order/Order'
-import EmployeePage from '@/pages/(site)/Employee/Employee'
 import AccountPage from '@/pages/(site)/Account/AccountPage'
 import AccountDetail from '@/pages/(site)/Account/components/AccountDetail/AccountDetail'
 import AccountLayout from '@/pages/(site)/Account/AccountLayout'
+import EmployeePage from '@/pages/(site)/Employee/EmployeePage'
 
 const routes: IRoute[] = [
   { path: '/', component: Signin, layout: AuthLayout },
