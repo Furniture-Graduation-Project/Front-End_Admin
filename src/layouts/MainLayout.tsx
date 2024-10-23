@@ -39,10 +39,10 @@ const MainLayout = ({ children }: { children: React.ReactNode }): JSX.Element =>
         </div>
 
         <div className='flex flex-col w-full'>
-          <header className='sticky top-0 z-10 flex h-[70px] w-full items-center gap-4 bg-muted/40 px-4 lg:h-[60px] lg:px-5'>
+          <header className='bg-white sticky top-0 z-10 flex h-[70px] w-full items-center gap-4 bg-muted/40  sm:h-[60px] sm:px-5 lg:h-[60px] lg:px-5'>
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant='outline' size='icon' className='shrink-0 md:hidden'>
+                <Button variant='outline' size='icon' className='ml-3 sm:ml-0 shrink-0 md:hidden'>
                   <Menu className='h-5 w-5' />
                   <span className='sr-only'>Toggle navigation menu</span>
                 </Button>
