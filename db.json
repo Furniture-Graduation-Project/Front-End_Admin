@@ -1,5 +1,4 @@
-{
-  "vouchers": [
+[
     {
       "id": "1",
       "code": "VOUCHER1",
@@ -145,5 +144,4 @@
       "usageLimit": 1,
       "status": "inactive"
     }
-  ]
-}
+]

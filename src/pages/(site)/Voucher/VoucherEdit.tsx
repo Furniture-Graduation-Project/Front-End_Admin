@@ -1,8 +1,10 @@
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Edit } from 'lucide-react';
-import axios from 'axios';
+import { useVoucherMutation } from '@/hooks/mutations/useVoucherMutation';
+import { useVoucherQuery } from '@/hooks/querys/useVoucherQuery';
+import { useForm, SubmitHandler } from 'react-hook-form';
+import { useNavigate, useParams } from 'react-router-dom';
+import React from 'react';
+import { toast } from 'react-toastify';
 
 interface Voucher {
   code: string;
@@ -17,151 +19,132 @@ interface Voucher {
 
 const VoucherEdit: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const [voucherData, setVoucherData] = useState<Voucher | null>(null);
-  const [message, setMessage] = useState<string | null>(null);
+  const { data, isLoading, isError } = useVoucherQuery(id);
+  const { register, handleSubmit, formState: { errors }, setValue } = useForm<Voucher>();
   const navigate = useNavigate();
+  const { mutate } = useVoucherMutation("UPDATE");
 
-  useEffect(() => {
-    const fetchVoucher = async () => {
-      try {
-        const response = await axios.get(`http://localhost:3000/vouchers/${id}`);
-        setVoucherData(response.data);
-      } catch (error) {
-        console.error("Error fetching voucher:", error);
-      }
-    };
+  React.useEffect(() => {
+    if (data) {
+      setValue('code', data.code);
+      setValue('description', data.description);
+      setValue('type', data.type);
+      setValue('value', data.value);
+      setValue('startDate', data.startDate);
+      setValue('endDate', data.endDate);
+      setValue('usageLimit', data.usageLimit);
+      setValue('status', data.status);
+    }
+  }, [data, setValue]);
 
-    fetchVoucher();
-  }, [id]);
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    if (voucherData) {
-      const { name, value } = e.target;
-      setVoucherData({ ...voucherData, [name]: value });
+  const onSubmit: SubmitHandler<Voucher> = (formData) => {
+    if (id) {
+      mutate({ id, data: formData }, {
+        onSuccess: () => {
+           alert("Đã sửa thành công")
+          navigate("/voucher");
+        },
+        onError: () => {
+          toast.error("Lỗi sửa Voucher");
+        }
+      });
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      await axios.put(`http://localhost:3000/vouchers/${id}`, voucherData);
-      console.log('Voucher Updated:', voucherData);
-      alert ('Sửa sản phẩm thành công')
-      navigate('/voucher');
-    } catch (error) {
-      console.error("Error updating voucher:", error);
-    }
-  };
-
-  if (!voucherData) {
-    return <div>Loading...</div>;
-  }
+  if (isLoading) return <p>Loading...</p>;
+  if (isError) return <p>Error loading voucher</p>;
 
   return (
     <div className='container mx-auto p-7 bg-[#f5f6fa]'>
       <div className='text-2xl font-semibold mb-7'>Edit Voucher</div>
-      {message && (
-        <div className='bg-green-200 text-green-800 p-4 rounded-md mb-4'>
-          {message}
-        </div>
-      )}
-      <form onSubmit={handleSubmit} className='space-y-6 bg-white p-6 rounded-md shadow-lg'>
+      <form onSubmit={handleSubmit(onSubmit)} className='space-y-6 bg-white p-6 rounded-md shadow-lg'>
         <div>
           <label className='block font-medium'>Voucher Code</label>
           <input
             type='text'
-            name='code'
-            value={voucherData.code}
-            onChange={handleInputChange}
+            {...register('code', { required: 'Voucher code is required' })}
             className='border rounded-md w-full py-2 px-3 mt-2'
-            required
           />
+          {errors.code && <p className="text-red-500">{errors.code.message}</p>}
         </div>
+
         <div>
           <label className='block font-medium'>Description</label>
           <textarea
-            name='description'
-            value={voucherData.description}
-            onChange={handleInputChange}
-            className='border rounded-md w-full py-2 px-3 mt-2'
-            required
+            {...register('description', { required: 'Description is required' })}
+            className='border rounded-md w-full h-32 py-2 px-3 mt-2'
           />
+          {errors.description && <p className="text-red-500">{errors.description.message}</p>}
         </div>
+
         <div>
           <label className='block font-medium'>Type</label>
           <select
-            name='type'
-            value={voucherData.type}
-            onChange={handleInputChange}
-            className='border rounded-md w-full py-2 px-3 mt-2'
+            {...register('type')}
+            className='border rounded-md  py-2 px-3 mt-2'
           >
             <option value='Percent'>Percent</option>
             <option value='Fixed'>Fixed</option>
           </select>
         </div>
+
         <div>
           <label className='block font-medium'>Value</label>
           <input
             type='number'
-            name='value'
-            value={voucherData.value}
-            onChange={handleInputChange}
-            className='border rounded-md w-full py-2 px-3 mt-2'
-            required
+            {...register('value', { required: 'Value is required', min: 1 })}
+            className='border rounded-md  py-2 px-3 mt-2'
           />
+          {errors.value && <p className="text-red-500">{errors.value.message}</p>}
         </div>
+
         <div>
           <label className='block font-medium'>Start Date</label>
           <input
             type='date'
-            name='startDate'
-            value={voucherData.startDate}
-            onChange={handleInputChange}
-            className='border rounded-md w-full py-2 px-3 mt-2'
-            required
+            {...register('startDate', { required: 'Start date is required' })}
+            className='border rounded-md w-1/2 py-2 px-3 mt-2'
           />
+          {errors.startDate && <p className="text-red-500">{errors.startDate.message}</p>}
         </div>
+
         <div>
           <label className='block font-medium'>End Date</label>
           <input
             type='date'
-            name='endDate'
-            value={voucherData.endDate}
-            onChange={handleInputChange}
-            className='border rounded-md w-full py-2 px-3 mt-2'
-            required
+            {...register('endDate', { required: 'End date is required' })}
+            className='border rounded-md w-1/2 py-2 px-3 mt-2'
           />
+          {errors.endDate && <p className="text-red-500">{errors.endDate.message}</p>}
         </div>
+
         <div>
           <label className='block font-medium'>Usage Limit</label>
           <input
             type='number'
-            name='usageLimit'
-            value={voucherData.usageLimit}
-            onChange={handleInputChange}
-            className='border rounded-md w-full py-2 px-3 mt-2'
-            required
+            {...register('usageLimit', { required: 'Usage limit is required', min: 1 })}
+            className='border rounded-md  py-2 px-3 mt-2'
           />
+          {errors.usageLimit && <p className="text-red-500">{errors.usageLimit.message}</p>}
         </div>
+
         <div>
           <label className='block font-medium'>Status</label>
           <select
-            name='status'
-            value={voucherData.status}
-            onChange={handleInputChange}
-            className='border rounded-md w-full py-2 px-3 mt-2'
+            {...register('status')}
+            className='border rounded-md  py-2 px-3 mt-2'
           >
             <option value='active'>Active</option>
             <option value='inactive'>Inactive</option>
           </select>
         </div>
+
         <Button type='submit' variant='primary' className='mt-4'>
-          <Edit size={18} />
-          <span className='ml-2'>Update Voucher</span>
+          Update Voucher
         </Button>
       </form>
     </div>
   );
-}
+};
 
 export default VoucherEdit;

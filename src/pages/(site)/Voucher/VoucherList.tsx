@@ -1,130 +1,146 @@
 import { Edit, Search, Trash, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
+import { useQueryClient } from '@tanstack/react-query';
 import { useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
-import { useReactTable, ColumnDef, flexRender, getCoreRowModel, getPaginationRowModel,} from '@tanstack/react-table';
+import { Link, useNavigate } from 'react-router-dom';
+import { useReactTable, ColumnDef, flexRender, getCoreRowModel, getPaginationRowModel } from '@tanstack/react-table';
+import { useVoucherQuery } from '@/hooks/querys/useVoucherQuery';
+import { useVoucherMutation } from '@/hooks/mutations/useVoucherMutation';
 
 const VoucherList: React.FC = () => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [search, setSearch] = useState('');
+  const [pageIndex, setPageIndex] = useState(0);
 
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ['VOUCHERS'],
-    queryFn: async () => {
-      const response = await axios.get('http://localhost:3000/vouchers');
-      return response.data;
-    },
-  });
+  const { data, isLoading, isError } = useVoucherQuery(); 
+  const vouchers = data?.vouchers || [];
 
-  const { mutate } = useMutation({
-    mutationFn: async (id: string) => {
-      const confirmed = window.confirm('Bạn chắc chắn muốn xóa chứ ?');
-      if (!confirmed) {
-        return Promise.reject('User canceled the deletion.');
-      }
-      await axios.delete(`http://localhost:3000/vouchers/${id}`);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['VOUCHERS'] });
-      setSuccessMessage('Voucher đã được xóa thành công!');
-      setTimeout(() => setSuccessMessage(null), 3000);
-    },
-  });
+  const { mutate } = useVoucherMutation("DELETE");
 
-  // Đảm bảo columns luôn được gọi trước render
-  const columns: ColumnDef<any>[] = useMemo(
-    () => [
-      {
-        header: 'Voucher Code',
-        accessorKey: 'code',
-        cell: (info) => info.getValue(),
+  const columns: ColumnDef<any>[] = useMemo(() => [
+    {
+      header: 'Mã phiếu giảm giá',
+      accessorKey: 'code',
+      cell: (info) => info.getValue(),
+    },
+    {
+      header: 'Mô tả',
+      accessorKey: 'description',
+      cell: (info) => info.getValue(),
+    },
+    {
+      header: 'Kiểu',
+      accessorKey: 'type',
+      cell: (info) => info.getValue(),
+    },
+    {
+      header: 'Giá trị',
+      accessorKey: 'value',
+      cell: (info) => info.getValue(),
+    },
+    {
+      header: 'Ngày bắt đầu',
+      accessorKey: 'startDate',
+      cell: (info) => {
+        const startDate = info.getValue() as string | undefined;
+        if (!startDate) return 'N/A';
+        const date = new Date(startDate);
+        return isNaN(date.getTime()) ? 'N/A' : date.toLocaleDateString('vi-VN');
       },
-      {
-        header: 'Description',
-        accessorKey: 'description',
+    },
+    {
+      header: 'Ngày kết thúc',
+      accessorKey: 'endDate',
+      cell: (info) => {
+        const endDate = info.getValue() as string | undefined;
+        if (!endDate) return 'N/A';
+        const date = new Date(endDate);
+        return isNaN(date.getTime()) ? 'N/A' : date.toLocaleDateString('vi-VN');
       },
-      {
-        header: 'Type',
-        accessorKey: 'type',
+    },
+    {
+      header: 'Giới hạn sử dụng',
+      accessorKey: 'usageLimit',
+      cell: (info) => info.getValue(),
+    },
+    {
+      header: 'Số lượng đã dùng',
+      accessorKey: 'usedCount',
+      cell: (info) => info.getValue(),
+    },
+    {
+      header: 'Trạng thái',
+      accessorKey: 'status',
+      cell: (info) => {
+        const status = info.getValue() as string | undefined;
+        if (status === undefined) return 'N/A';
+
+        const isActive = status.toLowerCase() === 'active';
+
+        return (
+          <span className={`inline-block px-3 py-1 rounded-full text-white ${isActive ? 'bg-green-500' : 'bg-red-500'}`}>
+            {status}
+          </span>
+        );
       },
-      {
-        header: 'Value',
-        accessorKey: 'value',
-      },
-      {
-        header: 'Start Date',
-        accessorKey: 'startDate',
-        cell: (info) =>
-          new Date(info.getValue() as string).toLocaleDateString(),
-      },
-      {
-        header: 'End Date',
-        accessorKey: 'endDate',
-        cell: (info) =>
-          new Date(info.getValue() as string).toLocaleDateString(),
-      },
-      {
-        header: 'Usage Limit',
-        accessorKey: 'usageLimit',
-      },
-      {
-        header: 'Used Count',
-        accessorKey: 'usedCount',
-      },
-      {
-        header: 'Status',
-        accessorKey: 'status',
-        cell: (info) => {
-          const status = info.getValue() || 'unknown';
-          return (
-            <span
-              className={`px-2 py-1 rounded-full text-white ${
-                status === 'active' ? 'bg-green-500' : 'bg-red-500'
-              }`}>
-              {status}
-            </span>
-          );
-        },
-      },
-      {
-        header: 'Actions',
-        cell: (info) => {
-          const voucher = info.row.original;
-          return (
-            <>
-              <Link to={`${voucher.id}/edit`}>
-                <button className='text-gray-600 hover:text-gray-800 transition-colors border border-gray-200 px-3 py-1 rounded-s-lg'>
-                  <Edit size={18} />
-                </button>
-              </Link>
-              <button
-                className='text-red-600 hover:text-red-800 transition-colors border border-gray-200 px-3 py-1 rounded-e-lg'
-                onClick={() => mutate(voucher.id)}>
-                <Trash size={18} />
+    },
+    {
+      header: 'Actions',
+      cell: (info) => {
+        const voucher = info.row.original;
+        return (
+          <>
+            <Link to={`${voucher._id}/edit`}>
+              <button className='text-gray-600 hover:text-gray-800 transition-colors border border-gray-200 px-3 py-1 rounded-s-lg'>
+                <Edit size={18} />
               </button>
-            </>
-          );
-        },
+            </Link>
+            <button
+              className='text-red-600 hover:text-red-800 transition-colors border border-gray-200 px-3 py-1 rounded-e-lg'
+              onClick={() => handleDelete(voucher._id)}>
+              <Trash size={18} />
+            </button>
+          </>
+        );
       },
-    ],
-    [mutate]
+    }
+  ], [mutate]);
+
+  const handleDelete = async (id: string) => {
+    const confirmDelete = window.confirm("Bạn có chắc chắn muốn xóa voucher này không?");
+    if (!confirmDelete) return;
+  
+    try {
+      await mutate({ id }); 
+      setSuccessMessage('Voucher đã được xóa thành công!');
+      queryClient.invalidateQueries({ queryKey: ['Voucher'] });
+
+      navigate('/voucher');
+      
+    } catch (error) {
+      console.error('Error deleting voucher:', error);
+      setSuccessMessage('Có lỗi xảy ra khi xóa voucher!');
+    }
+  };
+
+  const filteredVouchers = useMemo(() => 
+    vouchers.filter((voucher: any) => 
+      voucher.code.toLowerCase().includes(search.toLowerCase())
+    ), [vouchers, search]
   );
 
-  // Bộ lọc dữ liệu dựa trên tìm kiếm
-  const filteredVouchers = useMemo(
-    () =>
-      data?.filter((voucher: any) =>
-        voucher.code.toLowerCase().includes(search.toLowerCase())
-      ) || [],
-    [data, search]
+  const pageCount = Math.min(Math.ceil(filteredVouchers.length / 5), 5);
+  const paginatedVouchers = useMemo(() => 
+    filteredVouchers.slice(pageIndex * 5, (pageIndex + 1) * 5), 
+    [filteredVouchers, pageIndex]
   );
+  
 
   const table = useReactTable({
-    data: filteredVouchers,
+    data: paginatedVouchers,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -174,10 +190,7 @@ const VoucherList: React.FC = () => {
             <tr key={headerGroup.id} className='text-left'>
               {headerGroup.headers.map((header) => (
                 <th key={header.id} className='p-4 font-bold'>
-                  {flexRender(
-                    header.column.columnDef.header,
-                    header.getContext()
-                  )}
+                  {flexRender(header.column.columnDef.header, header.getContext())}
                 </th>
               ))}
             </tr>
@@ -186,9 +199,7 @@ const VoucherList: React.FC = () => {
         <tbody>
           {table.getRowModel().rows.length > 0 ? (
             table.getRowModel().rows.map((row) => (
-              <tr
-                key={row.id}
-                className='border-t hover:bg-gray-50 transition-colors'>
+              <tr key={row.id} className='border-t hover:bg-gray-50 transition-colors'>
                 {row.getVisibleCells().map((cell) => (
                   <td key={cell.id} className='p-4'>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -208,21 +219,20 @@ const VoucherList: React.FC = () => {
 
       <div className='flex justify-between items-center mt-7'>
         <p className='text-[14px] font-light'>
-          Showing {table.getState().pagination.pageIndex + 1} of{' '}
-          {table.getPageCount()} pages
+          Showing page {pageIndex + 1} of {pageCount}
         </p>
         <div>
           <Button
             variant='outline'
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}>
-            <ChevronLeft size={18} className='mx-2' />
+            onClick={() => setPageIndex(prev => Math.max(0, prev - 1))}
+            disabled={pageIndex === 0}>
+            <ChevronLeft size={16} />
           </Button>
           <Button
             variant='outline'
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}>
-            <ChevronRight size={18} className='mx-2' />
+            onClick={() => setPageIndex(prev => Math.min(pageCount - 1, prev + 1))}
+            disabled={pageIndex >= pageCount - 1}>
+            <ChevronRight size={16} />
           </Button>
         </div>
       </div>
