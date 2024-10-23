@@ -26,7 +26,6 @@ const routes: IRoute[] = [
   { path: '/', component: Signin, layout: AuthLayout },
   { path: '/signup', component: Signup, layout: AuthLayout },
   { path: '/dashboard', component: Dashboard, layout: MainLayout },
-
   {
     path: '/category',
     component: Category,
@@ -44,7 +43,7 @@ const routes: IRoute[] = [
     children: [
       { path: '', component: ProductList },
       { path: 'add', component: ProductAdd },
-      { path: 'edit', component: ProductEdit }
+      { path: 'edit/:id', component: ProductEdit }
     ]
   },
   {
