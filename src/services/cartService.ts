@@ -1,5 +1,5 @@
 import { axiosInstance } from '@/config/axios'
-import { ICart, AddToCartData, UpdateCartItemData } from '@/interface/cart'
+import { AddToCartData, UpdateCartItemData } from '@/interface/cart'
 
 export const CartService = {
   getCartByUserId: async (userId: string) => {

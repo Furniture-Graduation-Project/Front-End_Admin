@@ -42,7 +42,7 @@ const ProductList = () => {
       </div>
       <div className='w-full flex justify-between pb-7'>
         <a href='/product/add'>
-          <Button variant='primary' className='flex items-center space-x-2'>
+          <Button variant='outline' className='flex items-center space-x-2'>
             <Plus size={18} />
             <span>Add Product</span>
           </Button>
