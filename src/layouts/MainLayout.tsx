@@ -2,6 +2,9 @@ import SideBar from '@/components/common/SideBar/SideBar'
 import TopBar from '@/components/common/TopBar/TopBar'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import { Toaster } from '@/components/ui/sonner'
+import useListenMessage from '@/hooks/useListenMessage'
+import useListenOrder from '@/hooks/useListenOrder'
 import {
   Banknote,
   BarChart,
@@ -15,7 +18,6 @@ import {
   Menu,
   MessagesSquare,
   Package,
-  Power,
   Rows3,
   Settings,
   User,
@@ -25,6 +27,8 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
 const MainLayout = ({ children }: { children: React.ReactNode }): JSX.Element => {
+  useListenOrder()
+
   const [isOpen, setIsOpen] = useState<boolean>(true)
 
   const toggleSidebar = () => {
@@ -167,6 +171,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }): JSX.Element =>
           <main className='px-3 sm:px-5 flex-1 overflow-auto'>{children}</main>
         </div>
       </div>
+      <Toaster />
     </div>
   )
 }

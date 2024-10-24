@@ -21,6 +21,11 @@ import AccountPage from '@/pages/(site)/Account/AccountPage'
 import AccountDetail from '@/pages/(site)/Account/components/AccountDetail/AccountDetail'
 import AccountLayout from '@/pages/(site)/Account/AccountLayout'
 import EmployeePage from '@/pages/(site)/Employee/EmployeePage'
+import AddEmployeeForm from '@/pages/(site)/Employee/_components/EmployeeAdd'
+import EmployeeEdit from '@/pages/(site)/Employee/_components/EmployeeEdit'
+import EmployeeList from '@/pages/(site)/Employee/_components/EmployeeList'
+import SettingsPage from '@/pages/(site)/Settings/page'
+// import EmployeeSignIn from '@/pages/(site)/Employee/_components/EmployeeSignIn'
 
 const routes: IRoute[] = [
   { path: '/', component: Signin, layout: AuthLayout },
@@ -63,7 +68,12 @@ const routes: IRoute[] = [
   {
     path: '/employee',
     component: EmployeePage,
-    layout: MainLayout
+    layout: MainLayout,
+    children: [
+      { path: '', component: EmployeeList },
+      { path: 'add', component: AddEmployeeForm },
+      { path: 'edit/:id', component: EmployeeEdit }
+    ]
   },
   {
     path: '/account',
@@ -80,6 +90,12 @@ const routes: IRoute[] = [
       }
     ]
   },
+  {
+    path: '/setting',
+    component: SettingsPage,
+    layout: MainLayout
+  },
+
   { path: '/*', component: page404, layout: AuthLayout }
 ]
 
