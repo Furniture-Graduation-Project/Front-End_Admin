@@ -10,16 +10,17 @@ import {
   ChevronsLeft,
   ChevronsRight,
   Clipboard,
+  Contact,
   Gift,
   Grid3X3,
   Heart,
   LayoutDashboard,
-  ListChecks,
+  ListOrdered,
   MessagesSquare,
   Package,
   Power,
-  Rows3,
   Settings,
+  TicketCheck,
   User,
   Users
 } from 'lucide-react'
@@ -27,37 +28,43 @@ import { Link } from 'react-router-dom'
 import { MenuItem, SidebarHeaderProps, SidebarMenuProps } from '../../../interface/sidebar'
 
 const menuItems: MenuItem[] = [
-  { name: 'Dashboard', icon: <LayoutDashboard className='w-6 h-6 mr-3' /> },
-  { name: 'Product', icon: <Package className='w-6 h-6 mr-3' /> },
-  { name: 'Favourites', icon: <Heart className='w-6 h-6 mr-3' /> },
-  { name: 'Inbox', icon: <MessagesSquare className='w-6 h-6 mr-3' /> },
-  { name: 'Order Lists', icon: <ListChecks className='w-6 h-6 mr-3' /> },
-  { name: 'Product Stock', icon: <Rows3 className='w-6 h-6 mr-3' /> }
+  { name: 'Trang chủ', icon: <LayoutDashboard className='w-6 h-6 mr-3' />, link: '/' },
+  {
+    name: 'Danh sách sản phẩm ',
+    icon: <Package className='w-6 h-6 mr-3' />,
+    link: '/product',
+    submenu: [{ name: 'Thêm sản phẩm', icon: <Package className='w-4 h-4 mr-3' />, link: '/product/add' }]
+  },
+  { name: 'Danh mục sản phẩm', icon: <Heart className='w-6 h-6 mr-3' />, link: '/category' },
+  { name: 'Danh sách nhân viên', icon: <Contact className='w-6 h-6 mr-3' />, link: '/employee' },
+  { name: 'Cuộc hội thoại', icon: <MessagesSquare className='w-6 h-6 mr-3' />, link: '/conversation' },
+  { name: 'Mã giảm giá', icon: <TicketCheck className='w-6 h-6 mr-3' />, link: '/voucher' },
+  { name: 'Đơn hàng', icon: <ListOrdered className='w-6 h-6 mr-3' />, link: '/order' }
 ]
 
 const Page: MenuItem[] = [
-  { name: 'Pricing', icon: <Gift className='w-6 h-6 mr-3' /> },
-  { name: 'Calendar', icon: <CalendarDays className='w-6 h-6 mr-3' /> },
-  { name: 'To-Do', icon: <Clipboard className='w-6 h-6 mr-3' /> },
-  { name: 'Contact', icon: <Users className='w-6 h-6 mr-3' /> },
-  { name: 'Invoice', icon: <Banknote className='w-6 h-6 mr-3' /> },
-  { name: 'UI Elements', icon: <BarChart className='w-6 h-6 mr-3' /> },
-  { name: 'Team', icon: <User className='w-6 h-6 mr-3' /> },
-  { name: 'Table', icon: <Grid3X3 className='w-6 h-6 mr-3' /> }
+  { name: 'Pricing', icon: <Gift className='w-6 h-6 mr-3' />, link: '/pricing' },
+  { name: 'Calendar', icon: <CalendarDays className='w-6 h-6 mr-3' />, link: '/calendar' },
+  { name: 'To-Do', icon: <Clipboard className='w-6 h-6 mr-3' />, link: '/todo' },
+  { name: 'Contact', icon: <Users className='w-6 h-6 mr-3' />, link: '/contact' },
+  { name: 'Invoice', icon: <Banknote className='w-6 h-6 mr-3' />, link: '/invoice' },
+  { name: 'UI Elements', icon: <BarChart className='w-6 h-6 mr-3' />, link: '/ui-elements' },
+  { name: 'Team', icon: <User className='w-6 h-6 mr-3' />, link: '/team' },
+  { name: 'Table', icon: <Grid3X3 className='w-6 h-6 mr-3' />, link: '/table' }
 ]
 
 const settingsItems: MenuItem[] = [
-  { name: 'Settings', icon: <Settings className='w-6 h-6 mr-3' /> },
-  { name: 'Logout', icon: <Power className='w-6 h-6 mr-3' /> }
+  { name: 'Settings', icon: <Settings className='w-6 h-6 mr-3' />, link: '/settings' },
+  { name: 'Logout', icon: <Power className='w-6 h-6 mr-3' />, link: '/logout' }
 ]
 
 const SidebarMenu: React.FC<SidebarMenuProps> = ({ items, isOpen }) => (
   <NavigationMenu>
     <NavigationMenuList className='space-y-4'>
       {items.map((item, index) => (
-        <NavigationMenuItem key={index}>
-          <a
-            href='#'
+        <NavigationMenuItem key={index} className='relative group'>
+          <Link
+            to={item.link}
             className={cn(
               'flex items-center h-12 text-left py-3 px-4 rounded',
               'hover:bg-blue-500 hover:text-white text-gray-900'
@@ -65,7 +72,23 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({ items, isOpen }) => (
           >
             {item.icon}
             {isOpen && <span>{item.name}</span>}
-          </a>
+          </Link>
+
+          {item.submenu && (
+            <ul className='hidden group-hover:block space-y-2 p-3 mt-2 ml-4 rounded'>
+              {item.submenu.map((subItem, subIndex) => (
+                <li key={subIndex}>
+                  <Link
+                    to={subItem.link}
+                    className='flex items-center h-10 text-left px-3 py-2 rounded hover:bg-blue-500 hover:text-white'
+                  >
+                    {subItem.icon}
+                    <span>{subItem.name}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
         </NavigationMenuItem>
       ))}
     </NavigationMenuList>

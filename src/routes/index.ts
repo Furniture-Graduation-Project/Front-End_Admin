@@ -21,6 +21,7 @@ import EmployeePage from '@/pages/(site)/Employee/EmployeePage'
 import AddEmployeeForm from '@/pages/(site)/Employee/_components/EmployeeAdd'
 import EmployeeEdit from '@/pages/(site)/Employee/_components/EmployeeEdit'
 import EmployeeList from '@/pages/(site)/Employee/_components/EmployeeList'
+import SettingsPage from '@/pages/(site)/Settings/page'
 // import EmployeeSignIn from '@/pages/(site)/Employee/_components/EmployeeSignIn'
 
 const routes: IRoute[] = [
@@ -70,6 +71,11 @@ const routes: IRoute[] = [
       { path: 'add', component: AddEmployeeForm },
       { path: 'edit/:id', component: EmployeeEdit }
     ]
+  },
+  {
+    path: '/setting',
+    component: SettingsPage,
+    layout: MainLayout
   },
 
   { path: '/*', component: page404, layout: AuthLayout }
