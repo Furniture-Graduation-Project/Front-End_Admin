@@ -22,7 +22,7 @@ const TopBar = () => {
       </div>
 
       <div className='flex items-center space-x-4 sm:space-x-8'>
-        <div className='md:flex hidden items-center space-x-4 lg:space-x-8'>
+        <div className='lg:flex hidden items-center space-x-4 lg:space-x-8'>
           <Button variant='ghost' className='p-2 text-black focus:outline-none hover:text-blue-500'>
             <Scan />
           </Button>

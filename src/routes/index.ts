@@ -17,6 +17,10 @@ import CategoryAdd from '@/pages/(site)/Category/CategoryAdd'
 import Category from '@/pages/(site)/Category/Category'
 import CategoryEdit from '@/pages/(site)/Category/CategoryEdit'
 import Order from '@/pages/(site)/Order/Order'
+import Blog from '@/pages/(site)/Blog/Blog'
+import BlogList from '@/pages/(site)/Blog/BlogList'
+import BlogAdd from '@/pages/(site)/Blog/BlogAdd'
+import BlogEdit from '@/pages/(site)/Blog/BlogEdit'
 
 const routes: IRoute[] = [
   { path: '/', component: Signin, layout: AuthLayout },
@@ -56,6 +60,16 @@ const routes: IRoute[] = [
     path: '/order',
     component: Order,
     layout: MainLayout
+  },
+  {
+    path: '/blog',
+    component: Blog,
+    layout: MainLayout,
+    children: [
+      { path: '', component: BlogList },
+      { path: 'add', component: BlogAdd },
+      { path: 'edit', component: BlogEdit }
+    ]
   },
   { path: '/*', component: page404, layout: AuthLayout }
 ]
