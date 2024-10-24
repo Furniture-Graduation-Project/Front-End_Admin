@@ -144,7 +144,7 @@ const VoucherEdit: React.FC = () => {
             <option value='inactive'>Inactive</option>
           </select>
         </div>
-        <Button type='submit' variant='primary' className='mt-4'>
+        <Button type='submit' variant='outline' className='mt-4'>
           <Edit size={18} />
           <span className='ml-2'>Update Voucher</span>
         </Button>
