@@ -6,7 +6,7 @@ import Signup from '@/pages/(auth)/Signup'
 import page404 from '@/pages/(site)/404/404'
 import MessageTexting from '@/pages/(site)/Conversation/components/MessageTexting/MessageTexting'
 import Conversation from '@/pages/(site)/Conversation/Conversation'
-import MessageList from '@/pages/(site)/Conversation/components/MessgeList/MessageList'
+import MessageList from '@/pages/(site)/Conversation/components/MessageList/MessageList'
 import Dashboard from '@/pages/(site)/Dashboard/Dashboard'
 import ProductList from '@/pages/(site)/Product/ProductList'
 import ProductAdd from '@/pages/(site)/Product/ProductAdd'
@@ -24,6 +24,11 @@ import Promotion from '@/pages/(site)/Promotion/Promotion'
 import PromotionList from '@/pages/(site)/Promotion/PromotionList'
 import PromotionAdd from '@/pages/(site)/Promotion/PromotionAdd'
 import PromotionEdit from '@/pages/(site)/Promotion/PromotionEdit'
+import Order from '@/pages/(site)/Order/Order'
+import AccountPage from '@/pages/(site)/Account/AccountPage'
+import AccountDetail from '@/pages/(site)/Account/components/AccountDetail/AccountDetail'
+import AccountLayout from '@/pages/(site)/Account/AccountLayout'
+import EmployeePage from '@/pages/(site)/Employee/EmployeePage'
 
 const routes: IRoute[] = [
   { path: '/', component: Signin, layout: AuthLayout },
@@ -47,7 +52,7 @@ const routes: IRoute[] = [
     children: [
       { path: '', component: ProductList },
       { path: 'add', component: ProductAdd },
-      { path: 'edit', component: ProductEdit }
+      { path: 'edit/:id', component: ProductEdit }
     ]
   },
   {
@@ -56,7 +61,7 @@ const routes: IRoute[] = [
     layout: MainLayout,
     children: [
       { path: '', component: MessageList },
-      { path: 'texting', component: MessageTexting }
+      { path: 'texting/:id', component: MessageTexting }
     ]
   },
   {
@@ -70,13 +75,28 @@ const routes: IRoute[] = [
     ]
   },
   {
-    path: '/promotion',
-    component: Promotion,
+    path: '/order',
+    component: Order,
+    layout: MainLayout
+  },
+  {
+    path: '/employee',
+    component: EmployeePage,
+    layout: MainLayout
+  },
+  {
+    path: '/account',
+    component: AccountLayout,
     layout: MainLayout,
     children: [
-      { path: '', component: PromotionList },
-      { path: 'add', component: PromotionAdd },
-      { path: 'edit', component: PromotionEdit }
+      {
+        path: '',
+        component: AccountPage
+      },
+      {
+        path: ':id',
+        component: AccountDetail
+      }
     ]
   },
   { path: '/*', component: page404, layout: AuthLayout }

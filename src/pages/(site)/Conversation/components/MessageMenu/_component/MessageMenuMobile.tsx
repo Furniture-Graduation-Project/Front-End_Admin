@@ -13,7 +13,8 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import { IMessageMenu } from '@/interface/messageMenu'
+import { IMessageMenu } from '@/interface/message'
+import { AlignJustify } from 'lucide-react'
 
 const MessageMenuMobile = ({ menu }: { menu: IMessageMenu }) => {
   const [isOpen, setIsOpen] = useState(false)
@@ -38,13 +39,15 @@ const MessageMenuMobile = ({ menu }: { menu: IMessageMenu }) => {
     <div className='flex justify-between sm:hidden relative '>
       <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
         <DropdownMenuTrigger asChild>
-          <Button variant='outline'>Tin nhắn của tôi</Button>
+          <Button variant='outline'>
+            <AlignJustify />
+          </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className='w-56 ml-5'>
           <DropdownMenuLabel>Thư mục</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
-            {menu.buttons.map(({ icon: Icon, text, count }) => (
+            {menu.buttons.map(({ icon: Icon, text, count }: any) => (
               <DropdownMenuItem key={text}>
                 <Icon className='mr-2 h-4 w-4' />
                 <span>{text}</span>
@@ -60,7 +63,7 @@ const MessageMenuMobile = ({ menu }: { menu: IMessageMenu }) => {
               </DropdownMenuSubTrigger>
               <DropdownMenuPortal>
                 <DropdownMenuSubContent>
-                  {menu.labels.map(({ text }) => (
+                  {menu.labels.map(({ text }: any) => (
                     <DropdownMenuItem key={text} className='flex items-center'>
                       <input type='checkbox' className='mr-2 h-4 w-4' />
                       <span>{text}</span>

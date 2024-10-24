@@ -7,7 +7,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import { MoreHorizontal, Trash2, UserSearch } from 'lucide-react'
+import { MoreHorizontal, Trash2, UserSearch, Edit2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { toast } from '@/hooks/use-toast'
@@ -21,7 +21,7 @@ interface CellActionProps {
 export const CellAction = ({ data }: CellActionProps) => {
   const [loading, setLoading] = useState(false)
   const [open, setOpen] = useState(false)
-
+  const [isDropdown, setIsDropdown] = useState(false)
   const { onSubmit: handleDelete } = useEmployeeMutation({
     action: 'DELETE'
   })
@@ -38,7 +38,7 @@ export const CellAction = ({ data }: CellActionProps) => {
       toast({
         title: 'Xoá thành công',
         description: `Người dùng ${data.fullName} đã được xoá thành công.`,
-        variant: 'success'
+        variant: 'default'
       })
     } catch (error) {
       toast({
@@ -61,7 +61,7 @@ export const CellAction = ({ data }: CellActionProps) => {
   return (
     <>
       <AlertModal isOpen={open} onClose={() => setOpen(false)} onConfirm={onDelete} loading={loading} />
-      <DropdownMenu>
+      <DropdownMenu open={isDropdown} onOpenChange={setIsDropdown}>
         <DropdownMenuTrigger asChild>
           <Button variant={'ghost'} className='h-8 w-8 p-0'>
             <span className='sr-only'>Open menu</span>
@@ -76,7 +76,13 @@ export const CellAction = ({ data }: CellActionProps) => {
               Info
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setOpen(true)}>
+          <DropdownMenuItem>
+            <Link to={`/employee/edit/${data._id}`} className='flex items-center'>
+              <Edit2 className='mr-2 h-4 w-4' />
+              Edit
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => setIsDropdown(false)} onClick={() => setOpen(true)}>
             <Trash2 className='mr-2 h-4 w-4 text-red-500' />
             Delete
           </DropdownMenuItem>
