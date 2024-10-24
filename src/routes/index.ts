@@ -17,6 +17,9 @@ import CategoryAdd from '@/pages/(site)/Category/CategoryAdd'
 import Category from '@/pages/(site)/Category/Category'
 import CategoryEdit from '@/pages/(site)/Category/CategoryEdit'
 import Order from '@/pages/(site)/Order/Order'
+import AccountPage from '@/pages/(site)/Account/AccountPage'
+import AccountDetail from '@/pages/(site)/Account/components/AccountDetail/AccountDetail'
+import AccountLayout from '@/pages/(site)/Account/AccountLayout'
 import EmployeePage from '@/pages/(site)/Employee/EmployeePage'
 import AddEmployeeForm from '@/pages/(site)/Employee/_components/EmployeeAdd'
 import EmployeeEdit from '@/pages/(site)/Employee/_components/EmployeeEdit'
@@ -70,6 +73,21 @@ const routes: IRoute[] = [
       { path: '', component: EmployeeList },
       { path: 'add', component: AddEmployeeForm },
       { path: 'edit/:id', component: EmployeeEdit }
+    ]
+  },
+  {
+    path: '/account',
+    component: AccountLayout,
+    layout: MainLayout,
+    children: [
+      {
+        path: '',
+        component: AccountPage
+      },
+      {
+        path: ':id',
+        component: AccountDetail
+      }
     ]
   },
   {

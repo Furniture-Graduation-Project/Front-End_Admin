@@ -133,13 +133,13 @@ const SideBar: React.FC<SidebarHeaderProps> = ({ toggleSidebar, isOpen }) => {
               <nav className='flex justify-start mt-4'>
                 <SidebarMenu items={menuItems} isOpen={isOpen} />
               </nav>
-              <div className='p-4 border-t'>
+              <div className='flex justify-start mt-4 border-t'>
                 {isOpen && <p className='block py-2 px-4 rounded text-opacity-50 text-gray-900'>PAGES</p>}
               </div>
-              <nav className='flex justify-center'>
+              <nav className='flex justify-start mt-4'>
                 <SidebarMenu items={Page} isOpen={isOpen} />
               </nav>
-              <nav className='flex justify-center border-t pt-4'>
+              <nav className='flex justify-start mt-4'>
                 <SidebarMenu items={settingsItems} isOpen={isOpen} />
               </nav>
             </div>
