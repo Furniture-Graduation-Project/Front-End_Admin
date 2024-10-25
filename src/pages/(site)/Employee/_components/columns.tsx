@@ -1,7 +1,5 @@
 import { ColumnDef } from '@tanstack/react-table'
 import { CellAction } from './cell-action'
-import { Button } from '@/components/ui/button'
-import { ArrowUpDown } from 'lucide-react'
 import { IEmployee } from '@/interface/employee'
 import { format } from 'date-fns'
 import { vi } from 'date-fns/locale'
