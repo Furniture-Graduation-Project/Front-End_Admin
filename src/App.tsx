@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router-dom'
 import { IRoute } from '@/interface/route'
 import routes from '@/routes'
+import { ThemeProvider } from './context/ThemeProvider'
 
 const renderRoutes = (routes: IRoute[]) =>
   routes.map(({ path, component: Component, layout: Layout, children }: IRoute) => (
@@ -22,7 +23,11 @@ const renderRoutes = (routes: IRoute[]) =>
   ))
 
 const App = () => {
-  return <Routes>{renderRoutes(routes)}</Routes>
+  return (
+    <ThemeProvider defaultTheme='dark' storageKey='vite-ui-theme'>
+      <Routes>{renderRoutes(routes)}</Routes>
+    </ThemeProvider>
+  )
 }
 
 export default App
