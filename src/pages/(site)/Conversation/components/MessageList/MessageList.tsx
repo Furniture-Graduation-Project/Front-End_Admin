@@ -12,8 +12,14 @@ import { useToast } from '@/hooks/use-toast'
 import { useMultipleConversationsQuery } from '@/hooks/querys/useConversationQuery'
 import { DEFAULT_PAGE_SIZE } from '@/constants/pagination'
 import { PaginationState } from '@tanstack/react-table'
+import { useLocation } from 'react-router-dom'
 const MessageList = () => {
   const { toast } = useToast()
+  const location = useLocation()
+  const queryParams = new URLSearchParams(location.search)
+  const type = queryParams.get('filter')
+  console.log(type)
+
   const [pagination, setPagination] = useState<PaginationState>(DEFAULT_PAGE_SIZE)
   const { data, isLoading, isError, refetch } = useMultipleConversationsQuery({ pagination })
   console.log(data)
