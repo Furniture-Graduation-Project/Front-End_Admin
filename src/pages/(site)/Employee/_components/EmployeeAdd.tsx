@@ -58,20 +58,28 @@ const AddEmployeeForm = () => {
   }
 
   return (
-    <div className='bg-[#F5F6FA] h-screen'>
+    <div className='bg-[#F5F6FA] dark:bg-gray-900 h-screen'>
       <Form {...form}>
-        <div className='font-bold text-2xl space-y-4 px-4 md:px-10 p-5'>Thêm tài khoản nhân viên</div>
+        <div className='font-bold text-2xl space-y-4 px-4 md:px-10 p-5 dark:text-gray-100'>
+          Thêm tài khoản nhân viên
+        </div>
         <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-4 px-4 md:px-10'>
           <FormField
             name='fullName'
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <Label htmlFor='fullName' className='font-bold'>
+                <Label htmlFor='fullName' className='font-bold dark:text-gray-100'>
                   Tên đầy đủ
                 </Label>
                 <FormControl>
-                  <Input id='fullName' placeholder='Tên đầy đủ' {...field} aria-required='true' />
+                  <Input
+                    id='fullName'
+                    placeholder='Tên đầy đủ'
+                    {...field}
+                    aria-required='true'
+                    className='dark:bg-gray-700 dark:text-gray-100'
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -83,11 +91,17 @@ const AddEmployeeForm = () => {
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <Label htmlFor='username' className='font-bold'>
+                <Label htmlFor='username' className='font-bold dark:text-gray-100'>
                   Tên đăng nhập
                 </Label>
                 <FormControl>
-                  <Input id='username' placeholder='Tên đăng nhập' {...field} aria-required='true' />
+                  <Input
+                    id='username'
+                    placeholder='Tên đăng nhập'
+                    {...field}
+                    aria-required='true'
+                    className='dark:bg-gray-700 dark:text-gray-100'
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -99,11 +113,18 @@ const AddEmployeeForm = () => {
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <Label htmlFor='password' className='font-bold'>
+                <Label htmlFor='password' className='font-bold dark:text-gray-100'>
                   Mật khẩu
                 </Label>
                 <FormControl>
-                  <Input type='password' id='password' placeholder='Mật khẩu' {...field} aria-required='true' />
+                  <Input
+                    type='password'
+                    id='password'
+                    placeholder='Mật khẩu'
+                    {...field}
+                    aria-required='true'
+                    className='dark:bg-gray-700 dark:text-gray-100'
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -115,11 +136,16 @@ const AddEmployeeForm = () => {
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <Label htmlFor='phoneNumber' className='font-bold'>
+                <Label htmlFor='phoneNumber' className='font-bold dark:text-gray-100'>
                   Số điện thoại
                 </Label>
                 <FormControl>
-                  <Input id='phoneNumber' placeholder='Số điện thoại' {...field} />
+                  <Input
+                    id='phoneNumber'
+                    placeholder='Số điện thoại'
+                    {...field}
+                    className='dark:bg-gray-700 dark:text-gray-100'
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -131,11 +157,16 @@ const AddEmployeeForm = () => {
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <Label htmlFor='address' className='font-bold'>
+                <Label htmlFor='address' className='font-bold dark:text-gray-100'>
                   Địa chỉ
                 </Label>
                 <FormControl>
-                  <Input id='address' placeholder='Địa chỉ' {...field} />
+                  <Input
+                    id='address'
+                    placeholder='Địa chỉ'
+                    {...field}
+                    className='dark:bg-gray-700 dark:text-gray-100'
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -147,11 +178,15 @@ const AddEmployeeForm = () => {
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <Label htmlFor='role' className='font-bold mr-5'>
+                <Label htmlFor='role' className='font-bold mr-5 dark:text-gray-100'>
                   Vai trò
                 </Label>
                 <FormControl>
-                  <select id='role' {...field} className='border p-2'>
+                  <select
+                    id='role'
+                    {...field}
+                    className='border p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100'
+                  >
                     <option value='product'>Product</option>
                     <option value='support'>Support</option>
                     <option value='order'>Order</option>
@@ -162,7 +197,12 @@ const AddEmployeeForm = () => {
             )}
           />
 
-          <Button type='submit' variant='default' disabled={loading} className='bg-blue-600 hover:bg-blue-400'>
+          <Button
+            type='submit'
+            variant='default'
+            disabled={loading}
+            className='bg-blue-600 hover:bg-blue-400 dark:bg-blue-500 dark:hover:bg-blue-400'
+          >
             {loading ? 'Đang xử lý...' : 'Thêm nhân viên'}
           </Button>
         </form>

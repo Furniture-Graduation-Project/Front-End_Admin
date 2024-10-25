@@ -30,29 +30,29 @@ const EmployeeList = () => {
   }
 
   return (
-    <div>
-      <h1 className='text-[32px] font-semibold'>Danh sách nhân viên</h1>
+    <>
+      <h1 className='text-[32px] font-semibold dark:text-gray-100'>Danh sách nhân viên</h1>
       <div className='w-full pt-5'>
         <Link to='/employee/add'>
-          <Button variant={'outline'} className='space-x-2 bg-[#F5F6FA] text-black'>
+          <Button variant='outline' className='space-x-2 bg-[#F5F6FA] dark:bg-gray-800 text-black dark:text-gray-100'>
             <Plus size={18} />
             <span>Add Employee</span>
           </Button>
         </Link>
       </div>
-      <div className='w-full mt-5 bg-white rounded-xl'>
+      <div className='w-full mt-5 bg-white dark:bg-gray-800 rounded-xl p-4'>
         <div className='mr-5 pt-5'>
           <Input
             type='text'
             placeholder='Tìm kiếm theo tên...'
             value={searchTerm}
             onChange={handleSearch}
-            className='border p-2 rounded mb-5 w-1/3 ml-auto'
+            className='border dark:border-gray-600 p-2 rounded mb-5 w-1/3 ml-auto dark:bg-gray-700 dark:text-gray-100'
           />
         </div>
         <DataTableCustom columns={columns} isError={isError} isLoading={isLoading} refetch={refetch} table={table} />
       </div>
-    </div>
+    </>
   )
 }
 
