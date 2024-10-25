@@ -1,4 +1,4 @@
-import { BarChart, Bot, CreditCard, Folder, User, UserCog } from 'lucide-react'
+import { BarChart, Bot, CreditCard, Folder, Mails, Package, User, UserCog } from 'lucide-react'
 
 const navMenu = {
   user: {
@@ -15,7 +15,7 @@ const navMenu = {
     {
       title: 'Sản Phẩm',
       url: '#',
-      icon: Bot,
+      icon: Package,
       items: [
         {
           title: 'Danh Sách',
@@ -45,7 +45,7 @@ const navMenu = {
     {
       title: 'Nhắn Tin',
       url: '#',
-      icon: Bot,
+      icon: Mails,
       items: [
         {
           title: 'Danh Sách',
