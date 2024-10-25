@@ -9,7 +9,6 @@ import { z } from 'zod'
 import { OrderService } from '@/services/order'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
 import { Label } from '@/components/ui/label'
-import { AlertModal } from '@/components/modals/alert-modal'
 import AlertAcitonDialog from '@/components/modals/AlertDialog'
 
 const orderStatuses = [
@@ -165,8 +164,8 @@ const OrderEdit = () => {
   const currentStatusIndex = orderStatuses.indexOf(order.status)
 
   return (
-    <div className='bg-gray-50 min-h-screen py-8 px-4 md:px-10'>
-      <div className='bg-white shadow rounded-lg p-6'>
+    <div className='bg-gray-50 dark:bg-gray-900 min-h-screen py-8 px-4 md:px-10'>
+      <div className='bg-white dark:bg-gray-800 shadow rounded-lg p-6'>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-6'>
             <FormField
@@ -174,14 +173,14 @@ const OrderEdit = () => {
               control={form.control}
               render={({ field }) => (
                 <FormItem>
-                  <Label htmlFor='status' className='font-bold text-2xl mb-4 text-gray-800'>
+                  <Label htmlFor='status' className='font-bold text-2xl mb-4 text-gray-800 dark:text-gray-100'>
                     Cập nhập trạng thái đơn hàng
                   </Label>
                   <FormControl>
                     <select
                       id='status'
                       {...field}
-                      className='w-full border border-gray-300 rounded-md p-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500'
+                      className='w-full border border-gray-300 dark:border-gray-700 rounded-md p-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-200'
                     >
                       {orderStatuses.map((status, index) => {
                         const isDisabled = index < currentStatusIndex || index > currentStatusIndex + 1
@@ -201,7 +200,7 @@ const OrderEdit = () => {
               type='submit'
               variant='default'
               disabled={loading}
-              className=' bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2 rounded-md'
+              className='bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2 rounded-md dark:bg-blue-500 dark:hover:bg-blue-400'
             >
               {loading ? 'Đang xử lý...' : 'Cập nhật trạng thái đơn hàng'}
             </Button>
@@ -209,10 +208,10 @@ const OrderEdit = () => {
         </Form>
       </div>
 
-      <div className='bg-white shadow rounded-lg p-6 mt-8'>
-        <h2 className='font-bold text-2xl mb-4 text-gray-800'>Cập nhật trạng thái thanh toán</h2>
+      <div className='bg-white dark:bg-gray-800 shadow rounded-lg p-6 mt-8'>
+        <h2 className='font-bold text-2xl mb-4 text-gray-800 dark:text-gray-100'>Cập nhật trạng thái thanh toán</h2>
         <select
-          className='w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-green-500'
+          className='w-full border border-gray-300 dark:border-gray-700 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-green-500 dark:bg-gray-700 dark:text-gray-200'
           value={paymentStatus}
           onChange={(e) => setPaymentStatus(e.target.value as 'paid' | 'unpaid')}
         >
@@ -226,7 +225,7 @@ const OrderEdit = () => {
           onClick={confirmPaymentUpdate}
           variant='default'
           disabled={loading}
-          className=' bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2 rounded-md mt-4'
+          className='bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2 rounded-md mt-4 dark:bg-blue-500 dark:hover:bg-blue-400'
         >
           {loading ? 'Đang xử lý...' : 'Cập nhật trạng thái thanh toán'}
         </Button>
@@ -236,6 +235,7 @@ const OrderEdit = () => {
         isOpen={isModalOpen}
         setIsOpen={setIsModalOpen}
         handleAciton={handleModalConfirm}
+        className='dark:bg-gray-800 dark:text-white'
       />
     </div>
   )

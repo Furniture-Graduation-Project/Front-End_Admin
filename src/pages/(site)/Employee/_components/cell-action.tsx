@@ -13,6 +13,7 @@ import { Link } from 'react-router-dom'
 import { toast } from '@/hooks/use-toast'
 import { IEmployee } from '@/interface/employee'
 import useEmployeeMutation from '@/hooks/mutations/useEmployeeMutation'
+import AlertAcitonDialog from '@/components/modals/AlertDialog'
 
 interface CellActionProps {
   data: IEmployee
@@ -60,7 +61,15 @@ export const CellAction = ({ data }: CellActionProps) => {
 
   return (
     <>
-      <AlertModal isOpen={open} onClose={() => setOpen(false)} onConfirm={onDelete} loading={loading} />
+      <AlertAcitonDialog
+        title='Bạn chắc chắn muốn chuyển bản ghi này vào thùng rác ?'
+        description='Bản ghi khi chuyển vào thùng rác sẽ bị xóa sau 30 ngày không làm việc.'
+        variant={'destructive'}
+        className='dark:bg-gray-800 dark:text-white'
+        isOpen={open}
+        setIsOpen={setOpen}
+        handleAciton={onDelete}
+      />
       <DropdownMenu open={isDropdown} onOpenChange={setIsDropdown}>
         <DropdownMenuTrigger asChild>
           <Button variant={'ghost'} className='h-8 w-8 p-0'>

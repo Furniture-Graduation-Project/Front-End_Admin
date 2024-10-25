@@ -8,6 +8,7 @@ import {
   AlertDialogTitle
 } from '@/components/ui/alert-dialog'
 import { Button } from '../ui/button'
+
 type actionProps = {
   title?: string
   description?: string
@@ -15,12 +16,21 @@ type actionProps = {
   isOpen: boolean
   setIsOpen: (open: boolean) => void
   handleAciton?: () => void
+  className?: string
 }
 
-const AlertAcitonDialog = ({ title, description, variant, isOpen, setIsOpen, handleAciton }: actionProps) => {
+const AlertAcitonDialog = ({
+  title,
+  description,
+  variant,
+  isOpen,
+  setIsOpen,
+  handleAciton,
+  className
+}: actionProps) => {
   return (
     <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
-      <AlertDialogContent>
+      <AlertDialogContent className={className}>
         <AlertDialogHeader>
           <AlertDialogTitle>{title}</AlertDialogTitle>
           <AlertDialogDescription>{description}</AlertDialogDescription>
