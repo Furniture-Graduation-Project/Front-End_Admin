@@ -1,5 +1,4 @@
-import { ChevronRight, Power, Settings } from 'lucide-react'
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
+import { ChevronUp, Power, Settings } from 'lucide-react'
 import {
   Sidebar,
   SidebarContent,
@@ -16,16 +15,12 @@ import {
   SidebarRail
 } from '@/components/ui/sidebar'
 import { Link, NavLink } from 'react-router-dom'
-import { useState } from 'react'
 import navMenu from '@/assets/data/navMenu'
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
+import { useState } from 'react'
 
 const SideBar = () => {
-  const [openSubMenu, setOpenSubMenu] = useState<string | null>(null)
-
-  const handleToggle = (title: string) => {
-    setOpenSubMenu((prev) => (prev === title ? null : title))
-  }
-
+  const [open, setOpen] = useState<string | null>(null)
   return (
     <Sidebar collapsible='icon' className='dark:bg-slate-950'>
       <SidebarHeader className='border-b border-b-slate-200 dark:border-b-slate-800 h-16 flex justify-center'>
@@ -50,73 +45,76 @@ const SideBar = () => {
         <SidebarGroup>
           <SidebarGroupLabel className='dark:text-slate-400'>Thanh điều hướng</SidebarGroupLabel>
           <SidebarMenu>
-            {navMenu.navMain.map((item) => (
-              <Collapsible key={item.title} asChild className='group/collapsible'>
-                <SidebarMenuItem>
+            <Accordion type='single' collapsible className='w-full'>
+              {navMenu.navMain.map((item) => (
+                <SidebarMenuItem key={item.title}>
                   {item.items ? (
-                    <>
-                      <CollapsibleTrigger asChild>
+                    <AccordionItem value={item.title}>
+                      <AccordionTrigger className='py-2'>
                         <SidebarMenuButton
                           tooltip={item.title}
-                          className={`text-lg h-12 p-3 dark:text-slate-200 dark:hover:bg-slate-800 ${
-                            openSubMenu === item.title ? 'bg-gray-200 dark:bg-slate-700 font-semibold' : ''
-                          }`}
-                          onClick={() => handleToggle(item.title)}
+                          className={`text-lg h-12 py-3 dark:text-slate-200 dark:hover:bg-slate-800 ${open === item.title ? 'bg-gray-200 dark:bg-slate-700 font-semibold' : ''}`}
                         >
                           {item.icon && <item.icon className='w-7 h-7 mr-2' />}
                           <span>{item.title}</span>
-                          <ChevronRight
-                            className={`ml-auto transition-transform duration-200 ${
-                              openSubMenu === item.title ? 'rotate-90' : ''
-                            } w-6 h-6`}
-                          />
                         </SidebarMenuButton>
-                      </CollapsibleTrigger>
-                      <CollapsibleContent hidden={openSubMenu !== item.title}>
-                        <SidebarMenuSub className='pl-6'>
+                        <ChevronUp className='ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90' />
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <SidebarMenuSub className='pl-3 me-0'>
                           {item.items.map((subItem) => (
-                            <SidebarMenuSubItem key={subItem.title} className='pl-1 space-y-1 py-1'>
+                            <SidebarMenuSubItem key={subItem.title} className='pl-1'>
                               <SidebarMenuSubButton
+                                onClick={() => setOpen(item.title)}
                                 asChild
-                                className='text-base h-10 p-2 dark:text-slate-200 dark:hover:bg-slate-800'
+                                className='text-base h-10 py-2 dark:text-slate-200 dark:hover:bg-slate-800'
                               >
-                                <Link
-                                  className={
-                                    'ms-center rounded transition-colors duration-200 text-gray-900 dark:text-slate-200 hover:bg-gray-200 dark:hover:bg-slate-800'
+                                <NavLink
+                                  className={({ isActive, isPending }) =>
+                                    `flex items-center transition-colors duration-200 ${
+                                      isPending
+                                        ? 'bg-yellow-200'
+                                        : isActive
+                                          ? 'bg-gray-200 dark:bg-slate-700 font-semibold'
+                                          : 'text-gray-900 dark:text-slate-200 hover:bg-gray-200 dark:hover:bg-slate-800'
+                                    }`
                                   }
                                   to={subItem.url}
                                 >
                                   <span>{subItem.title}</span>
-                                </Link>
+                                </NavLink>
                               </SidebarMenuSubButton>
                             </SidebarMenuSubItem>
                           ))}
                         </SidebarMenuSub>
-                      </CollapsibleContent>
-                    </>
+                      </AccordionContent>
+                    </AccordionItem>
                   ) : (
-                    <NavLink
-                      end
-                      to={item.url}
-                      className={({ isActive, isPending }) =>
-                        `flex items-center rounded transition-colors duration-200 ${
-                          isPending
-                            ? 'bg-yellow-200'
-                            : isActive
-                              ? 'bg-gray-200 dark:bg-slate-700 font-semibold'
-                              : 'text-gray-900 dark:text-slate-200 hover:bg-gray-200 dark:hover:bg-slate-800'
-                        }`
-                      }
-                    >
-                      <SidebarMenuButton tooltip={item.title} className='text-lg h-12 p-3'>
-                        {item.icon && <item.icon className='w-7 h-7 mr-2' />}
-                        <span>{item.title}</span>
-                      </SidebarMenuButton>
-                    </NavLink>
+                    <AccordionItem value={item.title}>
+                      <AccordionTrigger className='py-2' onClick={() => setOpen(item.title)}>
+                        <NavLink
+                          to={item.url}
+                          className={({ isActive, isPending }) =>
+                            `flex items-center w-full rounded transition-colors duration-200 ${
+                              isPending
+                                ? 'bg-yellow-200'
+                                : isActive
+                                  ? 'bg-gray-200 dark:bg-slate-700 font-semibold'
+                                  : 'text-gray-900 dark:text-slate-200 hover:bg-gray-200 dark:hover:bg-slate-800'
+                            }`
+                          }
+                        >
+                          <SidebarMenuButton tooltip={item.title} className='text-lg h-12 p-3'>
+                            {item.icon && <item.icon className='w-7 h-7 mr-2' />}
+                            <span>{item.title}</span>
+                          </SidebarMenuButton>
+                        </NavLink>
+                      </AccordionTrigger>
+                    </AccordionItem>
                   )}
                 </SidebarMenuItem>
-              </Collapsible>
-            ))}
+              ))}
+            </Accordion>
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
