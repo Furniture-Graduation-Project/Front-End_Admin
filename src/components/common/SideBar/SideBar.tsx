@@ -12,7 +12,9 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-  SidebarRail
+  SidebarProvider,
+  SidebarRail,
+  SidebarSeparator
 } from '@/components/ui/sidebar'
 import { Link, NavLink } from 'react-router-dom'
 import navMenu from '@/assets/data/navMenu'
@@ -118,10 +120,11 @@ const SideBar = () => {
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarSeparator  />
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <Link to='/settings'>
+            <Link to='/setting'>
               <SidebarMenuButton className='text-lg h-12 p-3 dark:text-slate-200 dark:hover:bg-slate-800'>
                 <Settings className='w-7 h-7' />
                 <span>Tài Khoản</span>

@@ -5,9 +5,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { SubmitHandler } from 'react-hook-form'
 
 type MutationQueryProps = {
-  action: 'CREATE' | 'UPDATE' | 'DELETE' | 'SIGN_IN'
+  action: 'CREATE' | 'UPDATE' | 'DELETE'
 }
-
 const useEmployeeMutation = ({ action }: MutationQueryProps) => {
   const { toast } = useToast()
   const queryClient = useQueryClient()
@@ -19,29 +18,27 @@ const useEmployeeMutation = ({ action }: MutationQueryProps) => {
     switch (action) {
       case 'CREATE':
         toast({
-          title: 'Tạo tài khoản nhân viên thành công!'
+          title: 'Tạo tài khoản nhân viên thành công!',
+          variant: 'success'
         })
         break
       case 'UPDATE':
         toast({
-          title: 'Cập nhật tài khoản nhân viên thành công!'
+          title: 'Cập nhật tài khoản nhân viên thành công!',
+          variant: 'success'
         })
         break
       case 'DELETE':
         toast({
-          title: 'Xóa tài khoản nhân viên thành công!'
-        })
-        break
-      case 'SIGN_IN':
-        toast({
-          title: 'Đăng nhập thành công!'
+          title: 'Xóa tài khoản nhân viên thành công!',
+          variant: 'success'
         })
         break
     }
   }
 
-  const handleError = (error: any) => {
-    const message = error?.response?.data?.message || 'Có lỗi xảy ra!'
+  const handleError = (error: { response: { data: { message: string } } }) => {
+    const message = error.response?.data?.message || 'Có lỗi xảy ra!'
     toast({
       title: 'Có lỗi xảy ra!',
       description: message,
@@ -50,29 +47,24 @@ const useEmployeeMutation = ({ action }: MutationQueryProps) => {
     console.log('[EMPLOYEE]', error)
   }
 
-  const mutationFn = async (data: IEmployee | { username: string; password: string }) => {
-    switch (action) {
-      case 'CREATE':
-        return EmployeeService.create(data as IEmployee)
-      case 'UPDATE':
-        return EmployeeService.update((data as IEmployee)._id, data as IEmployee)
-      case 'DELETE':
-        return EmployeeService.delete((data as IEmployee)._id)
-      case 'SIGN_IN':
-        const { username, password } = data as { username: string; password: string }
-        return EmployeeService.signIn(username, password)
-      default:
-        return Promise.reject(new Error('Invalid action'))
-    }
-  }
-
   const { mutate, ...rest } = useMutation({
-    mutationFn,
+    mutationFn: async (data: IEmployee) => {
+      switch (action) {
+        case 'CREATE':
+          return await EmployeeService.create(data)
+        case 'UPDATE':
+          return await EmployeeService.update(data)
+        case 'DELETE':
+          return await EmployeeService.delete(data)
+        default:
+          return null
+      }
+    },
     onSuccess: handleSuccess,
     onError: handleError
   })
 
-  const onSubmit: SubmitHandler<IEmployee | { username: string; password: string }> = (data) => {
+  const onSubmit: SubmitHandler<IEmployee> = (data) => {
     mutate(data)
   }
 

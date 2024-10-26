@@ -21,7 +21,7 @@ const settingsSchema = z.object({
   description: z.string().default('')
 })
 
-const SettingsPage = () => {
+const SettingPage = () => {
   const form = useForm<z.infer<typeof settingsSchema>>({
     resolver: zodResolver(settingsSchema),
     defaultValues: {
@@ -52,8 +52,8 @@ const SettingsPage = () => {
               render={({ field }) => (
                 <FormItem className='flex flex-col items-center justify-center'>
                   <Avatar className='w-[80px] h-[80px]'>
-                    <AvatarImage src='https://assets.codepen.io/1480814/av+1.png' {...field} alt='avatar' />
-                    <AvatarFallback>DS</AvatarFallback>
+                    <AvatarImage src='Av' {...field} alt='avatar' />
+                    <AvatarFallback>Avatar</AvatarFallback>
                   </Avatar>
                   <Button variant={'ghost'} type='button' className='mt-4 text-sm font-semibold text-[#4379EE]'>
                     Upload Avatar
@@ -148,4 +148,4 @@ const SettingsPage = () => {
   )
 }
 
-export default SettingsPage
+export default SettingPage

@@ -24,7 +24,7 @@ import EmployeePage from '@/pages/(site)/Employee/EmployeePage'
 import AddEmployeeForm from '@/pages/(site)/Employee/_components/EmployeeAdd'
 import EmployeeEdit from '@/pages/(site)/Employee/_components/EmployeeEdit'
 import EmployeeList from '@/pages/(site)/Employee/_components/EmployeeList'
-import SettingsPage from '@/pages/(site)/Settings/page'
+import SettingsPage from '@/pages/(site)/Setting/Setting'
 // import EmployeeSignIn from '@/pages/(site)/Employee/_components/EmployeeSignIn'
 
 const routes: IRoute[] = [

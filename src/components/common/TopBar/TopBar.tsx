@@ -23,6 +23,7 @@ import { SidebarInput, SidebarTrigger } from '@/components/ui/sidebar'
 import { Button } from '@/components/ui/button'
 import { DarkMode } from '@/components/modals/DarkMode'
 import useFullScreen from '@/hooks/useFullScreen'
+import { Link } from 'react-router-dom'
 
 const TopBar = () => {
   const { isFullScreen, toggleFullScreen } = useFullScreen()
@@ -111,8 +112,10 @@ const TopBar = () => {
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
                   <DropdownMenuItem className='dark:text-slate-200 flex items-center'>
-                    <Settings className='mr-2' />
-                    <span>Tài khoản</span>
+                    <Link to='/setting'>
+                      <Settings className='mr-2' />
+                      <span>Tài khoản</span>
+                    </Link>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator className='block md:hidden' />
