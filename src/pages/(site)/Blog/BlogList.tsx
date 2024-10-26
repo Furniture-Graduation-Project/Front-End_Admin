@@ -50,7 +50,7 @@ const BlogList = () => {
           />
         </div>
         {isLoading && <p>Đang tải dữ liệu...</p>}
-        {isError && <p>Đã có lỗi xảy ra khi lấy dữ liệu.</p>}
+        {/* {isError && <p>Đã có lỗi xảy ra khi lấy dữ liệu.</p>} */}
         <DataTableCustom columns={columns} isError={isError} isLoading={isLoading} refetch={refetch} table={table} />
       </div>
     </div>

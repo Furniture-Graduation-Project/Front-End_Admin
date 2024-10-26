@@ -10,8 +10,9 @@ import { useState } from 'react'
 import { IBlog } from '@/interface/blog'
 import { toast } from '@/hooks/use-toast'
 
+// Schema validation sử dụng zod
 const FormSchema = z.object({
-  authorId: z.string().min(1, { message: 'tác giả không được để trống.' }),
+  authorId: z.string().min(1, { message: 'Tác giả không được để trống.' }),
   title: z.string().min(1, { message: 'Tiêu đề không được để trống.' }),
   content: z.string().min(1, { message: 'Nội dung không được để trống.' }),
   tags: z
@@ -19,7 +20,7 @@ const FormSchema = z.object({
     .optional()
     .transform((val) => (val ? val.split(',').map((tag) => tag.trim()) : [])),
   image: z.string().optional(),
-  date: z.date().optional()
+  date: z.coerce.date().optional() // chuyển đổi từ chuỗi sang kiểu `Date`
 })
 
 const BlogAdd = () => {
@@ -31,9 +32,9 @@ const BlogAdd = () => {
       authorId: '',
       title: '',
       content: '',
-      tags: '',
+      tags: [],
       image: '',
-      date: new Date()
+      date: new Date() // Giá trị mặc định là ngày hiện tại
     }
   })
 
@@ -154,7 +155,13 @@ const BlogAdd = () => {
                   Ngày
                 </Label>
                 <FormControl>
-                  <Input type='date' id='date' {...field} />
+                  <Input
+                    type='date'
+                    id='date'
+                    {...field}
+                    value={field.value ? field.value.toISOString().substring(0, 10) : ''}
+                    onChange={(e) => field.onChange(e.target.value ? new Date(e.target.value) : undefined)}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

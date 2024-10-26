@@ -24,7 +24,6 @@ const FormSchema = z.object({
 
 const BlogEdit = () => {
   const { id } = useParams<{ id: string }>()
-  const [blog, setBlog] = useState<IBlog | null>(null)
   const [loading, setLoading] = useState(true)
 
   const form = useForm<IBlog>({
@@ -32,12 +31,13 @@ const BlogEdit = () => {
     defaultValues: {
       title: '',
       content: '',
-      tags: '',
+      tags: [],
       image: '',
       date: new Date()
     }
   })
 
+  // Fetch dữ liệu blog hiện tại
   useEffect(() => {
     const fetchBlog = async () => {
       if (!id) {
@@ -47,8 +47,8 @@ const BlogEdit = () => {
 
       try {
         const response = await BlogService.getById(id)
-        setBlog(response.data.data)
-        form.reset(response.data.data)
+        const blogData = response.data.data
+        form.reset(blogData)
       } catch (error) {
         console.error('Lỗi khi lấy thông tin blog:', error)
         toast({
@@ -64,6 +64,7 @@ const BlogEdit = () => {
     fetchBlog()
   }, [id, form])
 
+  // Xử lý submit
   const handleSubmit = async (data: IBlog) => {
     setLoading(true)
     try {
@@ -87,10 +88,6 @@ const BlogEdit = () => {
 
   if (loading) {
     return <div>Đang tải...</div>
-  }
-
-  if (!blog) {
-    return <div>Không tìm thấy blog với ID đã cho.</div>
   }
 
   return (
@@ -171,7 +168,13 @@ const BlogEdit = () => {
                   Ngày
                 </Label>
                 <FormControl>
-                  <Input type='date' id='date' {...field} />
+                  <Input
+                    type='date'
+                    id='date'
+                    {...field}
+                    value={field.value ? field.value.toISOString().substring(0, 10) : ''}
+                    onChange={(e) => field.onChange(e.target.value ? new Date(e.target.value) : undefined)}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

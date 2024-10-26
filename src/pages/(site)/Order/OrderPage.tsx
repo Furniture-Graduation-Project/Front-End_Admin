@@ -1,6 +1,6 @@
 import { Outlet } from 'react-router-dom'
 
-const EmployeePage = () => {
+const OrderPage = () => {
   return (
     <div className='p-[30px]'>
       <Outlet />
@@ -8,4 +8,4 @@ const EmployeePage = () => {
   )
 }
 
-export default EmployeePage
+export default OrderPage
