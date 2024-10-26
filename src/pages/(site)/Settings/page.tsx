@@ -138,7 +138,7 @@ const SettingsPage = () => {
                 />
               </div>
             </div>
-            <Button variant={'primary'} className='w-[418px] py-7 text-xl font-bold opacity-90' type='submit'>
+            <Button variant={'outline'} className='w-[418px] py-7 text-xl font-bold opacity-90' type='submit'>
               Save
             </Button>
           </form>

@@ -1,4 +1,3 @@
-import { AlertModal } from '@/components/modals/alert-modal'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -7,23 +6,23 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import { MoreHorizontal, Trash2, UserSearch, Edit2 } from 'lucide-react'
+import { MoreHorizontal, Trash2, Info, Edit2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { toast } from '@/hooks/use-toast'
-import { IEmployee } from '@/interface/employee'
-import useEmployeeMutation from '@/hooks/mutations/useEmployeeMutation'
+import { IOrder } from '@/interface/order'
+import useOrderMutation from '@/hooks/mutations/useOrderMutation'
 import AlertAcitonDialog from '@/components/modals/AlertDialog'
 
 interface CellActionProps {
-  data: IEmployee
+  data: IOrder
 }
 
 export const CellAction = ({ data }: CellActionProps) => {
   const [loading, setLoading] = useState(false)
   const [open, setOpen] = useState(false)
   const [isDropdown, setIsDropdown] = useState(false)
-  const { onSubmit: handleDelete } = useEmployeeMutation({
+  const { onSubmit: handleDelete } = useOrderMutation({
     action: 'DELETE'
   })
 
@@ -38,13 +37,13 @@ export const CellAction = ({ data }: CellActionProps) => {
       setOpen(false)
       toast({
         title: 'Xoá thành công',
-        description: `Người dùng ${data.fullName} đã được xoá thành công.`,
+        description: `Đơn hàng ${data.orderName} đã được xoá thành công.`,
         variant: 'default'
       })
     } catch (error) {
       toast({
-        title: 'Lỗi xoá người dùng',
-        description: 'Đã xảy ra lỗi khi xoá người dùng.',
+        title: 'Lỗi xoá đơn hàng',
+        description: 'Đã xảy ra lỗi khi xoá đơn hàng.',
         variant: 'destructive'
       })
     } finally {
@@ -70,6 +69,7 @@ export const CellAction = ({ data }: CellActionProps) => {
         setIsOpen={setOpen}
         handleAciton={onDelete}
       />
+
       <DropdownMenu open={isDropdown} onOpenChange={setIsDropdown}>
         <DropdownMenuTrigger asChild>
           <Button variant={'ghost'} className='h-8 w-8 p-0'>
@@ -78,22 +78,22 @@ export const CellAction = ({ data }: CellActionProps) => {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align='end'>
-          <DropdownMenuLabel className='font-bold'>Actions</DropdownMenuLabel>
+          <DropdownMenuLabel className='font-bold'>Hành Động</DropdownMenuLabel>
           <DropdownMenuItem>
-            <Link to={`/employee/${data._id}`} className='flex items-center'>
-              <UserSearch className='mr-2 h-4 w-4' />
-              Info
+            <Link to={``} className='flex items-center'>
+              <Info className='mr-2 h-4 w-4' />
+              Thông Tin
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem>
-            <Link to={`/employee/edit/${data._id}`} className='flex items-center'>
+            <Link to={`/order/edit/${data._id}`} className='flex items-center'>
               <Edit2 className='mr-2 h-4 w-4' />
-              Edit
+              Chỉnh Sửa
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem onSelect={() => setIsDropdown(false)} onClick={() => setOpen(true)}>
             <Trash2 className='mr-2 h-4 w-4 text-red-500' />
-            Delete
+            Xoá
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

@@ -116,7 +116,7 @@ const Signin = () => {
             />
             <div className='flex items-center justify-center'>
               <Button
-                variant={'primary'}
+                variant={'outline'}
                 className='w-[418px] py-7 text-xl font-bold opacity-90'
                 type='submit'
                 disabled={loading}
