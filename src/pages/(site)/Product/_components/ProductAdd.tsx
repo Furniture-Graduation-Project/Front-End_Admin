@@ -1,0 +1,280 @@
+import { Button } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { CategoryService } from '@/services/category'
+import { ProductService } from '@/services/product'
+import { useState, useEffect } from 'react'
+import { IProduct } from '@/interface/product'
+import { ICategory } from '@/interface/category'
+import { toast } from '@/hooks/use-toast'
+import { useNavigate } from 'react-router-dom'
+
+const FormSchema = z.object({
+  name: z.string().min(3, { message: 'Tên sản phẩm phải có ít nhất 3 ký tự.' }),
+  category: z.string().min(1, { message: 'Vui lòng chọn danh mục.' }),
+  description: z.string().optional(),
+  price: z.number().min(0, { message: 'Giá phải là số lớn hơn hoặc bằng 0.' }),
+  SKU: z.string().min(1, { message: 'SKU không được để trống.' }),
+  images: z.array(z.string()).min(1, { message: 'Phải có ít nhất một ảnh sản phẩm.' }),
+  material: z.string().optional(),
+  status: z.enum(['available', 'out of stock', 'discontinued'], { required_error: 'Vui lòng chọn trạng thái sản phẩm.' })
+})
+
+const AddProductForm = () => {
+  const [loading, setLoading] = useState(false)
+  const [categories, setCategories] = useState<ICategory[]>([])
+  const navigate = useNavigate()
+
+  const form = useForm<IProduct>({
+    resolver: zodResolver(FormSchema),
+    defaultValues: {
+      name: '',
+      category: '',
+      description: '',
+      price: 0,
+      SKU: '',
+      images: [],
+      material: '',
+      status: 'available' // Mặc định là 'available'
+    }
+  })
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await CategoryService.getAllCategories()
+        setCategories(res.data)
+      } catch (error) {
+        console.error('Lỗi khi lấy danh mục:', error)
+      }
+    }
+
+    fetchCategories()
+  }, [])
+
+  const handleSubmit = async (data: IProduct) => {
+    setLoading(true)
+    try {
+      await ProductService.create(data)
+      toast({
+        title: 'Thêm thành công',
+        description: `Sản phẩm ${data.name} đã được thêm thành công.`,
+        variant: 'success',
+        duration: 3000
+      })
+      form.reset()
+      navigate('/product')
+    } catch (error: any) {
+      toast({
+        title: 'Lỗi thêm sản phẩm',
+        description: 'Đã xảy ra lỗi khi thêm sản phẩm.',
+        variant: 'destructive',
+        duration: 3000
+      })
+      console.error('Lỗi khi tạo sản phẩm:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className='bg-[#F5F6FA] dark:bg-gray-900 h-screen'>
+      <Form {...form}>
+        <div className='font-bold text-2xl space-y-4 px-4 md:px-10 p-5 dark:text-gray-100'>Thêm sản phẩm</div>
+        <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-4 px-4 md:px-10'>
+          {/* Tên sản phẩm */}
+          <FormField
+            name='name'
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <Label htmlFor='name' className='font-bold dark:text-gray-100'>Tên sản phẩm</Label>
+                <FormControl>
+                  <Input
+                    id='name'
+                    placeholder='Tên sản phẩm'
+                    {...field}
+                    aria-required='true'
+                    className='dark:bg-gray-700 dark:text-gray-100'
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Danh mục */}
+          <FormField
+            name='category'
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <Label htmlFor='category' className='font-bold dark:text-gray-100'>Danh mục</Label>
+                <FormControl>
+                  <select id='category' {...field} className='dark:bg-gray-700 dark:text-gray-100'>
+                    <option value='' disabled>Chọn danh mục</option>
+                    {categories.map((category) => (
+                      <option key={category._id} value={category._id}>
+                        {category.categoryName}
+                      </option>
+                    ))}
+                  </select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Mô tả */}
+          <FormField
+            name='description'
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <Label htmlFor='description' className='font-bold dark:text-gray-100'>Mô tả</Label>
+                <FormControl>
+                  <Input
+                    id='description'
+                    placeholder='Mô tả sản phẩm'
+                    {...field}
+                    className='dark:bg-gray-700 dark:text-gray-100'
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Giá */}
+          <FormField
+            name='price'
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <Label htmlFor='price' className='font-bold dark:text-gray-100'>Giá</Label>
+                <FormControl>
+                  <Input
+                    id='price'
+                    type='number'
+                    placeholder='Giá sản phẩm'
+                    {...field}
+                    onChange={(e) => field.onChange(Number(e.target.value))}
+                    aria-required='true'
+                    className='dark:bg-gray-700 dark:text-gray-100'
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* SKU */}
+          <FormField
+            name='SKU'
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <Label htmlFor='SKU' className='font-bold dark:text-gray-100'>SKU</Label>
+                <FormControl>
+                  <Input
+                    id='SKU'
+                    placeholder='SKU sản phẩm'
+                    {...field}
+                    className='dark:bg-gray-700 dark:text-gray-100'
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Hình ảnh */}
+          <FormField
+            name='images'
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <Label htmlFor='images' className='font-bold dark:text-gray-100'>Hình ảnh</Label>
+                <FormControl>
+                  <Input
+                    id='images'
+                    placeholder='URL hình ảnh (ngăn cách bằng dấu phẩy)'
+                    {...field}
+                    className='dark:bg-gray-700 dark:text-gray-100'
+                    onChange={(e) => field.onChange(e.target.value.split(','))}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Vật liệu */}
+          <FormField
+            name='material'
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <Label htmlFor='material' className='font-bold dark:text-gray-100'>Vật liệu</Label>
+                <FormControl>
+                  <Input
+                    id='material'
+                    placeholder='Vật liệu sản phẩm'
+                    {...field}
+                    className='dark:bg-gray-700 dark:text-gray-100'
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Trạng thái */}
+          <FormField
+            name='status'
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <Label htmlFor='status' className='font-bold dark:text-gray-100'>Trạng thái</Label>
+                <FormControl>
+                  <select id='status' {...field} className='dark:bg-gray-700 dark:text-gray-100'>
+                    <option value='available'>Có sẵn</option>
+                    <option value='out of stock'>Hết hàng</option>
+                    <option value='discontinued'>Ngừng sản xuất</option>
+                  </select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Nút Submit và Quay lại */}
+          <div className='flex gap-2'>
+            <Button
+              type='submit'
+              variant='default'
+              disabled={loading}
+              className='bg-blue-600 hover:bg-blue-400 dark:bg-blue-500 dark:hover:bg-blue-400'
+            >
+              {loading ? 'Đang xử lý...' : 'Thêm sản phẩm'}
+            </Button>
+            <Button
+              type='button'
+              variant='default'
+              onClick={() => navigate('/product')}
+              className='bg-gray-600 hover:bg-gray-400 dark:bg-gray-500 dark:hover:bg-gray-400'
+            >
+              Quay lại
+            </Button>
+          </div>
+        </form>
+      </Form>
+    </div>
+  )
+}
+
+export default AddProductForm

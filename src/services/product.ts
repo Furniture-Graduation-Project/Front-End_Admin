@@ -1,48 +1,91 @@
-import { axiosInstance } from '../config/axios'
-import { IProduct } from '../interface/product'
+import { axiosInstance } from '@/config/axios'
+import { IApiResponse } from '@/interface/apiRespose'
+import { IProduct } from '@/interface/product'
+import { AxiosResponse } from 'axios'
 
-const API_URL = '/products'
+const API_URL = '/product'
 
 export const ProductService = {
-  // Lấy tất cả sản phẩm
-  getAllProducts: async (): Promise<IProduct[]> => {
-    const response = await axiosInstance.get(API_URL)
-    return response.data.data
+  getAll: async (): Promise<AxiosResponse<IApiResponse<IProduct[]>>> => {
+    try {
+      const response: AxiosResponse<IApiResponse<IProduct[]>> = await axiosInstance.get(API_URL)
+      return response
+    } catch (error) {
+      console.error('Lỗi khi lấy tất cả sản phẩm:', error)
+      throw error
+    }
   },
 
-  // Lấy sản phẩm theo ID
-  getProductById: async (id: string): Promise<IProduct> => {
-    const response = await axiosInstance.get(`${API_URL}/${id}`)
-    return response.data
+  getById: async (id: string): Promise<AxiosResponse<IApiResponse<IProduct>>> => {
+    try {
+      const response: AxiosResponse<IApiResponse<IProduct>> = await axiosInstance.get(`${API_URL}/${id}`)
+      return response
+    } catch (error) {
+      console.error(`Lỗi khi lấy sản phẩm với ID ${id}:`, error)
+      throw error
+    }
   },
 
-  // Tạo sản phẩm mới
-  createProduct: async (product: IProduct): Promise<IProduct> => {
-    const response = await axiosInstance.post(API_URL, product)
-    return response.data
+  create: async (product: IProduct): Promise<AxiosResponse<IApiResponse<IProduct>>> => {
+    try {
+      const response: AxiosResponse<IApiResponse<IProduct>> = await axiosInstance.post(API_URL, product)
+      return response
+    } catch (error) {
+      console.error('Lỗi khi tạo sản phẩm mới:', error)
+      throw error
+    }
   },
 
-  // Cập nhật sản phẩm hiện có theo ID
-  updateProductById: async (id: string, updatedProduct: IProduct): Promise<IProduct> => {
-    const response = await axiosInstance.put(`${API_URL}/${id}`, updatedProduct)
-    return response.data
+  update: async (id: string, updatedProduct: IProduct): Promise<AxiosResponse<IApiResponse<IProduct>>> => {
+    try {
+      const response: AxiosResponse<IApiResponse<IProduct>> = await axiosInstance.put(`${API_URL}/${id}`, updatedProduct)
+      return response
+    } catch (error) {
+      console.error(`Lỗi khi cập nhật sản phẩm với ID ${id}:`, error)
+      throw error
+    }
   },
 
-  // Xóa sản phẩm theo ID
-  deleteProductById: async (id: string): Promise<IProduct> => {
-    const response = await axiosInstance.delete(`${API_URL}/${id}`)
-    return response.data
+  delete: async (id: string): Promise<AxiosResponse<IApiResponse<void>>> => {
+    try {
+      const response: AxiosResponse<IApiResponse<void>> = await axiosInstance.delete(`${API_URL}/${id}`)
+      return response
+    } catch (error) {
+      console.error(`Lỗi khi xóa sản phẩm với ID ${id}:`, error)
+      throw error
+    }
   },
 
-  // Lấy sản phẩm theo danh mục
-  getProductsByCategory: async (categoryId: string): Promise<IProduct[]> => {
-    const response = await axiosInstance.get(`${API_URL}/category/${categoryId}`)
-    return response.data.data
+  getByStatus: async (status: string): Promise<AxiosResponse<IApiResponse<IProduct[]>>> => {
+    try {
+      const response: AxiosResponse<IApiResponse<IProduct[]>> = await axiosInstance.get(`${API_URL}/status/${status}`)
+      return response
+    } catch (error) {
+      console.error(`Lỗi khi lấy sản phẩm theo trạng thái ${status}:`, error)
+      throw error
+    }
   },
 
-  // Lấy sản phẩm liên quan
-  getRelatedProducts: async (categoryId: string, productId: string): Promise<IProduct[]> => {
-    const response = await axiosInstance.get(`${API_URL}/related/${categoryId}/${productId}`)
-    return response.data
-  }
+  getLimited: async (pagination: { pageIndex: number; pageSize: number }): Promise<AxiosResponse<IApiResponse<IProduct[]>>> => {
+    try {
+      const response: AxiosResponse<IApiResponse<IProduct[]>> = await axiosInstance.get(
+        `${API_URL}/limited?page=${pagination.pageIndex}&limit=${pagination.pageSize}`
+      )
+      return response
+    } catch (error) {
+      console.error(`Lỗi khi lấy sản phẩm giới hạn:`, error)
+      throw error
+    }
+  },
+  getByName: async (name: string): Promise<AxiosResponse<IApiResponse<IProduct[]>>> => {
+    try {
+      const response: AxiosResponse<IApiResponse<IProduct[]>> = await axiosInstance.get(`${API_URL}/search`, {
+        params: { name }
+      });
+      return response;
+    } catch (error) {
+      console.error(`Lỗi khi tìm kiếm sản phẩm theo tên "${name}":`, error);
+      throw error;
+    }
+  },
 }
