@@ -17,16 +17,24 @@ import CategoryAdd from '@/pages/(site)/Category/CategoryAdd'
 import Category from '@/pages/(site)/Category/Category'
 import CategoryEdit from '@/pages/(site)/Category/CategoryEdit'
 import Order from '@/pages/(site)/Order/Order'
+
 import Blog from '@/pages/(site)/Blog/Blog'
 import BlogList from '@/pages/(site)/Blog/BlogList'
 import BlogAdd from '@/pages/(site)/Blog/BlogAdd'
 import BlogEdit from '@/pages/(site)/Blog/BlogEdit'
 
+import AccountPage from '@/pages/(site)/Account/AccountPage'
+import AccountDetail from '@/pages/(site)/Account/components/AccountDetail/AccountDetail'
+import AccountLayout from '@/pages/(site)/Account/AccountLayout'
+import EmployeePage from '@/pages/(site)/Employee/EmployeePage'
+import EmployeeList from '@/pages/(site)/Employee/_components/EmployeeList'
+import AddEmployeeForm from '@/pages/(site)/Employee/_components/EmployeeAdd'
+import EmployeeEdit from '@/pages/(site)/Employee/_components/EmployeeEdit'
+
 const routes: IRoute[] = [
   { path: '/', component: Signin, layout: AuthLayout },
   { path: '/signup', component: Signup, layout: AuthLayout },
   { path: '/dashboard', component: Dashboard, layout: MainLayout },
-
   {
     path: '/category',
     component: Category,
@@ -44,7 +52,7 @@ const routes: IRoute[] = [
     children: [
       { path: '', component: ProductList },
       { path: 'add', component: ProductAdd },
-      { path: 'edit', component: ProductEdit }
+      { path: 'edit/:id', component: ProductEdit }
     ]
   },
   {
@@ -69,6 +77,31 @@ const routes: IRoute[] = [
       { path: '', component: BlogList },
       { path: 'add', component: BlogAdd },
       { path: 'edit', component: BlogEdit }
+    ]
+  },
+  {
+    path: '/employee',
+    component: EmployeePage,
+    layout: MainLayout,
+    children: [
+      { path: '', component: EmployeeList },
+      { path: 'add', component: AddEmployeeForm },
+      { path: 'edit/:id', component: EmployeeEdit }
+    ]
+  },
+  {
+    path: '/account',
+    component: AccountLayout,
+    layout: MainLayout,
+    children: [
+      {
+        path: '',
+        component: AccountPage
+      },
+      {
+        path: ':id',
+        component: AccountDetail
+      }
     ]
   },
   { path: '/*', component: page404, layout: AuthLayout }

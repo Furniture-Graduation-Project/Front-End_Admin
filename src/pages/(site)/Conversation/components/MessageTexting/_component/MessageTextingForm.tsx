@@ -76,6 +76,7 @@ const MessageTextingForm = ({ idUser }: { idUser?: string }) => {
                   className='resize-none border-0 shadow-none focus-visible:ring-0 focus-visible:bg-transparent focus-visible:ring-inset focus-visible:ring-offset-0 dark:bg-slate-950 dark:focus-visible:bg-slate-950'
                   {...field}
                   autoComplete='off'
+                  disabled
                 />
               </FormControl>
               <FormMessage />

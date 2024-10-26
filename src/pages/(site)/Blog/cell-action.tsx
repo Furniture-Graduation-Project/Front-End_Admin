@@ -7,24 +7,22 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import { MoreHorizontal, Trash2, UserSearch, Edit2 } from 'lucide-react'
+import { MoreHorizontal, Trash2, Edit2, FileText } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { toast } from '@/hooks/use-toast'
-import { IEmployee } from '@/interface/employee'
-import useEmployeeMutation from '@/hooks/mutations/useEmployeeMutation'
+import { IBlog } from '@/interface/blog'
+import { useBlogMutation } from '@/hooks/mutations/useBlogMutation'
 
 interface CellActionProps {
-  data: IEmployee
+  data: IBlog
 }
 
 export const CellAction = ({ data }: CellActionProps) => {
   const [loading, setLoading] = useState(false)
   const [open, setOpen] = useState(false)
   const [isDropdown, setIsDropdown] = useState(false)
-  const { onSubmit: handleDelete } = useEmployeeMutation({
-    action: 'DELETE'
-  })
+  const { mutate: handleDelete } = useBlogMutation('DELETE')
 
   const resetPointerEvents = () => {
     document.body.style.pointerEvents = 'auto'
@@ -33,17 +31,17 @@ export const CellAction = ({ data }: CellActionProps) => {
   const onDelete = async () => {
     try {
       setLoading(true)
-      await handleDelete(data)
+      await handleDelete({ id: data._id })
       setOpen(false)
       toast({
         title: 'Xoá thành công',
-        description: `Người dùng ${data.fullName} đã được xoá thành công.`,
+        description: `Blog "${data.title}" đã được xoá thành công.`,
         variant: 'default'
       })
     } catch (error) {
       toast({
-        title: 'Lỗi xoá người dùng',
-        description: 'Đã xảy ra lỗi khi xoá người dùng.',
+        title: 'Lỗi xoá blog',
+        description: 'Đã xảy ra lỗi khi xoá blog.',
         variant: 'destructive'
       })
     } finally {
@@ -71,13 +69,13 @@ export const CellAction = ({ data }: CellActionProps) => {
         <DropdownMenuContent align='end'>
           <DropdownMenuLabel className='font-bold'>Actions</DropdownMenuLabel>
           <DropdownMenuItem>
-            <Link to={`/employee/${data._id}`} className='flex items-center'>
-              <UserSearch className='mr-2 h-4 w-4' />
-              Info
+            <Link to={`/blog/${data._id}`} className='flex items-center'>
+              <FileText className='mr-2 h-4 w-4' />
+              View
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem>
-            <Link to={`/employee/edit/${data._id}`} className='flex items-center'>
+            <Link to={`/blog/edit/${data._id}`} className='flex items-center'>
               <Edit2 className='mr-2 h-4 w-4' />
               Edit
             </Link>

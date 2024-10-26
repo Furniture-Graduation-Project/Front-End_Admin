@@ -5,56 +5,53 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { BlogService } from '@/services/blog'
+import { EmployeeService } from '@/services/employee'
 import { useState } from 'react'
-import { IBlog } from '@/interface/blog'
+import { ICreateEmployee } from '@/interface/employee'
 import { toast } from '@/hooks/use-toast'
 
 const FormSchema = z.object({
-  authorId: z.string().min(1, { message: 'tác giả không được để trống.' }),
-  title: z.string().min(1, { message: 'Tiêu đề không được để trống.' }),
-  content: z.string().min(1, { message: 'Nội dung không được để trống.' }),
-  tags: z
-    .string()
-    .optional()
-    .transform((val) => (val ? val.split(',').map((tag) => tag.trim()) : [])),
-  image: z.string().optional(),
-  date: z.date().optional()
+  fullName: z.string().min(1, { message: 'Tên đầy đủ không được để trống.' }),
+  username: z.string().min(1, { message: 'Tên đăng nhập không được để trống.' }),
+  password: z.string().min(6, { message: 'Mật khẩu phải ít nhất 6 ký tự.' }),
+  phoneNumber: z.string().optional(),
+  address: z.string().optional(),
+  role: z.enum(['product', 'support', 'order'])
 })
 
-const BlogAdd = () => {
+const AddEmployeeForm = () => {
   const [loading, setLoading] = useState(false)
 
-  const form = useForm<IBlog>({
+  const form = useForm<ICreateEmployee>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      authorId: '',
-      title: '',
-      content: '',
-      tags: '',
-      image: '',
-      date: new Date()
+      fullName: '',
+      username: '',
+      password: '',
+      phoneNumber: '',
+      address: '',
+      role: 'support'
     }
   })
 
-  const handleSubmit = async (data: IBlog) => {
+  const handleSubmit = async (data: ICreateEmployee) => {
     setLoading(true)
     try {
-      await BlogService.create(data)
+      await EmployeeService.create(data)
       form.reset()
 
       toast({
         title: 'Thêm thành công',
-        description: `Blog "${data.title}" đã được thêm thành công.`,
+        description: `Nhân viên ${data.fullName} đã được thêm thành công.`,
         variant: 'default'
       })
     } catch (error) {
       toast({
-        title: 'Lỗi thêm blog',
-        description: 'Đã xảy ra lỗi khi thêm blog.',
+        title: 'Lỗi thêm nhân viên',
+        description: 'Đã xảy ra lỗi khi thêm nhân viên.',
         variant: 'destructive'
       })
-      console.error('Lỗi khi tạo blog:', error)
+      console.error('Lỗi khi tạo nhân viên:', error)
     } finally {
       setLoading(false)
     }
@@ -63,18 +60,18 @@ const BlogAdd = () => {
   return (
     <div className='bg-[#F5F6FA] h-screen'>
       <Form {...form}>
-        <div className='font-bold text-2xl space-y-4 px-4 md:px-10 p-5'>Thêm Blog</div>
+        <div className='font-bold text-2xl space-y-4 px-4 md:px-10 p-5'>Thêm tài khoản nhân viên</div>
         <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-4 px-4 md:px-10'>
           <FormField
-            name='authorId'
+            name='fullName'
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <Label htmlFor='authorId' className='font-bold'>
-                  Tác giả
+                <Label htmlFor='fullName' className='font-bold'>
+                  Tên đầy đủ
                 </Label>
                 <FormControl>
-                  <Input id='authorId' placeholder='tác giả' {...field} aria-required='true' />
+                  <Input id='fullName' placeholder='Tên đầy đủ' {...field} aria-required='true' />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -82,15 +79,15 @@ const BlogAdd = () => {
           />
 
           <FormField
-            name='title'
+            name='username'
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <Label htmlFor='title' className='font-bold'>
-                  Tiêu đề
+                <Label htmlFor='username' className='font-bold'>
+                  Tên đăng nhập
                 </Label>
                 <FormControl>
-                  <Input id='title' placeholder='Tiêu đề' {...field} aria-required='true' />
+                  <Input id='username' placeholder='Tên đăng nhập' {...field} aria-required='true' />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -98,15 +95,15 @@ const BlogAdd = () => {
           />
 
           <FormField
-            name='content'
+            name='password'
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <Label htmlFor='content' className='font-bold'>
-                  Nội dung
+                <Label htmlFor='password' className='font-bold'>
+                  Mật khẩu
                 </Label>
                 <FormControl>
-                  <Input id='content' placeholder='Nội dung' {...field} aria-required='true' />
+                  <Input type='password' id='password' placeholder='Mật khẩu' {...field} aria-required='true' />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -114,15 +111,15 @@ const BlogAdd = () => {
           />
 
           <FormField
-            name='tags'
+            name='phoneNumber'
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <Label htmlFor='tags' className='font-bold'>
-                  Tags (cách nhau bằng dấu phẩy)
+                <Label htmlFor='phoneNumber' className='font-bold'>
+                  Số điện thoại
                 </Label>
                 <FormControl>
-                  <Input id='tags' placeholder='Tags' {...field} />
+                  <Input id='phoneNumber' placeholder='Số điện thoại' {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -130,15 +127,15 @@ const BlogAdd = () => {
           />
 
           <FormField
-            name='image'
+            name='address'
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <Label htmlFor='image' className='font-bold'>
-                  Hình ảnh (URL)
+                <Label htmlFor='address' className='font-bold'>
+                  Địa chỉ
                 </Label>
                 <FormControl>
-                  <Input id='image' placeholder='URL hình ảnh' {...field} />
+                  <Input id='address' placeholder='Địa chỉ' {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -146,15 +143,19 @@ const BlogAdd = () => {
           />
 
           <FormField
-            name='date'
+            name='role'
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <Label htmlFor='date' className='font-bold'>
-                  Ngày
+                <Label htmlFor='role' className='font-bold mr-5'>
+                  Vai trò
                 </Label>
                 <FormControl>
-                  <Input type='date' id='date' {...field} />
+                  <select id='role' {...field} className='border p-2'>
+                    <option value='product'>Product</option>
+                    <option value='support'>Support</option>
+                    <option value='order'>Order</option>
+                  </select>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -162,7 +163,7 @@ const BlogAdd = () => {
           />
 
           <Button type='submit' variant='default' disabled={loading} className='bg-blue-600 hover:bg-blue-400'>
-            {loading ? 'Đang xử lý...' : 'Thêm Blog'}
+            {loading ? 'Đang xử lý...' : 'Thêm nhân viên'}
           </Button>
         </form>
       </Form>
@@ -170,4 +171,4 @@ const BlogAdd = () => {
   )
 }
 
-export default BlogAdd
+export default AddEmployeeForm

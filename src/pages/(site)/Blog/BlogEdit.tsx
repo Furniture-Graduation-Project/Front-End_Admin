@@ -1,89 +1,188 @@
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
+import React, { useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom'
+import { IBlog } from '@/interface/blog'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { useState, useEffect } from 'react'
+import { Input } from '@/components/ui/input'
+import { toast } from '@/hooks/use-toast'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { BlogService } from '@/services/blog'
+import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
+import { Label } from '@/components/ui/label'
+
+const FormSchema = z.object({
+  title: z.string().min(1, { message: 'Tiêu đề không được để trống.' }),
+  content: z.string().min(1, { message: 'Nội dung không được để trống.' }),
+  tags: z
+    .string()
+    .optional()
+    .transform((val) => (val ? val.split(',').map((tag) => tag.trim()) : [])),
+  image: z.string().optional(),
+  date: z.string().optional()
+})
 
 const BlogEdit = () => {
-  const [title, setTitle] = useState('')
-  const [content, setContent] = useState('')
-  const [tags, setTags] = useState('')
-  const [image, setImage] = useState('')
-  const [authorId, setAuthorId] = useState('')
+  const { id } = useParams<{ id: string }>()
+  const [blog, setBlog] = useState<IBlog | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  const form = useForm<IBlog>({
+    resolver: zodResolver(FormSchema),
+    defaultValues: {
+      title: '',
+      content: '',
+      tags: '',
+      image: '',
+      date: new Date()
+    }
+  })
 
   useEffect(() => {
-    const blogData = {
-      title: 'Sample Blog Title',
-      content: 'This is the sample content for the blog...',
-      tags: ['React', 'JavaScript'],
-      image: 'https://example.com/sample-image.jpg',
-      authorId: '12345'
+    const fetchBlog = async () => {
+      if (!id) {
+        console.error('ID không tồn tại')
+        return
+      }
+
+      try {
+        const response = await BlogService.getById(id)
+        setBlog(response.data.data)
+        form.reset(response.data.data)
+      } catch (error) {
+        console.error('Lỗi khi lấy thông tin blog:', error)
+        toast({
+          title: 'Lỗi',
+          description: 'Không thể lấy thông tin blog.',
+          variant: 'destructive'
+        })
+      } finally {
+        setLoading(false)
+      }
     }
 
-    setTitle(blogData.title)
-    setContent(blogData.content)
-    setTags(blogData.tags.join(', '))
-    setImage(blogData.image)
-    setAuthorId(blogData.authorId)
-  }, [])
+    fetchBlog()
+  }, [id, form])
+
+  const handleSubmit = async (data: IBlog) => {
+    setLoading(true)
+    try {
+      await BlogService.update(id!, data)
+      toast({
+        title: 'Cập nhật thành công',
+        description: `Blog "${data.title}" đã được cập nhật thành công.`,
+        variant: 'default'
+      })
+    } catch (error) {
+      console.error('Lỗi khi cập nhật blog:', error)
+      toast({
+        title: 'Lỗi cập nhật',
+        description: 'Đã xảy ra lỗi khi cập nhật blog.',
+        variant: 'destructive'
+      })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (loading) {
+    return <div>Đang tải...</div>
+  }
+
+  if (!blog) {
+    return <div>Không tìm thấy blog với ID đã cho.</div>
+  }
 
   return (
-    <div className='container mx-auto p-6'>
-      <Card className='shadow-md'>
-        <CardHeader>
-          <CardTitle className='text-2xl font-bold'>Edit Blog</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form className='space-y-4'>
-            <div>
-              <label className='block font-medium'>Title</label>
-              <Input
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder='Enter blog title'
-                className='w-full'
-              />
-            </div>
-            <div>
-              <label className='block font-medium'>Content</label>
-              <Textarea
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                placeholder='Enter blog content'
-                className='w-full'
-              />
-            </div>
-            <div>
-              <label className='block font-medium'>Tags (comma separated)</label>
-              <Input
-                value={tags}
-                onChange={(e) => setTags(e.target.value)}
-                placeholder='e.g. React, JavaScript, WebDev'
-                className='w-full'
-              />
-            </div>
-            <div>
-              <label className='block font-medium'>Image URL</label>
-              <Input
-                value={image}
-                onChange={(e) => setImage(e.target.value)}
-                placeholder='Enter image URL'
-                className='w-full'
-              />
-            </div>
-            <div>
-              <label className='block font-medium'>Author ID</label>
-              <Input
-                value={authorId}
-                onChange={(e) => setAuthorId(e.target.value)}
-                placeholder='Enter author ID'
-                className='w-full'
-              />
-            </div>
-            <Button className='bg-blue-500 text-white w-full mt-4'>Update Blog</Button>
-          </form>
-        </CardContent>
-      </Card>
+    <div className='bg-[#F5F6FA] h-screen'>
+      <Form {...form}>
+        <div className='font-bold text-2xl space-y-4 px-4 md:px-10 p-5'>Chỉnh sửa Blog</div>
+        <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-4 px-4 md:px-10'>
+          <FormField
+            name='title'
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <Label htmlFor='title' className='font-bold'>
+                  Tiêu đề
+                </Label>
+                <FormControl>
+                  <Input id='title' placeholder='Tiêu đề' {...field} aria-required='true' />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            name='content'
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <Label htmlFor='content' className='font-bold'>
+                  Nội dung
+                </Label>
+                <FormControl>
+                  <Input id='content' placeholder='Nội dung' {...field} aria-required='true' />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            name='tags'
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <Label htmlFor='tags' className='font-bold'>
+                  Tags (cách nhau bằng dấu phẩy)
+                </Label>
+                <FormControl>
+                  <Input id='tags' placeholder='Tags' {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            name='image'
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <Label htmlFor='image' className='font-bold'>
+                  Hình ảnh (URL)
+                </Label>
+                <FormControl>
+                  <Input id='image' placeholder='URL hình ảnh' {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            name='date'
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <Label htmlFor='date' className='font-bold'>
+                  Ngày
+                </Label>
+                <FormControl>
+                  <Input type='date' id='date' {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <Button type='submit' variant='default' disabled={loading} className='bg-blue-600 hover:bg-blue-400'>
+            {loading ? 'Đang xử lý...' : 'Cập nhật Blog'}
+          </Button>
+        </form>
+      </Form>
     </div>
   )
 }

@@ -13,7 +13,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import { IMessageMenu } from '@/interface/messageMenu'
+import { IMessageMenu } from '@/interface/message'
 import { AlignJustify } from 'lucide-react'
 
 const MessageMenuMobile = ({ menu }: { menu: IMessageMenu }) => {
@@ -47,7 +47,7 @@ const MessageMenuMobile = ({ menu }: { menu: IMessageMenu }) => {
           <DropdownMenuLabel>Thư mục</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
-            {menu.buttons.map(({ icon: Icon, text, count }) => (
+            {menu.buttons.map(({ icon: Icon, text, count }: any) => (
               <DropdownMenuItem key={text}>
                 <Icon className='mr-2 h-4 w-4' />
                 <span>{text}</span>
@@ -63,7 +63,7 @@ const MessageMenuMobile = ({ menu }: { menu: IMessageMenu }) => {
               </DropdownMenuSubTrigger>
               <DropdownMenuPortal>
                 <DropdownMenuSubContent>
-                  {menu.labels.map(({ text }) => (
+                  {menu.labels.map(({ text }: any) => (
                     <DropdownMenuItem key={text} className='flex items-center'>
                       <input type='checkbox' className='mr-2 h-4 w-4' />
                       <span>{text}</span>

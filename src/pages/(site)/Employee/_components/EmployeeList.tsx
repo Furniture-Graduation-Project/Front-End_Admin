@@ -2,22 +2,22 @@ import { DEFAULT_PAGE_SIZE } from '@/constants/pagination'
 import DataTableCustom from '@/components/common/DataTable/DataTableCustom'
 import React, { useState } from 'react'
 import { columns } from './columns'
-import { useMultipleBlogQuery } from '@/hooks/querys/useBlogQuery'
+import { useMutipleEmployeeQuery } from '@/hooks/querys/useEmployeeQuery'
 import { useDataTable } from '@/hooks/useDataTable'
 import { PaginationState } from '@tanstack/react-table'
+import { Plus } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 
-const BlogList = () => {
+const EmployeeList = () => {
   const [pagination, setPagination] = useState<PaginationState>(DEFAULT_PAGE_SIZE)
   const [searchTerm, setSearchTerm] = useState('')
-
-  const { data, isLoading, isError, refetch } = useMultipleBlogQuery(pagination, searchTerm)
+  const { data, isLoading, isError, refetch } = useMutipleEmployeeQuery(pagination, searchTerm)
 
   const { table } = useDataTable({
     data: data?.data ?? [],
-    columns,
+    columns: columns,
     totalData: data?.totalData,
     totalPage: data?.totalPage,
     pagination,
@@ -31,11 +31,12 @@ const BlogList = () => {
 
   return (
     <div>
-      <h1 className='text-[32px] font-semibold'>Danh sách Blog</h1>
+      <h1 className='text-[32px] font-semibold'>Danh sách nhân viên</h1>
       <div className='w-full pt-5'>
-        <Link to='/blog/add'>
+        <Link to='/employee/add'>
           <Button variant={'outline'} className='space-x-2 bg-[#F5F6FA] text-black'>
-            <span>Thêm Blog</span>
+            <Plus size={18} />
+            <span>Add Employee</span>
           </Button>
         </Link>
       </div>
@@ -43,18 +44,16 @@ const BlogList = () => {
         <div className='mr-5 pt-5'>
           <Input
             type='text'
-            placeholder='Tìm kiếm theo tên tác giả...'
+            placeholder='Tìm kiếm theo tên...'
             value={searchTerm}
             onChange={handleSearch}
             className='border p-2 rounded mb-5 w-1/3 ml-auto'
           />
         </div>
-        {isLoading && <p>Đang tải dữ liệu...</p>}
-        {isError && <p>Đã có lỗi xảy ra khi lấy dữ liệu.</p>}
         <DataTableCustom columns={columns} isError={isError} isLoading={isLoading} refetch={refetch} table={table} />
       </div>
     </div>
   )
 }
 
-export default BlogList
+export default EmployeeList

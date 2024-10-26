@@ -3,6 +3,8 @@ import { CellAction } from './cell-action'
 import { Button } from '@/components/ui/button'
 import { ArrowUpDown } from 'lucide-react'
 import { IEmployee } from '@/interface/employee'
+import { format } from 'date-fns'
+import { vi } from 'date-fns/locale'
 
 export const columns: ColumnDef<IEmployee>[] = [
   {
@@ -29,26 +31,28 @@ export const columns: ColumnDef<IEmployee>[] = [
     }
   },
   {
-    accessorKey: 'name',
-    header: ({ column }) => {
-      return (
-        <Button variant='column' className='p-0' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-          Name
-          <ArrowUpDown className='ml-2 h-4 w-4' />
-        </Button>
-      )
-    }
+    accessorKey: 'fullName',
+    // header: ({ column }) => {
+    //   return (
+    //     <Button className='p-0' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+    //       Full Name
+    //       <ArrowUpDown className='ml-2 h-4 w-4' />
+    //     </Button>
+    //   )
+    // }
+    header: 'Full Name'
   },
   {
-    accessorKey: 'email',
-    header: ({ column }) => {
-      return (
-        <Button variant='column' className='p-0' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-          Email
-          <ArrowUpDown className='ml-2 h-4 w-4' />
-        </Button>
-      )
-    }
+    accessorKey: 'username',
+    // header: ({ column }) => {
+    //   return (
+    //     <Button className='p-0' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+    //       User Name
+    //       <ArrowUpDown className='ml-2 h-4 w-4' />
+    //     </Button>
+    //   )
+    // }
+    header: 'User Name'
   },
   {
     accessorKey: 'phoneNumber',
@@ -64,13 +68,18 @@ export const columns: ColumnDef<IEmployee>[] = [
   },
   {
     accessorKey: 'createdAt',
-    header: ({ column }) => {
-      return (
-        <Button variant='column' className='p-0' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-          Date
-          <ArrowUpDown className='ml-2 h-4 w-4' />
-        </Button>
-      )
+    // header: ({ column }) => {
+    //   return (
+    //     <Button className='p-0' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+    //       Date
+    //       <ArrowUpDown className='ml-2 h-4 w-4' />
+    //     </Button>
+    //   )
+    // },
+    header: 'Date',
+    cell: ({ row }) => {
+      const formattedDate = format(row.getValue('createdAt'), 'Pp', { locale: vi })
+      return <div className='font-medium'>{formattedDate}</div>
     }
   },
   {
