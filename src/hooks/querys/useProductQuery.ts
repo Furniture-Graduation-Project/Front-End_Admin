@@ -18,11 +18,7 @@ export const useMultipleProductQuery = (pagination?: any, searchTerm: string = '
   
   const { data, ...rest } = useQuery({
     queryKey: ['PRODUCT', pageIndex, searchTerm],
-    queryFn: async () => {
-      if (searchTerm) {
-        const response = await ProductService.getByName(searchTerm);
-        return response.data;
-      } 
+    queryFn: async () => {    
       if (pagination) {
         const response = await ProductService.getLimited({ pageIndex, pageSize });
         return response.data;

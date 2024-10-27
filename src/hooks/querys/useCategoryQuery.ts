@@ -19,10 +19,6 @@ export const useMultipleCategoryQuery = (pagination?: any, searchTerm: string = 
   const { data, ...rest } = useQuery({
     queryKey: ['CATEGORY', pageIndex, searchTerm],
     queryFn: async () => {
-      if (searchTerm) {
-        const response = await CategoryService.getCategoriesByName(searchTerm);
-        return response.data;
-      } 
       if (pagination) {
         const response = await CategoryService.getLimitedCategories({ pageIndex, pageSize });
         return response.data;

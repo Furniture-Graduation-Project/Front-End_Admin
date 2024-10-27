@@ -22,29 +22,19 @@ const CategoryListHeader = ({
   const pageSizeOptions: number[] = [10, 20, 30, 40, 50]
 
   return (
-    <CardHeader className='grid grid-cols-2 sm:grid-cols-3'>
-      <div className='flex items-center space-x-2'>
-        <Button variant='outline'>
-          <Plus />
-          <span>Thêm Danh Mục</span>
-        </Button>
-        <Button variant='outline'>
-          <Trash2 />
-          <span>Xóa</span>
-        </Button>
+    <CardHeader className='grid grid-cols-2 sm:grid-cols-3 p-3'>
+      <div className='flex items-center space-x-2'> 
       </div>
-
       <Input
         placeholder='Tìm kiếm theo tên danh mục...'
-        value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
+        value={(table.getColumn('categoryName')?.getFilterValue() as string) ?? ''}
         onChange={(event) => {
           const value = event.target.value
           console.log('Giá trị tìm kiếm mới:', value)
-          table.getColumn('name')?.setFilterValue(value)
+          table.getColumn('categoryName')?.setFilterValue(value)
         }}
         className='order-last sm:order-first col-span-2 sm:col-span-1'
       />
-
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant='outline' className='ml-auto'>

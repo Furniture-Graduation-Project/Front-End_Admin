@@ -8,12 +8,11 @@ import { PaginationState } from '@tanstack/react-table';
 import { Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import CategoryListHeader from './CategoryListHeader ';
 
 const CategoryList = () => {
   const [pagination, setPagination] = useState<PaginationState>(DEFAULT_PAGE_SIZE);
-  const [searchTerm, setSearchTerm] = useState('');
-  const { data, isLoading, isError, refetch } = useMultipleCategoryQuery(pagination, searchTerm);
+  const { data, isLoading, isError, refetch } = useMultipleCategoryQuery(pagination);
 
   const { table } = useDataTable({
     data: data?.data ?? [],
@@ -23,13 +22,6 @@ const CategoryList = () => {
     pagination,
     setPagination,
   });
-
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-    setTimeout(() => {
-      refetch();
-    }, 300);
-  };
 
   return (
     <>
@@ -43,15 +35,7 @@ const CategoryList = () => {
         </Link>
       </div>
       <div className='w-full mt-5 bg-white dark:bg-gray-800 rounded-xl p-4'>
-        <div className='mr-5 pt-5'>
-          <Input
-            type='text'
-            placeholder='Tìm kiếm theo tên danh mục...'
-            value={searchTerm}
-            onChange={handleSearch}
-            className='border dark:border-gray-600 p-2 rounded mb-5 w-1/3 ml-auto dark:bg-gray-700 dark:text-gray-100'
-          />
-        </div>
+        <CategoryListHeader table={table} setPagination={setPagination} />
         {isLoading && <div className='text-center'>Đang tải...</div>}
         {isError && <div className='text-red-600'>Lỗi khi tải danh mục. Vui lòng thử lại.</div>}
         <DataTableCustom columns={columns} isError={isError} isLoading={isLoading} refetch={refetch} table={table} />

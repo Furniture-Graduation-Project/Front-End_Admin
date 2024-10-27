@@ -70,18 +70,4 @@ export const CategoryService = {
       throw error
     }
   },
-
-
-  getCategoriesByName: async (categoryName: string): Promise<AxiosResponse<IApiResponse<ICategory[]>>> => {
-    try {
-      const response: AxiosResponse<IApiResponse<ICategory[]>> = await axiosInstance.get(
-        `${API_URL}/search?categoryName=${categoryName}`
-      )
-      return response
-    } catch (error) {
-      console.error(`Lỗi khi tìm kiếm danh mục theo tên:`, error)
-      throw error
-    }
-  },
-  
 }

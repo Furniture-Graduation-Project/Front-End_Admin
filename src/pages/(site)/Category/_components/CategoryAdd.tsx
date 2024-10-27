@@ -110,23 +110,11 @@ const AddCategoryForm = () => {
               </FormItem>
             )}
           />
-          <div className='flex gap-2'>
-            <Button
-              type='submit'
-              variant='default'
-              disabled={loading}
-              className='bg-blue-600 hover:bg-blue-400 dark:bg-blue-500 dark:hover:bg-blue-400'
-            >
-              {loading ? 'Đang xử lý...' : 'Thêm danh mục'}
+           <div className='flex justify-end mt-6 space-x-3'>
+            <Button type='button' variant='outline' onClick={() => navigate('/category')}>
+              Hủy
             </Button>
-            <Button
-              type='button'
-              variant='default'
-              onClick={() => navigate('/category')} // Chuyển hướng về danh sách danh mục
-              className='bg-gray-300 hover:bg-gray-400 text-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
-            >
-              Quay lại
-            </Button>
+            <Button type='submit'>Thêm</Button>
           </div>
         </form>
       </Form>

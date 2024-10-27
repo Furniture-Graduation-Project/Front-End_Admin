@@ -9,6 +9,7 @@ export const ProductService = {
   getAll: async (): Promise<AxiosResponse<IApiResponse<IProduct[]>>> => {
     try {
       const response: AxiosResponse<IApiResponse<IProduct[]>> = await axiosInstance.get(API_URL)
+      console.log('Dữ liệu sản phẩm từ API:', response.data); 
       return response
     } catch (error) {
       console.error('Lỗi khi lấy tất cả sản phẩm:', error)

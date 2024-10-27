@@ -90,7 +90,7 @@ const CategoryEdit = () => {
   return (
     <div className='bg-[#F5F6FA] dark:bg-gray-900 h-screen'>
       <h1 className='font-bold text-2xl space-y-4 px-4 md:px-10 p-5 dark:text-gray-100'>
-        Chỉnh sửa thông tin danh mục
+        Cập nhật danh mục
       </h1>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-4 px-4 md:px-10'>
@@ -136,23 +136,11 @@ const CategoryEdit = () => {
             )}
           />
 
-          <div className="flex gap-2">
-            <Button
-              type='submit'
-              variant='default'
-              disabled={loading}
-              className='bg-blue-600 hover:bg-blue-400 dark:bg-blue-500 dark:hover:bg-blue-400'
-            >
-              {loading ? 'Đang xử lý...' : 'Cập nhật danh mục'}
+<div className='flex justify-end mt-6 space-x-3'>
+            <Button type='button' variant='outline' onClick={() => navigate('/category')}>
+              Hủy
             </Button>
-            <Button
-              type='button'
-              variant='default'
-              onClick={() => navigate('/category')}
-              className='bg-gray-300 hover:bg-gray-400 text-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
-            >
-              Quay lại
-            </Button>
+            <Button type='submit'>Cập nhật</Button>
           </div>
         </form>
       </Form>
