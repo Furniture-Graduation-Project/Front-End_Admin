@@ -37,7 +37,6 @@ const BlogEdit = () => {
     }
   })
 
-  // Fetch dữ liệu blog hiện tại
   useEffect(() => {
     const fetchBlog = async () => {
       if (!id) {

@@ -3,7 +3,7 @@ import { AxiosResponse } from 'axios'
 import { IApiResponse } from '@/interface/apiRespose'
 import { IBlog } from '@/interface/blog'
 
-const API = 'blog'
+const API = '/blog'
 
 export const BlogService = {
   getAll: async (): Promise<AxiosResponse<IApiResponse<IBlog[]>>> => {

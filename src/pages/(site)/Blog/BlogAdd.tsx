@@ -20,7 +20,7 @@ const FormSchema = z.object({
     .optional()
     .transform((val) => (val ? val.split(',').map((tag) => tag.trim()) : [])),
   image: z.string().optional(),
-  date: z.coerce.date().optional() // chuyển đổi từ chuỗi sang kiểu `Date`
+  date: z.coerce.date().optional()
 })
 
 const BlogAdd = () => {
@@ -34,7 +34,7 @@ const BlogAdd = () => {
       content: '',
       tags: [],
       image: '',
-      date: new Date() // Giá trị mặc định là ngày hiện tại
+      date: new Date()
     }
   })
 
