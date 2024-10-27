@@ -64,9 +64,9 @@ const CategoryEdit = () => {
       toast({
         title: 'Cập nhật thành công',
         description: `Danh mục ${data.categoryName} đã được cập nhật thành công.`,
-        variant: 'success', // Thay đổi variant thành 'success' để có nền xanh
+        variant: 'success',
       });
-      navigate('/category'); // Quay lại danh sách sau khi cập nhật thành công
+      navigate('/category');
     } catch (error) {
       console.error('Lỗi khi cập nhật danh mục:', error);
       toast({

@@ -11,7 +11,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { ICategory } from '@/interface/category'
 import { Table } from '@tanstack/react-table'
-import { Plus, Trash2, Settings2 } from 'lucide-react'
+import { Settings2 } from 'lucide-react'
 const CategoryListHeader = ({
   table,
   setPagination

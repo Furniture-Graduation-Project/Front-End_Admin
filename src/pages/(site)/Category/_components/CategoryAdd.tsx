@@ -18,7 +18,7 @@ const FormSchema = z.object({
 
 const AddCategoryForm = () => {
   const [loading, setLoading] = useState(false)
-  const navigate = useNavigate(); // Khởi tạo useNavigate
+  const navigate = useNavigate();
   const form = useForm<ICategory>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -38,7 +38,7 @@ const AddCategoryForm = () => {
         duration: 3000,
       })
       form.reset()
-      navigate('/category'); // Chuyển hướng về danh sách danh mục sau khi thêm thành công
+      navigate('/category');
     } catch (error: any) {
       if (error.response && error.response.status === 409) {
         toast({
