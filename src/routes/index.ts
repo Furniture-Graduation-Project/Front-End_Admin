@@ -27,6 +27,8 @@ import SettingsPage from '@/pages/(site)/Setting/Setting'
 import OrderPage from '@/pages/(site)/Order/OrderPage'
 import OrderList from '@/pages/(site)/Order/components/OrderList'
 import OrderEdit from '@/pages/(site)/Order/components/OrderEdit'
+import SettingAccount from '@/pages/(site)/Setting/_component/SettingAccount'
+import SettingPassword from '@/pages/(site)/Setting/_component/SettingPassword'
 // import EmployeeSignIn from '@/pages/(site)/Employee/_components/EmployeeSignIn'
 
 const routes: IRoute[] = [
@@ -99,7 +101,17 @@ const routes: IRoute[] = [
   {
     path: '/setting',
     component: SettingsPage,
-    layout: MainLayout
+    layout: MainLayout,
+    children: [
+      {
+        path: '',
+        component: SettingAccount
+      },
+      {
+        path: 'security',
+        component: SettingPassword
+      }
+    ]
   },
 
   { path: '/*', component: page404, layout: AuthLayout }
