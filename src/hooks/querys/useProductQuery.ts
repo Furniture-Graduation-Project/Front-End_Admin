@@ -1,32 +1,32 @@
-import { DEFAULT_PAGE_SIZE } from '@/constants/pagination';
-import { ProductService } from '@/services/product';
-import { useQuery } from '@tanstack/react-query';
+import { DEFAULT_PAGE_SIZE } from '@/constants/pagination'
+import { ProductService } from '@/services/product'
+import { useQuery } from '@tanstack/react-query'
 
 export const useSingleProductQuery = (id: string) => {
   const { data, ...rest } = useQuery({
     queryKey: ['PRODUCT', id],
     queryFn: async () => {
-      return await ProductService.getById(id);
+      return await ProductService.getById(id)
     }
-  });
+  })
 
-  return { data, ...rest };
-};
+  return { data, ...rest }
+}
 
 export const useMultipleProductQuery = (pagination?: any, searchTerm: string = '') => {
-  const { pageIndex = DEFAULT_PAGE_SIZE.pageIndex, pageSize = DEFAULT_PAGE_SIZE.pageSize } = pagination || {};
-  
+  const { pageIndex = DEFAULT_PAGE_SIZE.pageIndex, pageSize = DEFAULT_PAGE_SIZE.pageSize } = pagination || {}
+
   const { data, ...rest } = useQuery({
     queryKey: ['PRODUCT', pageIndex, searchTerm],
-    queryFn: async () => {    
+    queryFn: async () => {
       if (pagination) {
-        const response = await ProductService.getLimited({ pageIndex, pageSize });
-        return response.data;
+        const response = await ProductService.getLimited({ pageIndex, pageSize })
+        return response.data
       }
-      const response = await ProductService.getAll();
-      return response.data;
+      const response = await ProductService.getAll()
+      return response.data
     }
-  });
+  })
 
-  return { data, ...rest };
-};
+  return { data, ...rest }
+}

@@ -2,13 +2,11 @@ import { ColumnDef } from '@tanstack/react-table'
 import { CellAction } from './cell-action'
 import { IProduct } from '@/interface/product'
 
-export const columns: ColumnDef<IProduct>[] = [
+export const columns = (onDelete: (id: string) => void): ColumnDef<IProduct>[] => [
   {
     accessorKey: 'STT',
     header: 'STT',
-    cell: ({ row }) => {
-      return <p>{row.index + 1}</p>
-    }
+    cell: ({ row }) => <p>{row.index + 1}</p>
   },
   {
     accessorKey: 'name',
@@ -16,24 +14,17 @@ export const columns: ColumnDef<IProduct>[] = [
   },
   {
     header: 'Category',
-    cell: ({ row }) => {
-      return <p>{row.original.category?.categoryName}</p>;
-    }
-  }
-  ,
+    cell: ({ row }) => <p>{row.original.category?.categoryName}</p>
+  },
   {
     accessorKey: 'description',
     header: 'Description',
-    cell: ({ row }) => {
-      return <p>{row.getValue<string>('description') || 'N/A'}</p> 
-    }
+    cell: ({ row }) => <p>{row.getValue<string>('description') || 'N/A'}</p>
   },
   {
     accessorKey: 'price',
     header: 'Price',
-    cell: ({ row }) => {
-      return <p>${row.getValue<number>('price').toFixed(2)}</p> 
-    }
+    cell: ({ row }) => <p>${row.getValue<number>('price').toFixed(2)}</p>
   },
   {
     accessorKey: 'SKU',
@@ -42,20 +33,18 @@ export const columns: ColumnDef<IProduct>[] = [
   {
     accessorKey: 'material',
     header: 'Material',
-    cell: ({ row }) => {
-      return <p>{row.getValue<string>('material') || 'N/A'}</p> 
-    }
+    cell: ({ row }) => <p>{row.getValue<string>('material') || 'N/A'}</p>
   },
   {
     accessorKey: 'status',
     header: 'Status',
     cell: ({ row }) => {
-      const status = row.getValue<string>('status');
-      return <p>{status.charAt(0).toUpperCase() + status.slice(1)}</p>; 
+      const status = row.getValue<string>('status')
+      return <p>{status.charAt(0).toUpperCase() + status.slice(1)}</p>
     }
   },
   {
     id: 'actions',
-    cell: ({ row }) => <CellAction data={row.original} />
+    cell: ({ row }) => <CellAction data={row.original} onDelete={onDelete} />
   }
 ]

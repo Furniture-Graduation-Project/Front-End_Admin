@@ -3,7 +3,7 @@ import { useMutation } from '@tanstack/react-query'
 
 type ProductMutation = 'CREATE' | 'UPDATE' | 'DELETE'
 
-export const useProductMutation = (key: ProductMutation) => {
+export const useProductMutation = (key: ProductMutation, onSuccess?: () => void) => {
   const { mutate } = useMutation({
     mutationKey: ['Product'],
     mutationFn: async (params: { id?: string; data?: any }) => {
@@ -19,6 +19,9 @@ export const useProductMutation = (key: ProductMutation) => {
         default:
           throw new Error('Invalid mutation key')
       }
+    },
+    onSuccess: () => {
+      if (onSuccess) onSuccess()
     }
   })
 
