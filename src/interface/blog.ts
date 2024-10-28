@@ -1,11 +1,18 @@
 export interface IBlog {
   _id?: string
-  authorId: string
+  employeeId: string
   title: string
   content: string
   tags?: string[]
   image?: string
-  date?: Date
   createdAt?: Date
   updatedAt?: Date
+}
+
+export interface ICreateBlog {
+  employeeId: string
+  title: string
+  content: string
+  tags?: string[]
+  image?: string
 }

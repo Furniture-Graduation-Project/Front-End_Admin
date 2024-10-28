@@ -7,38 +7,36 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from '@/component
 import { Input } from '@/components/ui/input'
 import { BlogService } from '@/services/blog'
 import { useState } from 'react'
-import { IBlog } from '@/interface/blog'
+import { ICreateBlog } from '@/interface/blog'
 import { toast } from '@/hooks/use-toast'
 
-// Schema validation sử dụng zod
+// Schema validation using zod
 const FormSchema = z.object({
-  authorId: z.string().min(1, { message: 'Tác giả không được để trống.' }),
+  employeeId: z.string().min(1, { message: 'Người viết không được để trống.' }),
   title: z.string().min(1, { message: 'Tiêu đề không được để trống.' }),
   content: z.string().min(1, { message: 'Nội dung không được để trống.' }),
   tags: z
     .string()
     .optional()
     .transform((val) => (val ? val.split(',').map((tag) => tag.trim()) : [])),
-  image: z.string().optional(),
-  date: z.coerce.date().optional()
+  image: z.string().optional()
 })
 
 const BlogAdd = () => {
   const [loading, setLoading] = useState(false)
 
-  const form = useForm<IBlog>({
+  const form = useForm<ICreateBlog>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      authorId: '',
+      employeeId: '',
       title: '',
       content: '',
       tags: [],
-      image: '',
-      date: new Date()
+      image: ''
     }
   })
 
-  const handleSubmit = async (data: IBlog) => {
+  const handleSubmit = async (data: ICreateBlog) => {
     setLoading(true)
     try {
       await BlogService.create(data)
@@ -67,15 +65,15 @@ const BlogAdd = () => {
         <div className='font-bold text-2xl space-y-4 px-4 md:px-10 p-5'>Thêm Blog</div>
         <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-4 px-4 md:px-10'>
           <FormField
-            name='authorId'
+            name='employeeId'
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <Label htmlFor='authorId' className='font-bold'>
-                  Tác giả
+                <Label htmlFor='employeeId' className='font-bold'>
+                  Người viết
                 </Label>
                 <FormControl>
-                  <Input id='authorId' placeholder='tác giả' {...field} aria-required='true' />
+                  <Input id='employeeId' placeholder='Người viết' {...field} aria-required='true' />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -140,28 +138,6 @@ const BlogAdd = () => {
                 </Label>
                 <FormControl>
                   <Input id='image' placeholder='URL hình ảnh' {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            name='date'
-            control={form.control}
-            render={({ field }) => (
-              <FormItem>
-                <Label htmlFor='date' className='font-bold'>
-                  Ngày
-                </Label>
-                <FormControl>
-                  <Input
-                    type='date'
-                    id='date'
-                    {...field}
-                    value={field.value ? field.value.toISOString().substring(0, 10) : ''}
-                    onChange={(e) => field.onChange(e.target.value ? new Date(e.target.value) : undefined)}
-                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

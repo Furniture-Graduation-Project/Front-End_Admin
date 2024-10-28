@@ -12,28 +12,29 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from '@/component
 import { Label } from '@/components/ui/label'
 
 const FormSchema = z.object({
+  employeeId: z.string().min(1, { message: 'Người viết không được để trống.' }),
   title: z.string().min(1, { message: 'Tiêu đề không được để trống.' }),
   content: z.string().min(1, { message: 'Nội dung không được để trống.' }),
-  tags: z
-    .string()
-    .optional()
-    .transform((val) => (val ? val.split(',').map((tag) => tag.trim()) : [])),
-  image: z.string().optional(),
-  date: z.string().optional()
+  // tags: z
+  //   .string()
+  //   .optional()
+  //   .transform((val) => (val ? val.split(',').map((tag) => tag.trim()) : [])),
+  image: z.string().optional()
 })
 
 const BlogEdit = () => {
   const { id } = useParams<{ id: string }>()
+  const [blog, setBlog] = useState<IBlog | null>(null)
   const [loading, setLoading] = useState(true)
 
   const form = useForm<IBlog>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
+      employeeId: '',
       title: '',
       content: '',
       tags: [],
-      image: '',
-      date: new Date()
+      image: ''
     }
   })
 
@@ -46,8 +47,8 @@ const BlogEdit = () => {
 
       try {
         const response = await BlogService.getById(id)
-        const blogData = response.data.data
-        form.reset(blogData)
+        setBlog(response.data.data)
+        form.reset(response.data.data)
       } catch (error) {
         console.error('Lỗi khi lấy thông tin blog:', error)
         toast({
@@ -63,7 +64,6 @@ const BlogEdit = () => {
     fetchBlog()
   }, [id, form])
 
-  // Xử lý submit
   const handleSubmit = async (data: IBlog) => {
     setLoading(true)
     try {
@@ -89,11 +89,31 @@ const BlogEdit = () => {
     return <div>Đang tải...</div>
   }
 
+  if (!blog) {
+    return <div>Không tìm thấy blog với ID đã cho.</div>
+  }
+
   return (
     <div className='bg-[#F5F6FA] h-screen'>
+      <h1 className='font-bold text-2xl space-y-4 px-4 md:px-10 p-5'>Chỉnh sửa Blog</h1>
       <Form {...form}>
-        <div className='font-bold text-2xl space-y-4 px-4 md:px-10 p-5'>Chỉnh sửa Blog</div>
         <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-4 px-4 md:px-10'>
+          <FormField
+            name='employeeId'
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <Label htmlFor='employeeId' className='font-bold'>
+                  Người viết
+                </Label>
+                <FormControl>
+                  <Input id='employeeId' placeholder='Người viết' {...field} aria-required='true' />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <FormField
             name='title'
             control={form.control}
@@ -141,7 +161,6 @@ const BlogEdit = () => {
               </FormItem>
             )}
           />
-
           <FormField
             name='image'
             control={form.control}
@@ -152,28 +171,6 @@ const BlogEdit = () => {
                 </Label>
                 <FormControl>
                   <Input id='image' placeholder='URL hình ảnh' {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            name='date'
-            control={form.control}
-            render={({ field }) => (
-              <FormItem>
-                <Label htmlFor='date' className='font-bold'>
-                  Ngày
-                </Label>
-                <FormControl>
-                  <Input
-                    type='date'
-                    id='date'
-                    {...field}
-                    value={field.value ? field.value.toISOString().substring(0, 10) : ''}
-                    onChange={(e) => field.onChange(e.target.value ? new Date(e.target.value) : undefined)}
-                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

@@ -23,7 +23,7 @@ export const useMultipleBlogQuery = (
     queryKey: ['BLOG', pageIndex, searchTerm],
     queryFn: async () => {
       if (searchTerm) {
-        const response = await BlogService.getByAuthorId(searchTerm)
+        const response = await BlogService.getBlogsByEmployeeId(searchTerm)
         return response.data
       } else if (pagination) {
         const response = await BlogService.getLimited({ pageIndex, pageSize })

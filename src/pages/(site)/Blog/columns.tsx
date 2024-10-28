@@ -20,10 +20,10 @@ export const columns: ColumnDef<IBlog>[] = [
     }
   },
   {
-    accessorKey: 'authorId',
-    header: 'Author',
+    accessorKey: 'employeeId',
+    header: 'Employee',
     cell: ({ row }) => {
-      return <p>{row.getValue('authorId')}</p>
+      return <p>{row.getValue('employeeId')}</p>
     }
   },
   {

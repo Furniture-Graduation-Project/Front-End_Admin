@@ -82,7 +82,7 @@ const routes: IRoute[] = [
     children: [
       { path: '', component: BlogList },
       { path: 'add', component: BlogAdd },
-      { path: 'edit', component: BlogEdit }
+      { path: 'edit/:id', component: BlogEdit }
     ]
   },
   {
