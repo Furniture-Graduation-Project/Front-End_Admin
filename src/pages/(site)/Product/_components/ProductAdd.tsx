@@ -122,7 +122,9 @@ const AddProductForm = () => {
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <Label htmlFor='category' className='font-bold dark:text-gray-100'>Danh mục</Label>
+                <Label htmlFor='category' className='font-bold dark:text-gray-100'>
+                  Danh mục
+                </Label>
                 <FormControl className='ml-2 rounded-sm'>
                   <select
                     id='category'
@@ -262,7 +264,9 @@ const AddProductForm = () => {
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <Label htmlFor='status' className='font-bold dark:text-gray-100'>Trạng thái</Label>
+                <Label htmlFor='status' className='font-bold dark:text-gray-100'>
+                  Trạng thái
+                </Label>
                 <FormControl className='ml-2 rounded-sm'>
                   <select id='status' {...field} className='dark:bg-gray-700 dark:text-gray-100 border rounded-md p-1'>
                     <option value='available'>Còn hàng</option>
@@ -274,7 +278,7 @@ const AddProductForm = () => {
               </FormItem>
             )}
           />
-          <div className='flex justify-end mt-6 space-x-3'>
+          <div className='flex justify-end mt-6 space-x-3 pb-8'>
             <Button type='button' variant='outline' onClick={() => navigate('/product')}>
               Hủy
             </Button>

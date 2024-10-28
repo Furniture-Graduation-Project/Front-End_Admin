@@ -150,15 +150,14 @@ const EditProductForm = () => {
                     className='dark:bg-gray-700 dark:text-gray-100 border rounded-md p-1'
                     value={field.value || product.category._id}
                     onChange={(e) => {
-                      field.onChange(e.target.value);
+                      field.onChange(e.target.value)
                     }}
                   >
-                    {categories
-                      .map((category) => (
-                        <option key={category._id} value={category._id}>
-                          {category.categoryName}
-                        </option>
-                      ))}
+                    {categories.map((category) => (
+                      <option key={category._id} value={category._id}>
+                        {category.categoryName}
+                      </option>
+                    ))}
                   </select>
                 </FormControl>
                 <FormMessage />
@@ -301,7 +300,7 @@ const EditProductForm = () => {
             )}
           />
 
-          <div className='flex justify-end mt-6 space-x-3'>
+          <div className='flex justify-end mt-6 space-x-3 pb-8'>
             <Button type='button' variant='outline' onClick={() => navigate('/product')}>
               Hủy
             </Button>
