@@ -1,38 +1,73 @@
-import { axiosInstance } from '../config/axios'
-import { ICategory } from '../interface/category'
+import { IApiResponse } from '@/interface/apiRespose'
+import { ICategory } from '@/interface/category'
+import { AxiosResponse } from 'axios'
+import { axiosInstance } from '@/config/axios'
 
-const API_URL = '/categories'
+const API_URL = '/category'
 
 export const CategoryService = {
-  // Lấy tất cả danh mục
+  create: async (category: ICategory): Promise<AxiosResponse<IApiResponse<ICategory>>> => {
+    try {
+      const response: AxiosResponse<IApiResponse<ICategory>> = await axiosInstance.post(API_URL, category)
+      return response
+    } catch (error) {
+      console.error('Lỗi khi tạo danh mục mới:', error)
+      throw error
+    }
+  },
+
+
   getAllCategories: async (): Promise<ICategory[]> => {
-    const response = await axiosInstance.get(API_URL)
-    return response.data
+    try {
+      const response: ICategory[] = await axiosInstance.get(API_URL)
+      return response
+    } catch (error) {
+      console.error('Lỗi khi lấy tất cả danh mục:', error)
+      throw error
+    }
   },
 
-  // Lấy danh mục theo ID
-  getCategoryById: async (id: string): Promise<ICategory> => {
-    const response = await axiosInstance.get(`${API_URL}/${id}`)
-    return response.data
+  getCategoryById: async (id: string): Promise<AxiosResponse<IApiResponse<ICategory>>> => {
+    try {
+      const response: AxiosResponse<IApiResponse<ICategory>> = await axiosInstance.get(`${API_URL}/${id}`)
+      return response
+    } catch (error) {
+      console.error(`Lỗi khi lấy danh mục với ID ${id}:`, error)
+      throw error
+    }
   },
 
-  // Tạo mới danh mục
-  createCategory: async (category: ICategory): Promise<ICategory> => {
-    const response = await axiosInstance.post(API_URL, category)
-    return response.data
+  updateCategoryById: async (id: string, updatedCategory: Partial<ICategory>): Promise<AxiosResponse<IApiResponse<ICategory>>> => {
+    try {
+      const response: AxiosResponse<IApiResponse<ICategory>> = await axiosInstance.put(`${API_URL}/${id}`, updatedCategory)
+      return response
+    } catch (error) {
+      console.error(`Lỗi khi cập nhật danh mục với ID ${id}:`, error)
+      throw error
+    }
   },
 
-  // Cập nhật danh mục theo ID
-  updateCategoryById: async (id: string, updatedCategory: ICategory): Promise<ICategory> => {
-    const response = await axiosInstance.put(`${API_URL}/${id}`, updatedCategory)
-    return response.data
+
+  deleteCategory: async (id: string): Promise<AxiosResponse<IApiResponse<void>>> => {
+    try {
+      const response: AxiosResponse<IApiResponse<void>> = await axiosInstance.delete(`${API_URL}/${id}`)
+      return response
+    } catch (error) {
+      console.error(`Lỗi khi xóa danh mục với ID ${id}:`, error)
+      throw error
+    }
   },
 
-  // Xóa danh mục theo ID và chuyển sản phẩm về danh mục có role = 1
-  deleteCategoryById: async (id: string): Promise<ICategory> => {
-    const response = await axiosInstance.delete(`${API_URL}/${id}`, {
-      data: { moveProducts: true } // Gửi yêu cầu để chuyển sản phẩm
-    })
-    return response.data
-  }
+
+  getLimitedCategories: async (pagination: { pageIndex: number; pageSize: number }): Promise<AxiosResponse<IApiResponse<ICategory[]>>> => {
+    try {
+      const response: AxiosResponse<IApiResponse<ICategory[]>> = await axiosInstance.get(
+        `${API_URL}/limited?page=${pagination.pageIndex}&limit=${pagination.pageSize}`
+      )
+      return response
+    } catch (error) {
+      console.error(`Lỗi khi lấy danh sách danh mục:`, error)
+      throw error
+    }
+  },
 }
