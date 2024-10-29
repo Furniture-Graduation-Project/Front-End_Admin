@@ -9,13 +9,13 @@ export const useCategoryMutation = (key: CategoryMutation) => {
     mutationFn: async (params: { id?: string; data?: any }) => {
       switch (key) {
         case 'CREATE':
-          return await CategoryService.createCategory(params.data)
+          return await CategoryService.create(params.data)
         case 'UPDATE':
           if (!params.id) throw new Error('ID is required for update')
           return await CategoryService.updateCategoryById(params.id, params.data)
-        case 'DELETE':
-          if (!params.id) throw new Error('ID is required for delete')
-          return await CategoryService.deleteCategoryById(params.id)
+        // case 'DELETE':
+        //   if (!params.id) throw new Error('ID is required for delete')
+        //   return await CategoryService.deleteCategoryById(params.id)
         default:
           throw new Error('Invalid mutation key')
       }
