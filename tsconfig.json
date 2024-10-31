@@ -24,6 +24,6 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src", "src/@types"],
+  "include": ["src", "src/@types", "../Front-End_Client/src/interface/cart.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

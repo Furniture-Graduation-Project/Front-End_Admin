@@ -1,6 +1,5 @@
 export interface ICategory {
   _id?: string
-  name: string
+  categoryName: string
   description: string
-  role: number
 }

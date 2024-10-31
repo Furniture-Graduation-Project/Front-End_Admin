@@ -74,7 +74,7 @@ const ProductList = () => {
         <TableBody>
           {products.map((product) => (
             <TableRow key={product.id} className='border-t hover:bg-gray-50 transition-colors'>
-              <TableCell className='p-4'>
+<TableCell className='p-4'>
                 <img src={product.image} alt={product.name} className='w-[60px] h-[60px] object-cover rounded-md' />
               </TableCell>
               <TableCell className='p-4 font-medium'>{product.name}</TableCell>

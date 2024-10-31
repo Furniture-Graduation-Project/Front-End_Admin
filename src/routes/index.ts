@@ -8,14 +8,22 @@ import MessageTexting from '@/pages/(site)/Conversation/components/MessageTextin
 import Conversation from '@/pages/(site)/Conversation/Conversation'
 import MessageList from '@/pages/(site)/Conversation/components/MessageList/MessageList'
 import Dashboard from '@/pages/(site)/Dashboard/Dashboard'
-import ProductList from '@/pages/(site)/Product/ProductList'
-import ProductAdd from '@/pages/(site)/Product/ProductAdd'
-import ProductEdit from '@/pages/(site)/Product/ProductEdit'
+import ProductList from '@/pages/(site)/Product/_components/ProductList'
+import ProductAdd from '@/pages/(site)/Product/_components/ProductAdd'
+import ProductEdit from '@/pages/(site)/Product/_components/ProductEdit'
 import Product from '@/pages/(site)/Product/Product'
-import CategoryList from '@/pages/(site)/Category/CategoryList'
-import CategoryAdd from '@/pages/(site)/Category/CategoryAdd'
+import CategoryList from '@/pages/(site)/Category/_components/CategoryList'
+import CategoryAdd from '@/pages/(site)/Category/_components/CategoryAdd'
 import Category from '@/pages/(site)/Category/Category'
-import CategoryEdit from '@/pages/(site)/Category/CategoryEdit'
+import CategoryEdit from '@/pages/(site)/Category/_components/CategoryEdit'
+import Voucher from '@/pages/(site)/Voucher/Voucher'
+import VoucherList from '@/pages/(site)/Voucher/VoucherList'
+import VoucherAdd from '@/pages/(site)/Voucher/VoucherAdd'
+import VoucherEdit from '@/pages/(site)/Voucher/VoucherEdit'
+import Promotion from '@/pages/(site)/Promotion/Promotion'
+import PromotionList from '@/pages/(site)/Promotion/PromotionList'
+import PromotionAdd from '@/pages/(site)/Promotion/PromotionAdd'
+import PromotionEdit from '@/pages/(site)/Promotion/PromotionEdit'
 import AccountPage from '@/pages/(site)/Account/AccountPage'
 import AccountDetail from '@/pages/(site)/Account/components/AccountDetail/AccountDetail'
 import AccountLayout from '@/pages/(site)/Account/AccountLayout'
@@ -35,6 +43,7 @@ const routes: IRoute[] = [
   { path: '/', component: Signin, layout: AuthLayout },
   { path: '/signup', component: Signup, layout: AuthLayout },
   { path: '/dashboard', component: Dashboard, layout: MainLayout },
+
   {
     path: '/category',
     component: Category,
@@ -62,6 +71,16 @@ const routes: IRoute[] = [
     children: [
       { path: '', component: MessageList },
       { path: 'texting/:id', component: MessageTexting }
+    ]
+  },
+  {
+    path: '/voucher',
+    component: Voucher,
+    layout: MainLayout,
+    children: [
+      { path: '', component: VoucherList },
+      { path: 'add', component: VoucherAdd },
+      { path: ':id/edit', component: VoucherEdit }
     ]
   },
   {
