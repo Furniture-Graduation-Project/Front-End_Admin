@@ -1,23 +1,32 @@
-import { CategoryService } from '@/services/category' // Import CategoryService
-import { useQuery } from '@tanstack/react-query'
+import { DEFAULT_PAGE_SIZE } from '@/constants/pagination';
+import { CategoryService } from '@/services/category';
+import { useQuery } from '@tanstack/react-query';
 
-export const useCategoryQuery = (id?: string) => {
-  const { data, isLoading, isError, error, ...rest } = useQuery({
-    queryKey: id ? ['Category', id] : ['Category'],
+export const useSingleCategoryQuery = (id: string) => {
+  const { data, ...rest } = useQuery({
+    queryKey: ['CATEGORY', id],
     queryFn: async () => {
-      if (id) {
-        return await CategoryService.getCategoryById(id)
-      } else {
-        return await CategoryService.getAllCategories()
-      }
+      return await CategoryService.getCategoryById(id);
     }
-  })
+  });
 
-  return {
-    data,
-    isLoading,
-    isError,
-    error,
-    ...rest
-  }
-}
+  return { data, ...rest };
+};
+
+export const useMultipleCategoryQuery = (pagination?: any, searchTerm: string = '') => {
+  const { pageIndex = DEFAULT_PAGE_SIZE.pageIndex, pageSize = DEFAULT_PAGE_SIZE.pageSize } = pagination || {};
+  
+  const { data, ...rest } = useQuery({
+    queryKey: ['CATEGORY', pageIndex, searchTerm],
+    queryFn: async () => {
+      if (pagination) {
+        const response = await CategoryService.getLimitedCategories({ pageIndex, pageSize });
+        return response.data;
+      }
+      const response = await CategoryService.getAllCategories();
+      return response;
+    }
+  });
+
+  return { data, ...rest };
+};
