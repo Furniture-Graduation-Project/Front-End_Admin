@@ -12,7 +12,9 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-  SidebarRail
+  SidebarProvider,
+  SidebarRail,
+  SidebarSeparator
 } from '@/components/ui/sidebar'
 import { Link, NavLink } from 'react-router-dom'
 import navMenu from '@/assets/data/navMenu'
@@ -50,15 +52,21 @@ const SideBar = () => {
                 <SidebarMenuItem key={item.title}>
                   {item.items ? (
                     <AccordionItem value={item.title}>
-                      <AccordionTrigger className='py-2'>
-                        <SidebarMenuButton
-                          tooltip={item.title}
-                          className={`text-lg h-12 py-3 dark:text-slate-200 dark:hover:bg-slate-800 ${open === item.title ? 'bg-gray-200 dark:bg-slate-700 font-semibold' : ''}`}
-                        >
-                          {item.icon && <item.icon className='w-7 h-7 mr-2' />}
-                          <span>{item.title}</span>
-                        </SidebarMenuButton>
-                        <ChevronUp className='ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90' />
+                      <AccordionTrigger className='p-0' asChild>
+                        <div>
+                          <SidebarMenuButton
+                            tooltip={item.title}
+                            className={`text-lg px-2 py-7 dark:text-slate-200 dark:hover:bg-slate-800 ${open === item.title ? 'bg-gray-200 dark:bg-slate-700 font-semibold' : ''}`}
+                          >
+                            <>
+                              {item.icon && (
+                                <item.icon className='w-7 h-7 mr-2 group-data-[state=open]/collapsible:rotate-90' />
+                              )}
+                              <span>{item.title}</span>
+                            </>
+                          </SidebarMenuButton>
+                          <ChevronUp className='ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90' />
+                        </div>
                       </AccordionTrigger>
                       <AccordionContent>
                         <SidebarMenuSub className='pl-3 me-0'>
@@ -67,7 +75,7 @@ const SideBar = () => {
                               <SidebarMenuSubButton
                                 onClick={() => setOpen(item.title)}
                                 asChild
-                                className='text-base h-10 py-2 dark:text-slate-200 dark:hover:bg-slate-800'
+                                className='text-base py-5 dark:text-slate-200 dark:hover:bg-slate-800'
                               >
                                 <NavLink
                                   className={({ isActive, isPending }) =>
@@ -91,24 +99,27 @@ const SideBar = () => {
                     </AccordionItem>
                   ) : (
                     <AccordionItem value={item.title}>
-                      <AccordionTrigger className='py-2' onClick={() => setOpen(item.title)}>
-                        <NavLink
-                          to={item.url}
-                          className={({ isActive, isPending }) =>
-                            `flex items-center w-full rounded transition-colors duration-200 ${
-                              isPending
-                                ? 'bg-yellow-200'
-                                : isActive
-                                  ? 'bg-gray-200 dark:bg-slate-700 font-semibold'
-                                  : 'text-gray-900 dark:text-slate-200 hover:bg-gray-200 dark:hover:bg-slate-800'
-                            }`
-                          }
-                        >
-                          <SidebarMenuButton tooltip={item.title} className='text-lg h-12 p-3'>
-                            {item.icon && <item.icon className='w-7 h-7 mr-2' />}
-                            <span>{item.title}</span>
-                          </SidebarMenuButton>
-                        </NavLink>
+                      <AccordionTrigger className='py-2' asChild>
+                        <>
+                          <NavLink
+                            to={item.url}
+                            onClick={() => setOpen(item.title)}
+                            className={({ isActive, isPending }) =>
+                              `flex items-center w-full rounded transition-colors duration-200 ${
+                                isPending
+                                  ? 'bg-yellow-200'
+                                  : isActive
+                                    ? 'bg-gray-200 dark:bg-slate-700 font-semibold'
+                                    : 'text-gray-900 dark:text-slate-200 hover:bg-gray-200 dark:hover:bg-slate-800'
+                              }`
+                            }
+                          >
+                            <SidebarMenuButton tooltip={item.title} className='text-lg px-2 py-7'>
+                              {item.icon && <item.icon className='w-7 h-7 mr-2' />}
+                              <span>{item.title}</span>
+                            </SidebarMenuButton>
+                          </NavLink>
+                        </>
                       </AccordionTrigger>
                     </AccordionItem>
                   )}
@@ -118,10 +129,11 @@ const SideBar = () => {
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarSeparator />
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <Link to='/settings'>
+            <Link to='/setting'>
               <SidebarMenuButton className='text-lg h-12 p-3 dark:text-slate-200 dark:hover:bg-slate-800'>
                 <Settings className='w-7 h-7' />
                 <span>Tài Khoản</span>

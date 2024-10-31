@@ -12,10 +12,10 @@ import ProductList from '@/pages/(site)/Product/_components/ProductList'
 import ProductAdd from '@/pages/(site)/Product/_components/ProductAdd'
 import ProductEdit from '@/pages/(site)/Product/_components/ProductEdit'
 import Product from '@/pages/(site)/Product/Product'
-import CategoryList from '@/pages/(site)/Category/CategoryList'
-import CategoryAdd from '@/pages/(site)/Category/CategoryAdd'
+import CategoryList from '@/pages/(site)/Category/_components/CategoryList'
+import CategoryAdd from '@/pages/(site)/Category/_components/CategoryAdd'
 import Category from '@/pages/(site)/Category/Category'
-import CategoryEdit from '@/pages/(site)/Category/CategoryEdit'
+import CategoryEdit from '@/pages/(site)/Category/_components/CategoryEdit'
 import Voucher from '@/pages/(site)/Voucher/Voucher'
 import VoucherList from '@/pages/(site)/Voucher/VoucherList'
 import VoucherAdd from '@/pages/(site)/Voucher/VoucherAdd'
@@ -31,11 +31,12 @@ import EmployeePage from '@/pages/(site)/Employee/EmployeePage'
 import AddEmployeeForm from '@/pages/(site)/Employee/_components/EmployeeAdd'
 import EmployeeEdit from '@/pages/(site)/Employee/_components/EmployeeEdit'
 import EmployeeList from '@/pages/(site)/Employee/_components/EmployeeList'
-import SettingsPage from '@/pages/(site)/Settings/page'
+import SettingsPage from '@/pages/(site)/Setting/Setting'
 import OrderPage from '@/pages/(site)/Order/OrderPage'
 import OrderList from '@/pages/(site)/Order/components/OrderList'
 import OrderEdit from '@/pages/(site)/Order/components/OrderEdit'
-import Category from '@/pages/(site)/Category/Category'
+import SettingAccount from '@/pages/(site)/Setting/_component/SettingAccount'
+import SettingPassword from '@/pages/(site)/Setting/_component/SettingPassword'
 // import EmployeeSignIn from '@/pages/(site)/Employee/_components/EmployeeSignIn'
 
 const routes: IRoute[] = [
@@ -119,7 +120,17 @@ const routes: IRoute[] = [
   {
     path: '/setting',
     component: SettingsPage,
-    layout: MainLayout
+    layout: MainLayout,
+    children: [
+      {
+        path: '',
+        component: SettingAccount
+      },
+      {
+        path: 'security',
+        component: SettingPassword
+      }
+    ]
   },
 
   { path: '/*', component: page404, layout: AuthLayout }

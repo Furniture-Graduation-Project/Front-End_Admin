@@ -55,9 +55,9 @@ const useEmployeeMutation = ({ action }: MutationQueryProps) => {
       case 'CREATE':
         return EmployeeService.create(data as IEmployee)
       case 'UPDATE':
-        return EmployeeService.update((data as IEmployee)._id, data as IEmployee)
+        return EmployeeService.update((data as IEmployee)._id as string, data as IEmployee)
       case 'DELETE':
-        return EmployeeService.delete((data as IEmployee)._id)
+        return EmployeeService.delete((data as IEmployee)._id as string)
       case 'SIGN_IN':
         const { username, password } = data as { username: string; password: string }
         return EmployeeService.signIn(username, password)

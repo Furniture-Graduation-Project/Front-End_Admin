@@ -1,12 +1,15 @@
 import { DEFAULT_PAGE_SIZE } from '@/constants/pagination'
+import { IApiResponse } from '@/interface/apiRespose'
+import { IEmployee } from '@/interface/employee'
 import { EmployeeService } from '@/services/employee'
 import { useQuery } from '@tanstack/react-query'
 
 export const useSingleEmployeeQuery = (id: string) => {
   const { data, ...rest } = useQuery({
     queryKey: ['EMPLOYEE', id],
-    queryFn: async () => {
-      return await EmployeeService.getById(id)
+    queryFn: async (): Promise<IApiResponse<IEmployee>> => {
+      const response = await EmployeeService.getById(id)
+      return response.data
     }
   })
   return { data, ...rest }
