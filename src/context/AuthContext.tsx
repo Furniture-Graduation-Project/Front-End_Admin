@@ -1,26 +1,37 @@
-import useSessionStorage from '@/hooks/useSessionStorage'
 import { createContext, useContext, ReactNode } from 'react'
-
+import { jwtDecode } from 'jwt-decode'
+import useLocalStorage from '@/hooks/useLocalStorage'
 interface AuthContextType {
-  user: string | null
-  login: (username: string) => void
+  userId: string | null
+  login: (token: string) => void
   logout: () => void
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser, removeUser] = useSessionStorage('user', null)
-  const login = (username: string) => setUser(username)
-  const logout = () => removeUser()
+const getUserIdFromToken = (token: string | null): string | null => {
+  if (!token) return null
+  try {
+    const decoded = jwtDecode<{ userId: string }>(token)
+    return decoded.userId
+  } catch (error) {
+    console.error('Token không hợp lệ:', error)
+    return null
+  }
+}
 
-  return <AuthContext.Provider value={{ user, login, logout }}>{children}</AuthContext.Provider>
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const [user, setUser, removeUser] = useLocalStorage('user', null)
+  const login = (token: string) => setUser(token)
+  const logout = () => removeUser()
+  const userId = getUserIdFromToken(user)
+  return <AuthContext.Provider value={{ userId, login, logout }}>{children}</AuthContext.Provider>
 }
 
 export const useAuth = () => {
   const context = useContext(AuthContext)
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider')
+    throw new Error('AuthContext phải được sử dụng trong AuthProvider')
   }
   return context
 }
