@@ -11,9 +11,8 @@ import { ICreateBlog } from '@/interface/blog'
 import { toast } from '@/hooks/use-toast'
 import { Textarea } from '@/components/ui/textarea'
 
-// Schema validation using zod
 const FormSchema = z.object({
-  employeeId: z.string(), // Đã bỏ validation min length vì đây sẽ là giá trị cố định
+  employeeId: z.string(),
   title: z.string().min(1, { message: 'Tiêu đề không được để trống.' }),
   content: z.string().min(1, { message: 'Nội dung không được để trống.' }),
   tags: z
@@ -23,7 +22,7 @@ const FormSchema = z.object({
   image: z.string().optional()
 })
 
-const FIXED_EMPLOYEE_ID = '671b8d1a76b33359e327cce7' // ID nhân viên cố định
+const FIXED_EMPLOYEE_ID = '671b8d1a76b33359e327cce7'
 
 const BlogAdd = () => {
   const [loading, setLoading] = useState(false)
@@ -31,7 +30,7 @@ const BlogAdd = () => {
   const form = useForm<ICreateBlog>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      employeeId: FIXED_EMPLOYEE_ID, // Gán giá trị cố định
+      employeeId: FIXED_EMPLOYEE_ID,
       title: '',
       content: '',
       tags: [],
@@ -45,8 +44,7 @@ const BlogAdd = () => {
       await BlogService.create(data)
       form.reset({
         ...form.getValues(),
-        employeeId: FIXED_EMPLOYEE_ID, // Đảm bảo giá trị employeeId được giữ nguyên sau khi reset
-        title: '',
+        employeeId: FIXED_EMPLOYEE_ID,
         content: '',
         tags: [],
         image: ''

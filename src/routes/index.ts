@@ -14,7 +14,16 @@ import ProductEdit from '@/pages/(site)/Product/_components/ProductEdit'
 import Product from '@/pages/(site)/Product/Product'
 import CategoryList from '@/pages/(site)/Category/_components/CategoryList'
 import CategoryAdd from '@/pages/(site)/Category/_components/CategoryAdd'
+import Category from '@/pages/(site)/Category/Category'
 import CategoryEdit from '@/pages/(site)/Category/_components/CategoryEdit'
+import Voucher from '@/pages/(site)/Voucher/Voucher'
+import VoucherList from '@/pages/(site)/Voucher/VoucherList'
+import VoucherAdd from '@/pages/(site)/Voucher/VoucherAdd'
+import VoucherEdit from '@/pages/(site)/Voucher/VoucherEdit'
+import Promotion from '@/pages/(site)/Promotion/Promotion'
+import PromotionList from '@/pages/(site)/Promotion/PromotionList'
+import PromotionAdd from '@/pages/(site)/Promotion/PromotionAdd'
+import PromotionEdit from '@/pages/(site)/Promotion/PromotionEdit'
 import AccountPage from '@/pages/(site)/Account/AccountPage'
 import AccountDetail from '@/pages/(site)/Account/components/AccountDetail/AccountDetail'
 import AccountLayout from '@/pages/(site)/Account/AccountLayout'
@@ -22,21 +31,23 @@ import EmployeePage from '@/pages/(site)/Employee/EmployeePage'
 import AddEmployeeForm from '@/pages/(site)/Employee/_components/EmployeeAdd'
 import EmployeeEdit from '@/pages/(site)/Employee/_components/EmployeeEdit'
 import EmployeeList from '@/pages/(site)/Employee/_components/EmployeeList'
-import SettingsPage from '@/pages/(site)/Settings/page'
+import SettingsPage from '@/pages/(site)/Setting/Setting'
 import OrderPage from '@/pages/(site)/Order/OrderPage'
 import OrderList from '@/pages/(site)/Order/components/OrderList'
 import OrderEdit from '@/pages/(site)/Order/components/OrderEdit'
-import Category from '@/pages/(site)/Category/Category'
-import Blog from '@/pages/(site)/Blog/Blog'
+import SettingAccount from '@/pages/(site)/Setting/_component/SettingAccount'
+import SettingPassword from '@/pages/(site)/Setting/_component/SettingPassword'
 import BlogList from '@/pages/(site)/Blog/BlogList'
 import BlogAdd from '@/pages/(site)/Blog/BlogAdd'
 import BlogEdit from '@/pages/(site)/Blog/BlogEdit'
+import Blog from '@/pages/(site)/Blog/Blog'
 // import EmployeeSignIn from '@/pages/(site)/Employee/_components/EmployeeSignIn'
 
 const routes: IRoute[] = [
   { path: '/', component: Signin, layout: AuthLayout },
   { path: '/signup', component: Signup, layout: AuthLayout },
   { path: '/dashboard', component: Dashboard, layout: MainLayout },
+
   {
     path: '/category',
     component: Category,
@@ -64,6 +75,16 @@ const routes: IRoute[] = [
     children: [
       { path: '', component: MessageList },
       { path: 'texting/:id', component: MessageTexting }
+    ]
+  },
+  {
+    path: '/voucher',
+    component: Voucher,
+    layout: MainLayout,
+    children: [
+      { path: '', component: VoucherList },
+      { path: 'add', component: VoucherAdd },
+      { path: ':id/edit', component: VoucherEdit }
     ]
   },
   {
@@ -113,7 +134,17 @@ const routes: IRoute[] = [
   {
     path: '/setting',
     component: SettingsPage,
-    layout: MainLayout
+    layout: MainLayout,
+    children: [
+      {
+        path: '',
+        component: SettingAccount
+      },
+      {
+        path: 'security',
+        component: SettingPassword
+      }
+    ]
   },
 
   { path: '/*', component: page404, layout: AuthLayout }

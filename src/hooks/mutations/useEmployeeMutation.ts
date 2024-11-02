@@ -1,18 +1,21 @@
+import { useAuth } from '@/context/AuthContext'
 import { useToast } from '@/hooks/use-toast'
 import { IEmployee } from '@/interface/employee'
 import { EmployeeService } from '@/services/employee'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { SubmitHandler } from 'react-hook-form'
+import { useNavigate } from 'react-router-dom'
 
 type MutationQueryProps = {
   action: 'CREATE' | 'UPDATE' | 'DELETE' | 'SIGN_IN'
 }
 
 const useEmployeeMutation = ({ action }: MutationQueryProps) => {
+  const { login } = useAuth()
   const { toast } = useToast()
+  const navigate = useNavigate()
   const queryClient = useQueryClient()
-
-  const handleSuccess = () => {
+  const handleSuccess = (data: any) => {
     queryClient.invalidateQueries({
       queryKey: ['EMPLOYEE']
     })
@@ -33,9 +36,12 @@ const useEmployeeMutation = ({ action }: MutationQueryProps) => {
         })
         break
       case 'SIGN_IN':
+        login(data.data.token)
+        navigate('/dashboard')
         toast({
           title: 'Đăng nhập thành công!'
         })
+
         break
     }
   }
@@ -55,9 +61,9 @@ const useEmployeeMutation = ({ action }: MutationQueryProps) => {
       case 'CREATE':
         return EmployeeService.create(data as IEmployee)
       case 'UPDATE':
-        return EmployeeService.update((data as IEmployee)._id, data as IEmployee)
+        return EmployeeService.update((data as IEmployee)._id as string, data as IEmployee)
       case 'DELETE':
-        return EmployeeService.delete((data as IEmployee)._id)
+        return EmployeeService.delete((data as IEmployee)._id as string)
       case 'SIGN_IN':
         const { username, password } = data as { username: string; password: string }
         return EmployeeService.signIn(username, password)
@@ -68,7 +74,11 @@ const useEmployeeMutation = ({ action }: MutationQueryProps) => {
 
   const { mutate, ...rest } = useMutation({
     mutationFn,
-    onSuccess: handleSuccess,
+    onSuccess: (data: any) => {
+      console.log(data)
+
+      handleSuccess(data)
+    },
     onError: handleError
   })
 
