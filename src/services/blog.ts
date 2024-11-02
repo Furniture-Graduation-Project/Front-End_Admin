@@ -1,14 +1,17 @@
+// src/services/blog.ts
+
 import { axiosInstance } from '@/config/axios'
 import { IApiResponse } from '@/interface/apiRespose'
-import { IBlog } from '@/interface/blog'
+import { IBlog, ICreateBlog } from '@/interface/blog'
 import { AxiosResponse } from 'axios'
 
 const API = 'blog'
 
 export const BlogService = {
-  create: async (data: IBlog): Promise<AxiosResponse<IApiResponse<IBlog>>> => {
+  // Sửa kiểu dữ liệu ở đây
+  create: async (data: ICreateBlog): Promise<AxiosResponse<IApiResponse<IBlog>>> => {
     try {
-      const response: AxiosResponse<IApiResponse<IBlog>> = await axiosInstance.post(API, data)
+      const response = await axiosInstance.post<IApiResponse<IBlog>>(API, data)
       return response
     } catch (error) {
       console.error('Lỗi khi tạo blog mới:', error)
@@ -18,7 +21,7 @@ export const BlogService = {
 
   getAll: async (): Promise<AxiosResponse<IApiResponse<IBlog[]>>> => {
     try {
-      const response: AxiosResponse<IApiResponse<IBlog[]>> = await axiosInstance.get(API)
+      const response = await axiosInstance.get<IApiResponse<IBlog[]>>(API)
       return response
     } catch (error) {
       console.error('Lỗi khi lấy tất cả blog:', error)
@@ -28,7 +31,7 @@ export const BlogService = {
 
   getById: async (id: string): Promise<AxiosResponse<IApiResponse<IBlog>>> => {
     try {
-      const response: AxiosResponse<IApiResponse<IBlog>> = await axiosInstance.get(`${API}/${id}`)
+      const response = await axiosInstance.get<IApiResponse<IBlog>>(`${API}/${id}`)
       return response
     } catch (error) {
       console.error(`Lỗi khi lấy blog với ID ${id}:`, error)
@@ -36,9 +39,10 @@ export const BlogService = {
     }
   },
 
-  update: async (id: string, data: Partial<IBlog>): Promise<AxiosResponse<IApiResponse<IBlog>>> => {
+  // Sửa kiểu dữ liệu ở đây
+  update: async (id: string, data: Partial<ICreateBlog>): Promise<AxiosResponse<IApiResponse<IBlog>>> => {
     try {
-      const response: AxiosResponse<IApiResponse<IBlog>> = await axiosInstance.put(`${API}/${id}`, data)
+      const response = await axiosInstance.put<IApiResponse<IBlog>>(`${API}/${id}`, data)
       return response
     } catch (error) {
       console.error(`Lỗi khi cập nhật blog với ID ${id}:`, error)
@@ -48,7 +52,7 @@ export const BlogService = {
 
   delete: async (id: string): Promise<AxiosResponse<IApiResponse<void>>> => {
     try {
-      const response: AxiosResponse<IApiResponse<void>> = await axiosInstance.delete(`${API}/${id}`)
+      const response = await axiosInstance.delete<IApiResponse<void>>(`${API}/${id}`)
       return response
     } catch (error) {
       console.error(`Lỗi khi xóa blog với ID ${id}:`, error)
@@ -58,7 +62,7 @@ export const BlogService = {
 
   getBlogsByEmployeeId: async (employeeId: string): Promise<AxiosResponse<IApiResponse<IBlog[]>>> => {
     try {
-      const response: AxiosResponse<IApiResponse<IBlog[]>> = await axiosInstance.get(`${API}/employee/${employeeId}`)
+      const response = await axiosInstance.get<IApiResponse<IBlog[]>>(`${API}/employee/${employeeId}`)
       return response
     } catch (error) {
       console.error(`Lỗi khi lấy blog của nhân viên với ID ${employeeId}:`, error)
@@ -71,7 +75,7 @@ export const BlogService = {
     pageSize: number
   }): Promise<AxiosResponse<IApiResponse<IBlog[]>>> => {
     try {
-      const response: AxiosResponse<IApiResponse<IBlog[]>> = await axiosInstance.get(
+      const response = await axiosInstance.get<IApiResponse<IBlog[]>>(
         `${API}/limited?page=${pagination.pageIndex}&limit=${pagination.pageSize}`
       )
       return response
@@ -83,7 +87,7 @@ export const BlogService = {
 
   searchByTitle: async (title: string): Promise<AxiosResponse<IApiResponse<IBlog[]>>> => {
     try {
-      const response: AxiosResponse<IApiResponse<IBlog[]>> = await axiosInstance.get(`${API}/search?title=${title}`)
+      const response = await axiosInstance.get<IApiResponse<IBlog[]>>(`${API}/search?title=${title}`)
       return response
     } catch (error) {
       console.error(`Lỗi khi tìm kiếm blog theo tiêu đề:`, error)

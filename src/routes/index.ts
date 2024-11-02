@@ -26,14 +26,11 @@ import SettingsPage from '@/pages/(site)/Settings/page'
 import OrderPage from '@/pages/(site)/Order/OrderPage'
 import OrderList from '@/pages/(site)/Order/components/OrderList'
 import OrderEdit from '@/pages/(site)/Order/components/OrderEdit'
-<<<<<<< HEAD
+import Category from '@/pages/(site)/Category/Category'
+import Blog from '@/pages/(site)/Blog/Blog'
 import BlogList from '@/pages/(site)/Blog/BlogList'
 import BlogAdd from '@/pages/(site)/Blog/BlogAdd'
 import BlogEdit from '@/pages/(site)/Blog/BlogEdit'
-import Blog from '@/pages/(site)/Blog/Blog'
-=======
-import Category from '@/pages/(site)/Category/Category'
->>>>>>> 62e22b3affe735e910dab26c2ad7606ee3548184
 // import EmployeeSignIn from '@/pages/(site)/Employee/_components/EmployeeSignIn'
 
 const routes: IRoute[] = [

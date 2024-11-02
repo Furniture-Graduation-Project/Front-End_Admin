@@ -1,6 +1,11 @@
+// src/interface/blog.ts
+
 export interface IBlog {
   _id?: string
-  employeeId: string
+  employeeId: {
+    _id: string
+    fullName: string
+  }
   title: string
   content: string
   tags?: string[]
@@ -10,7 +15,7 @@ export interface IBlog {
 }
 
 export interface ICreateBlog {
-  employeeId: string
+  employeeId?: string // Khi tạo mới chỉ cần gửi ID
   title: string
   content: string
   tags?: string[]

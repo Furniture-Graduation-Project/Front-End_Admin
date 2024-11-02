@@ -21,9 +21,10 @@ export const columns: ColumnDef<IBlog>[] = [
   },
   {
     accessorKey: 'employeeId',
-    header: 'Employee',
+    header: 'Tác giả',
     cell: ({ row }) => {
-      return <p>{row.getValue('employeeId')}</p>
+      const employee = row.original.employeeId
+      return <p>{employee.fullName}</p>
     }
   },
   {

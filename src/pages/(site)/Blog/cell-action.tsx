@@ -35,7 +35,7 @@ export const CellAction = ({ data }: CellActionProps) => {
       setOpen(false)
       toast({
         title: 'Xoá thành công',
-        description: `Blog "${data.title}" đã được xoá thành công.`,
+        description: `Blog của "${data.employeeId.fullName}" đã được xoá thành công.`,
         variant: 'default'
       })
     } catch (error) {

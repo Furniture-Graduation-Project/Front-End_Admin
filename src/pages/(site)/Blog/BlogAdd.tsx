@@ -9,10 +9,11 @@ import { BlogService } from '@/services/blog'
 import { useState } from 'react'
 import { ICreateBlog } from '@/interface/blog'
 import { toast } from '@/hooks/use-toast'
+import { Textarea } from '@/components/ui/textarea'
 
 // Schema validation using zod
 const FormSchema = z.object({
-  employeeId: z.string().min(1, { message: 'Người viết không được để trống.' }),
+  employeeId: z.string(), // Đã bỏ validation min length vì đây sẽ là giá trị cố định
   title: z.string().min(1, { message: 'Tiêu đề không được để trống.' }),
   content: z.string().min(1, { message: 'Nội dung không được để trống.' }),
   tags: z
@@ -22,13 +23,15 @@ const FormSchema = z.object({
   image: z.string().optional()
 })
 
+const FIXED_EMPLOYEE_ID = '671b8d1a76b33359e327cce7' // ID nhân viên cố định
+
 const BlogAdd = () => {
   const [loading, setLoading] = useState(false)
 
   const form = useForm<ICreateBlog>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      employeeId: '',
+      employeeId: FIXED_EMPLOYEE_ID, // Gán giá trị cố định
       title: '',
       content: '',
       tags: [],
@@ -40,7 +43,14 @@ const BlogAdd = () => {
     setLoading(true)
     try {
       await BlogService.create(data)
-      form.reset()
+      form.reset({
+        ...form.getValues(),
+        employeeId: FIXED_EMPLOYEE_ID, // Đảm bảo giá trị employeeId được giữ nguyên sau khi reset
+        title: '',
+        content: '',
+        tags: [],
+        image: ''
+      })
 
       toast({
         title: 'Thêm thành công',
@@ -60,95 +70,104 @@ const BlogAdd = () => {
   }
 
   return (
-    <div className='bg-[#F5F6FA] h-screen'>
-      <Form {...form}>
-        <div className='font-bold text-2xl space-y-4 px-4 md:px-10 p-5'>Thêm Blog</div>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-4 px-4 md:px-10'>
-          <FormField
-            name='employeeId'
-            control={form.control}
-            render={({ field }) => (
-              <FormItem>
-                <Label htmlFor='employeeId' className='font-bold'>
-                  Người viết
-                </Label>
-                <FormControl>
-                  <Input id='employeeId' placeholder='Người viết' {...field} aria-required='true' />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+    <div className='bg-[#F5F6FA] dark:bg-gray-900 min-h-screen'>
+      <div className='p-4 md:p-10'>
+        <h1 className='text-2xl font-bold mb-6 dark:text-white'>Thêm Blog</h1>
+        <div className='bg-white dark:bg-gray-800 rounded-lg p-6 shadow-md'>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-6'>
+              <FormField
+                name='employeeId'
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <Label className='font-bold dark:text-white'>Người viết</Label>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        disabled
+                        value={FIXED_EMPLOYEE_ID}
+                        className='bg-gray-100 dark:bg-gray-700 dark:text-gray-400'
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          <FormField
-            name='title'
-            control={form.control}
-            render={({ field }) => (
-              <FormItem>
-                <Label htmlFor='title' className='font-bold'>
-                  Tiêu đề
-                </Label>
-                <FormControl>
-                  <Input id='title' placeholder='Tiêu đề' {...field} aria-required='true' />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+              <FormField
+                name='title'
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <Label className='font-bold dark:text-white'>Tiêu đề</Label>
+                    <FormControl>
+                      <Input placeholder='Nhập tiêu đề blog' {...field} className='dark:bg-gray-700 dark:text-white' />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          <FormField
-            name='content'
-            control={form.control}
-            render={({ field }) => (
-              <FormItem>
-                <Label htmlFor='content' className='font-bold'>
-                  Nội dung
-                </Label>
-                <FormControl>
-                  <Input id='content' placeholder='Nội dung' {...field} aria-required='true' />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+              <FormField
+                name='content'
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <Label htmlFor='content' className='font-bold'>
+                      Nội dung
+                    </Label>
+                    <FormControl>
+                      <Input id='content' placeholder='Nội dung' {...field} aria-required='true' />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          <FormField
-            name='tags'
-            control={form.control}
-            render={({ field }) => (
-              <FormItem>
-                <Label htmlFor='tags' className='font-bold'>
-                  Tags (cách nhau bằng dấu phẩy)
-                </Label>
-                <FormControl>
-                  <Input id='tags' placeholder='Tags' {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+              <FormField
+                name='tags'
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <Label className='font-bold dark:text-white'>Tags</Label>
+                    <FormControl>
+                      <Input
+                        placeholder='Nhập tags (phân cách bằng dấu phẩy)'
+                        {...field}
+                        className='dark:bg-gray-700 dark:text-white'
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          <FormField
-            name='image'
-            control={form.control}
-            render={({ field }) => (
-              <FormItem>
-                <Label htmlFor='image' className='font-bold'>
-                  Hình ảnh (URL)
-                </Label>
-                <FormControl>
-                  <Input id='image' placeholder='URL hình ảnh' {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+              <FormField
+                name='image'
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <Label className='font-bold dark:text-white'>Hình ảnh URL</Label>
+                    <FormControl>
+                      <Input placeholder='Nhập URL hình ảnh' {...field} className='dark:bg-gray-700 dark:text-white' />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          <Button type='submit' variant='default' disabled={loading} className='bg-blue-600 hover:bg-blue-400'>
-            {loading ? 'Đang xử lý...' : 'Thêm Blog'}
-          </Button>
-        </form>
-      </Form>
+              <Button
+                type='submit'
+                disabled={loading}
+                className='w-full bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700'
+              >
+                {loading ? 'Đang xử lý...' : 'Thêm Blog'}
+              </Button>
+            </form>
+          </Form>
+        </div>
+      </div>
     </div>
   )
 }
