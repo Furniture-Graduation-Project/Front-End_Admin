@@ -1,6 +1,6 @@
 import { axiosInstance } from '@/config/axios'
 import { IApiResponse } from '@/interface/apiRespose'
-import { IProduct } from '@/interface/product'
+import { IProduct, ProductFormData } from '@/interface/product'
 import { AxiosResponse } from 'axios'
 
 const API_URL = '/product'
@@ -9,7 +9,7 @@ export const ProductService = {
   getAll: async (): Promise<AxiosResponse<IApiResponse<IProduct[]>>> => {
     try {
       const response: AxiosResponse<IApiResponse<IProduct[]>> = await axiosInstance.get(API_URL)
-      console.log('Dữ liệu sản phẩm từ API:', response.data); 
+      console.log('Dữ liệu sản phẩm từ API:', response.data)
       return response
     } catch (error) {
       console.error('Lỗi khi lấy tất cả sản phẩm:', error)
@@ -27,9 +27,9 @@ export const ProductService = {
     }
   },
 
-  create: async (product: IProduct): Promise<AxiosResponse<IApiResponse<IProduct>>> => {
+  create: async (product: ProductFormData): Promise<AxiosResponse<IApiResponse<ProductFormData>>> => {
     try {
-      const response: AxiosResponse<IApiResponse<IProduct>> = await axiosInstance.post(API_URL, product)
+      const response: AxiosResponse<IApiResponse<ProductFormData>> = await axiosInstance.post(API_URL, product)
       return response
     } catch (error) {
       console.error('Lỗi khi tạo sản phẩm mới:', error)
@@ -37,9 +37,15 @@ export const ProductService = {
     }
   },
 
-  update: async (id: string, updatedProduct: IProduct): Promise<AxiosResponse<IApiResponse<IProduct>>> => {
+  update: async (
+    id: string,
+    updatedProduct: ProductFormData
+  ): Promise<AxiosResponse<IApiResponse<ProductFormData>>> => {
     try {
-      const response: AxiosResponse<IApiResponse<IProduct>> = await axiosInstance.put(`${API_URL}/${id}`, updatedProduct)
+      const response: AxiosResponse<IApiResponse<ProductFormData>> = await axiosInstance.put(
+        `${API_URL}/${id}`,
+        updatedProduct
+      )
       return response
     } catch (error) {
       console.error(`Lỗi khi cập nhật sản phẩm với ID ${id}:`, error)
@@ -67,7 +73,10 @@ export const ProductService = {
     }
   },
 
-  getLimited: async (pagination: { pageIndex: number; pageSize: number }): Promise<AxiosResponse<IApiResponse<IProduct[]>>> => {
+  getLimited: async (pagination: {
+    pageIndex: number
+    pageSize: number
+  }): Promise<AxiosResponse<IApiResponse<IProduct[]>>> => {
     try {
       const response: AxiosResponse<IApiResponse<IProduct[]>> = await axiosInstance.get(
         `${API_URL}/limited?page=${pagination.pageIndex}&limit=${pagination.pageSize}`
@@ -82,11 +91,11 @@ export const ProductService = {
     try {
       const response: AxiosResponse<IApiResponse<IProduct[]>> = await axiosInstance.get(`${API_URL}/search`, {
         params: { name }
-      });
-      return response;
+      })
+      return response
     } catch (error) {
-      console.error(`Lỗi khi tìm kiếm sản phẩm theo tên "${name}":`, error);
-      throw error;
+      console.error(`Lỗi khi tìm kiếm sản phẩm theo tên "${name}":`, error)
+      throw error
     }
-  },
+  }
 }

@@ -5,13 +5,12 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { CategoryService } from '@/services/category'
 import { ProductService } from '@/services/product'
-import { useState, useEffect } from 'react'
-import { IProduct } from '@/interface/product'
-import { ICategory } from '@/interface/category'
+import { useMultipleCategoryQuery } from '@/hooks/querys/useCategoryQuery'
 import { toast } from '@/hooks/use-toast'
 import { useNavigate } from 'react-router-dom'
+import { ProductFormData } from '@/interface/product'
+import { ICategory } from '@/interface/category'
 
 const FormSchema = z.object({
   name: z.string().min(3, { message: 'Tên sản phẩm phải có ít nhất 3 ký tự.' }),
@@ -27,14 +26,16 @@ const FormSchema = z.object({
 })
 
 const AddProductForm = () => {
-  const [categories, setCategories] = useState<ICategory[]>([])
   const navigate = useNavigate()
+  const { data: categoriesResponse } = useMultipleCategoryQuery()
 
-  const form = useForm<IProduct>({
+  const categories = categoriesResponse?.data || []
+
+  const form = useForm<ProductFormData>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       name: '',
-      category: { _id: '', categoryName: '', description: '' },
+      category: '',
       description: '',
       price: 0,
       SKU: '',
@@ -44,20 +45,7 @@ const AddProductForm = () => {
     }
   })
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const res = await CategoryService.getAllCategories()
-        setCategories(res.data)
-      } catch (error) {
-        console.error('Lỗi khi lấy danh mục:', error)
-      }
-    }
-
-    fetchCategories()
-  }, [])
-
-  const handleSubmit = async (data: IProduct) => {
+  const handleSubmit = async (data: ProductFormData) => {
     try {
       await ProductService.create(data)
       toast({
@@ -68,8 +56,9 @@ const AddProductForm = () => {
       })
       form.reset()
       navigate('/product')
-    } catch (error: any) {
-      if (error.response && error.response.status === 400 && error.response.data.message === 'SKU đã tồn tại.') {
+    } catch (error) {
+      const errorMessage = (error as { response?: { data?: { message?: string } } })?.response?.data?.message
+      if (errorMessage === 'SKU đã tồn tại.') {
         toast({
           title: 'Lỗi thêm sản phẩm',
           description: 'SKU đã tồn tại. Vui lòng nhập SKU khác.',
@@ -84,7 +73,6 @@ const AddProductForm = () => {
           duration: 3000
         })
       }
-      console.error('Lỗi khi tạo sản phẩm:', error)
     }
   }
 
@@ -115,7 +103,6 @@ const AddProductForm = () => {
               </FormItem>
             )}
           />
-
           {/* Danh mục */}
           <FormField
             name='category'
@@ -131,8 +118,7 @@ const AddProductForm = () => {
                     {...field}
                     className='dark:bg-gray-700 dark:text-gray-100 border rounded-md p-1'
                   >
-                    <option value=''>Chọn danh mục</option>
-                    {categories.map((category) => (
+                    {categories?.map((category) => (
                       <option key={category._id} value={category._id}>
                         {category.categoryName}
                       </option>
@@ -143,7 +129,6 @@ const AddProductForm = () => {
               </FormItem>
             )}
           />
-
           {/* Mô tả */}
           <FormField
             name='description'
@@ -165,7 +150,6 @@ const AddProductForm = () => {
               </FormItem>
             )}
           />
-
           {/* Giá */}
           <FormField
             name='price'
@@ -190,7 +174,6 @@ const AddProductForm = () => {
               </FormItem>
             )}
           />
-
           {/* SKU */}
           <FormField
             name='SKU'
@@ -212,7 +195,6 @@ const AddProductForm = () => {
               </FormItem>
             )}
           />
-
           {/* Hình ảnh */}
           <FormField
             name='images'
@@ -225,7 +207,7 @@ const AddProductForm = () => {
                 <FormControl>
                   <Input
                     id='images'
-                    placeholder='URL hình ảnh ( ngăn cách bằng dấu phẩy )'
+                    placeholder='URL hình ảnh (ngăn cách bằng dấu phẩy)'
                     {...field}
                     className='dark:bg-gray-700 dark:text-gray-100'
                     onChange={(e) => field.onChange(e.target.value.split(','))}
@@ -235,7 +217,6 @@ const AddProductForm = () => {
               </FormItem>
             )}
           />
-
           {/* Vật liệu */}
           <FormField
             name='material'
@@ -257,7 +238,6 @@ const AddProductForm = () => {
               </FormItem>
             )}
           />
-
           {/* Trạng thái */}
           <FormField
             name='status'
@@ -282,7 +262,7 @@ const AddProductForm = () => {
             <Button type='button' variant='outline' onClick={() => navigate('/product')}>
               Hủy
             </Button>
-            <Button type='submit'>Thêm sản phẩm</Button>
+            <Button type='submit'>Thêm mới</Button>
           </div>
         </form>
       </Form>

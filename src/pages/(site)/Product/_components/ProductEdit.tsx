@@ -5,13 +5,11 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { CategoryService } from '@/services/category'
-import { ProductService } from '@/services/product'
-import { useState, useEffect } from 'react'
-import { IProduct } from '@/interface/product'
-import { ICategory } from '@/interface/category'
+import { useSingleProductQuery } from '@/hooks/querys/useProductQuery'
+import { useMultipleCategoryQuery } from '@/hooks/querys/useCategoryQuery'
 import { toast } from '@/hooks/use-toast'
 import { useNavigate, useParams } from 'react-router-dom'
+import { ProductService } from '@/services/product'
 
 const FormSchema = z.object({
   name: z.string().min(3, { message: 'Tên sản phẩm phải có ít nhất 3 ký tự.' }),
@@ -27,16 +25,17 @@ const FormSchema = z.object({
 })
 
 const EditProductForm = () => {
-  const [categories, setCategories] = useState<ICategory[]>([])
-  const [product, setProduct] = useState<IProduct | null>(null)
   const navigate = useNavigate()
   const { id } = useParams<{ id: string }>()
 
-  const form = useForm<IProduct>({
+  const { data: productData, isLoading: isLoadingProduct } = useSingleProductQuery(id as string)
+  const { data: categoriesData, isLoading: isLoadingCategories } = useMultipleCategoryQuery()
+  const categories = categoriesData?.data || []
+  const form = useForm({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       name: '',
-      category: { _id: '', categoryName: '', description: '' },
+      category: '',
       description: '',
       price: 0,
       SKU: '',
@@ -46,35 +45,13 @@ const EditProductForm = () => {
     }
   })
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const res = await CategoryService.getAllCategories()
-        setCategories(res.data)
-      } catch (error) {
-        console.error('Lỗi khi lấy danh mục:', error)
-      }
-    }
+  if (productData) {
+    form.reset(productData as any)
+  }
 
-    const fetchProduct = async () => {
-      if (id) {
-        try {
-          const res = await ProductService.getById(id)
-          setProduct(res.data.data)
-          form.reset(res.data.data)
-        } catch (error) {
-          console.error('Lỗi khi lấy sản phẩm:', error)
-        }
-      }
-    }
-
-    fetchCategories()
-    fetchProduct()
-  }, [id, form])
-
-  const handleSubmit = async (data: IProduct) => {
+  const handleSubmit = async (data: any) => {
     try {
-      await ProductService.update(id, data)
+      await ProductService.update(id as string, data)
       toast({
         title: 'Cập nhật thành công',
         description: `Sản phẩm ${data.name} đã được cập nhật thành công.`,
@@ -83,27 +60,17 @@ const EditProductForm = () => {
       })
       navigate('/product')
     } catch (error: any) {
-      if (error.response && error.response.status === 400 && error.response.data.message === 'SKU đã tồn tại.') {
-        toast({
-          title: 'Lỗi cập nhật sản phẩm',
-          description: 'SKU đã tồn tại. Vui lòng nhập SKU khác.',
-          variant: 'destructive',
-          duration: 3000
-        })
-      } else {
-        toast({
-          title: 'Lỗi cập nhật sản phẩm',
-          description: 'Đã xảy ra lỗi khi cập nhật sản phẩm.',
-          variant: 'destructive',
-          duration: 3000
-        })
-      }
+      toast({
+        title: 'Lỗi cập nhật sản phẩm',
+        description: 'Đã xảy ra lỗi khi cập nhật sản phẩm.',
+        variant: 'destructive',
+        duration: 3000
+      })
       console.error('Lỗi khi cập nhật sản phẩm:', error)
-    } finally {
     }
   }
 
-  if (!product) {
+  if (isLoadingProduct || isLoadingCategories) {
     return <div>Loading...</div>
   }
 
@@ -148,12 +115,8 @@ const EditProductForm = () => {
                     id='category'
                     {...field}
                     className='dark:bg-gray-700 dark:text-gray-100 border rounded-md p-1'
-                    value={field.value || product.category._id}
-                    onChange={(e) => {
-                      field.onChange(e.target.value)
-                    }}
                   >
-                    {categories.map((category) => (
+                    {categories?.map((category) => (
                       <option key={category._id} value={category._id}>
                         {category.categoryName}
                       </option>
@@ -164,7 +127,6 @@ const EditProductForm = () => {
               </FormItem>
             )}
           />
-
           {/* Mô tả */}
           <FormField
             name='description'
@@ -186,7 +148,6 @@ const EditProductForm = () => {
               </FormItem>
             )}
           />
-
           {/* Giá */}
           <FormField
             name='price'
@@ -211,7 +172,6 @@ const EditProductForm = () => {
               </FormItem>
             )}
           />
-
           {/* SKU */}
           <FormField
             name='SKU'
@@ -233,7 +193,6 @@ const EditProductForm = () => {
               </FormItem>
             )}
           />
-
           {/* Hình ảnh */}
           <FormField
             name='images'
@@ -256,7 +215,6 @@ const EditProductForm = () => {
               </FormItem>
             )}
           />
-
           {/* Vật liệu */}
           <FormField
             name='material'
@@ -278,7 +236,6 @@ const EditProductForm = () => {
               </FormItem>
             )}
           />
-
           {/* Trạng thái */}
           <FormField
             name='status'
@@ -299,12 +256,11 @@ const EditProductForm = () => {
               </FormItem>
             )}
           />
-
           <div className='flex justify-end mt-6 space-x-3 pb-8'>
             <Button type='button' variant='outline' onClick={() => navigate('/product')}>
               Hủy
             </Button>
-            <Button type='submit'>Cập nhật sản phẩm</Button>
+            <Button type='submit'>Cập nhật</Button>
           </div>
         </form>
       </Form>
