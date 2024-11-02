@@ -2,7 +2,7 @@ import { ColumnDef } from '@tanstack/react-table'
 import { CellAction } from './cell-action'
 import { IProduct } from '@/interface/product'
 
-export const columns = (onDelete: (id: string) => void): ColumnDef<IProduct>[] => [
+export const columns: ColumnDef<IProduct>[] = [
   {
     accessorKey: 'STT',
     header: 'STT',
@@ -45,6 +45,6 @@ export const columns = (onDelete: (id: string) => void): ColumnDef<IProduct>[] =
   },
   {
     id: 'actions',
-    cell: ({ row }) => <CellAction data={row.original} onDelete={onDelete} />
+    cell: ({ row }) => <CellAction data={row.original} />
   }
 ]
