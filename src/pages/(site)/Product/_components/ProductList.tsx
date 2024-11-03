@@ -23,13 +23,9 @@ const ProductList = () => {
     }
   }, [data])
 
-  const handleDeleteProduct = (id: string) => {
-    setProducts((prev) => prev.filter((product) => product._id !== id))
-  }
-
   const { table } = useDataTable({
     data: products,
-    columns: columns(handleDeleteProduct),
+    columns: columns,
     totalData: data?.totalData,
     totalPage: data?.totalPage,
     pagination,
@@ -51,7 +47,15 @@ const ProductList = () => {
         <ProductListHeader table={table} setPagination={setPagination} />
         {isLoading && <div className='text-center'>Đang tải...</div>}
         {isError && <div className='text-red-600'>Lỗi khi tải sản phẩm. Vui lòng thử lại.</div>}
-        <DataTableCustom columns={columns} isError={isError} isLoading={isLoading} table={table} />
+        <DataTableCustom
+          columns={columns}
+          isError={isError}
+          isLoading={isLoading}
+          table={table}
+          refetch={function (): void {
+            throw new Error('Function not implemented.')
+          }}
+        />
       </div>
     </>
   )
