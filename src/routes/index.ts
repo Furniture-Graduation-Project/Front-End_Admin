@@ -37,6 +37,10 @@ import OrderList from '@/pages/(site)/Order/components/OrderList'
 import OrderEdit from '@/pages/(site)/Order/components/OrderEdit'
 import SettingAccount from '@/pages/(site)/Setting/_component/SettingAccount'
 import SettingPassword from '@/pages/(site)/Setting/_component/SettingPassword'
+import BlogList from '@/pages/(site)/Blog/BlogList'
+import BlogAdd from '@/pages/(site)/Blog/BlogAdd'
+import BlogEdit from '@/pages/(site)/Blog/BlogEdit'
+import Blog from '@/pages/(site)/Blog/Blog'
 // import EmployeeSignIn from '@/pages/(site)/Employee/_components/EmployeeSignIn'
 
 const routes: IRoute[] = [
@@ -90,6 +94,16 @@ const routes: IRoute[] = [
     children: [
       { path: '', component: OrderList },
       { path: 'edit/:id', component: OrderEdit }
+    ]
+  },
+  {
+    path: '/blog',
+    component: Blog,
+    layout: MainLayout,
+    children: [
+      { path: '', component: BlogList },
+      { path: 'add', component: BlogAdd },
+      { path: 'edit/:id', component: BlogEdit }
     ]
   },
   {

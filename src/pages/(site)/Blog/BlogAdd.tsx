@@ -1,0 +1,173 @@
+import { Button } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { BlogService } from '@/services/blog'
+import { useState } from 'react'
+import { ICreateBlog } from '@/interface/blog'
+import { toast } from '@/hooks/use-toast'
+import { Textarea } from '@/components/ui/textarea'
+
+const FormSchema = z.object({
+  employeeId: z.string(),
+  title: z.string().min(1, { message: 'Tiêu đề không được để trống.' }),
+  content: z.string().min(1, { message: 'Nội dung không được để trống.' }),
+  tags: z
+    .string()
+    .optional()
+    .transform((val) => (val ? val.split(',').map((tag) => tag.trim()) : [])),
+  image: z.string().optional()
+})
+
+const FIXED_EMPLOYEE_ID = '671b8d1a76b33359e327cce7'
+
+const BlogAdd = () => {
+  const [loading, setLoading] = useState(false)
+
+  const form = useForm<ICreateBlog>({
+    resolver: zodResolver(FormSchema),
+    defaultValues: {
+      employeeId: FIXED_EMPLOYEE_ID,
+      title: '',
+      content: '',
+      tags: [],
+      image: ''
+    }
+  })
+
+  const handleSubmit = async (data: ICreateBlog) => {
+    setLoading(true)
+    try {
+      await BlogService.create(data)
+      form.reset({
+        ...form.getValues(),
+        employeeId: FIXED_EMPLOYEE_ID,
+        content: '',
+        tags: [],
+        image: ''
+      })
+
+      toast({
+        title: 'Thêm thành công',
+        description: `Blog "${data.title}" đã được thêm thành công.`,
+        variant: 'default'
+      })
+    } catch (error) {
+      toast({
+        title: 'Lỗi thêm blog',
+        description: 'Đã xảy ra lỗi khi thêm blog.',
+        variant: 'destructive'
+      })
+      console.error('Lỗi khi tạo blog:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className='bg-[#F5F6FA] dark:bg-gray-900 min-h-screen'>
+      <div className='p-4 md:p-10'>
+        <h1 className='text-2xl font-bold mb-6 dark:text-white'>Thêm Blog</h1>
+        <div className='bg-white dark:bg-gray-800 rounded-lg p-6 shadow-md'>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-6'>
+              <FormField
+                name='employeeId'
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <Label className='font-bold dark:text-white'>Người viết</Label>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        disabled
+                        value={FIXED_EMPLOYEE_ID}
+                        className='bg-gray-100 dark:bg-gray-700 dark:text-gray-400'
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                name='title'
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <Label className='font-bold dark:text-white'>Tiêu đề</Label>
+                    <FormControl>
+                      <Input placeholder='Nhập tiêu đề blog' {...field} className='dark:bg-gray-700 dark:text-white' />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                name='content'
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <Label htmlFor='content' className='font-bold'>
+                      Nội dung
+                    </Label>
+                    <FormControl>
+                      <Input id='content' placeholder='Nội dung' {...field} aria-required='true' />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                name='tags'
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <Label className='font-bold dark:text-white'>Tags</Label>
+                    <FormControl>
+                      <Input
+                        placeholder='Nhập tags (phân cách bằng dấu phẩy)'
+                        {...field}
+                        className='dark:bg-gray-700 dark:text-white'
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                name='image'
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <Label className='font-bold dark:text-white'>Hình ảnh URL</Label>
+                    <FormControl>
+                      <Input placeholder='Nhập URL hình ảnh' {...field} className='dark:bg-gray-700 dark:text-white' />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <Button
+                type='submit'
+                disabled={loading}
+                className='w-full bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700'
+              >
+                {loading ? 'Đang xử lý...' : 'Thêm Blog'}
+              </Button>
+            </form>
+          </Form>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default BlogAdd
