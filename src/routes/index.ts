@@ -1,3 +1,4 @@
+// routes/index.ts
 import { IRoute } from '@/interface/route'
 import AuthLayout from '@/layouts/AuthLayout'
 import MainLayout from '@/layouts/MainLayout'
@@ -27,20 +28,37 @@ import OrderPage from '@/pages/(site)/Order/OrderPage'
 import OrderList from '@/pages/(site)/Order/components/OrderList'
 import OrderEdit from '@/pages/(site)/Order/components/OrderEdit'
 import Category from '@/pages/(site)/Category/Category'
-// import EmployeeSignIn from '@/pages/(site)/Employee/_components/EmployeeSignIn'
+import { checkPermissions } from '@/utils/checkPermissions'
+import Unauthorized from '@/pages/(site)/Unauthorized/unauthorized'
 
 const routes: IRoute[] = [
   { path: '/', component: Signin, layout: AuthLayout },
   { path: '/signup', component: Signup, layout: AuthLayout },
-  { path: '/dashboard', component: Dashboard, layout: MainLayout },
+  {
+    path: '/dashboard',
+    component: Dashboard,
+    layout: MainLayout
+  },
   {
     path: '/category',
     component: Category,
     layout: MainLayout,
     children: [
-      { path: '', component: CategoryList },
-      { path: 'add', component: CategoryAdd },
-      { path: 'edit/:id', component: CategoryEdit }
+      {
+        path: '',
+        component: CategoryList,
+        guard: () => checkPermissions(['product', 'admin'])
+      },
+      {
+        path: 'add',
+        component: CategoryAdd,
+        guard: () => checkPermissions(['product', 'admin'])
+      },
+      {
+        path: 'edit/:id',
+        component: CategoryEdit,
+        guard: () => checkPermissions(['product', 'admin'])
+      }
     ]
   },
   {
@@ -48,9 +66,21 @@ const routes: IRoute[] = [
     component: Product,
     layout: MainLayout,
     children: [
-      { path: '', component: ProductList },
-      { path: 'add', component: ProductAdd },
-      { path: 'edit/:id', component: ProductEdit }
+      {
+        path: '',
+        component: ProductList,
+        guard: () => checkPermissions(['product', 'admin'])
+      },
+      {
+        path: 'add',
+        component: ProductAdd,
+        guard: () => checkPermissions(['product', 'admin'])
+      },
+      {
+        path: 'edit/:id',
+        component: ProductEdit,
+        guard: () => checkPermissions(['product', 'admin'])
+      }
     ]
   },
   {
@@ -58,8 +88,16 @@ const routes: IRoute[] = [
     component: Conversation,
     layout: MainLayout,
     children: [
-      { path: '', component: MessageList },
-      { path: 'texting/:id', component: MessageTexting }
+      {
+        path: '',
+        component: MessageList,
+        guard: () => checkPermissions(['support', 'admin'])
+      },
+      {
+        path: 'texting/:id',
+        component: MessageTexting,
+        guard: () => checkPermissions(['support', 'admin'])
+      }
     ]
   },
   {
@@ -67,18 +105,39 @@ const routes: IRoute[] = [
     component: OrderPage,
     layout: MainLayout,
     children: [
-      { path: '', component: OrderList },
-      { path: 'edit/:id', component: OrderEdit }
+      {
+        path: '',
+        component: OrderList,
+        guard: () => checkPermissions(['order', 'admin'])
+      },
+      {
+        path: 'edit/:id',
+        component: OrderEdit,
+        guard: () => checkPermissions(['order', 'admin'])
+      }
     ]
   },
+
   {
     path: '/employee',
     component: EmployeePage,
     layout: MainLayout,
     children: [
-      { path: '', component: EmployeeList },
-      { path: 'add', component: AddEmployeeForm },
-      { path: 'edit/:id', component: EmployeeEdit }
+      {
+        path: '',
+        component: EmployeeList,
+        guard: () => checkPermissions(['admin'])
+      },
+      {
+        path: 'add',
+        component: AddEmployeeForm,
+        guard: () => checkPermissions(['admin'])
+      },
+      {
+        path: 'edit/:id',
+        component: EmployeeEdit,
+        guard: () => checkPermissions(['admin'])
+      }
     ]
   },
   {
@@ -101,8 +160,8 @@ const routes: IRoute[] = [
     component: SettingsPage,
     layout: MainLayout
   },
-
-  { path: '/*', component: page404, layout: AuthLayout }
+  { path: '/*', component: page404, layout: AuthLayout },
+  { path: '/unauthorized', component: Unauthorized, layout: AuthLayout }
 ]
 
 export default routes

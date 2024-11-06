@@ -2,61 +2,86 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
+import { EmployeeService } from '@/services/employee'
 
 const settingsSchema = z.object({
-  avatar: z.string().default(''),
-  email: z.string().email({
-    message: 'Invalid email address'
+  avatar: z.string().optional(), // Không bắt buộc
+  username: z.string().min(4, {
+    message: 'Username phải có ít nhất 4 ký tự'
   }),
-  name: z.string().min(6, {
-    message: 'Full name must be at least 6 characters long'
+  password: z.string().min(6, {
+    message: 'Mật khẩu phải có ít nhất 6 ký tự'
+  }),
+  fullName: z.string().min(6, {
+    message: 'Họ và tên phải có ít nhất 6 ký tự'
   }),
   phoneNumber: z.string().default(''),
-  position: z.string().default(''),
-  description: z.string().default('')
+  role: z.string().default(''),
+  address: z.string().default('')
 })
 
 const SettingsPage = () => {
+  const userData = JSON.parse(sessionStorage.getItem('userData') || '{}')
+  const userId = userData._id
+
   const form = useForm<z.infer<typeof settingsSchema>>({
     resolver: zodResolver(settingsSchema),
     defaultValues: {
-      avatar: '',
-      name: '',
-      email: '',
-      phoneNumber: '',
-      position: '',
-      description: ''
+      avatar: userData.avatar || '',
+      username: userData.username || '',
+      password: '',
+      fullName: userData.fullName || '',
+      phoneNumber: userData.phoneNumber || '',
+      role: userData.role || '',
+      address: userData.address || ''
     }
   })
 
-  const onSubmit = (data: z.infer<typeof settingsSchema>) => {
-    console.log(data)
+  const onSubmit = async (data: z.infer<typeof settingsSchema>) => {
+    try {
+      // Gọi API để cập nhật thông tin
+      const response = await EmployeeService.update(userId, data)
+
+      // Nếu cập nhật thành công, lưu thông tin người dùng vào sessionStorage
+      if (response.data.success) {
+        sessionStorage.setItem('userData', JSON.stringify(response.data.data))
+        console.log('Cập nhật thông tin thành công:', response.data)
+
+        // Có thể thêm thông báo thành công cho người dùng
+      } else {
+        console.error('Cập nhật không thành công:', response.data.message)
+        // Thêm thông báo lỗi nếu cần
+      }
+    } catch (error) {
+      console.error('Lỗi khi lưu thông tin:', error)
+      // Thêm thông báo lỗi nếu cần
+    }
   }
+
   return (
     <div className='px-[30px] pt-[38px] pb-[52px] bg-[#F5F6FA]'>
-      <h1 className='text-[32px] font-bold mb-[38px]'>General Settings</h1>
+      <h1 className='text-[32px] font-bold mb-[38px]'>Thông tin cá nhân</h1>
       <div className='w-full rounded-xl py-[60px] border-[0.3px] bg-white'>
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
             className='space-y-8 xl:mx-auto mx-12 lg:mx-20 w-auto xl:w-[788px] flex flex-col items-center justify-center'
           >
+            {/* Avatar */}
             <FormField
               control={form.control}
-              name='name'
+              name='avatar'
               render={({ field }) => (
                 <FormItem className='flex flex-col items-center justify-center'>
                   <Avatar className='w-[80px] h-[80px]'>
-                    <AvatarImage src='https://assets.codepen.io/1480814/av+1.png' {...field} alt='avatar' />
-                    <AvatarFallback>DS</AvatarFallback>
+                    <AvatarImage src={userData.avatar || 'https://assets.codepen.io/1480814/av+1.png'} alt='avatar' />
+                    <AvatarFallback>{userData.fullName?.slice(0, 2).toUpperCase()}</AvatarFallback>
                   </Avatar>
                   <Button variant={'ghost'} type='button' className='mt-4 text-sm font-semibold text-[#4379EE]'>
-                    Upload Avatar
+                    Tải ảnh lên
                   </Button>
                 </FormItem>
               )}
@@ -65,25 +90,37 @@ const SettingsPage = () => {
             <div className='grid md:grid-cols-2 gap-x-[60px] w-full gap-y-7 md:gap-y-0'>
               <FormField
                 control={form.control}
-                name='name'
+                name='username'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className='text-lg opacity-80 text-[#202224]'>Full name</FormLabel>
+                    <FormLabel className='text-lg opacity-80 text-[#202224]'>Username</FormLabel>
                     <FormControl>
-                      <Input type='text' className='bg-[#F1F4F9] h-14' placeholder='Your name...' {...field} />
+                      <Input
+                        type='text'
+                        className='bg-[#F1F4F9] h-14'
+                        placeholder='Tên đăng nhập của bạn...'
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+
+              {/* Password */}
               <FormField
                 control={form.control}
-                name='email'
+                name='password'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className='text-lg opacity-80 text-[#202224]'>Email address</FormLabel>
+                    <FormLabel className='text-lg opacity-80 text-[#202224]'>Mật khẩu</FormLabel>
                     <FormControl>
-                      <Input type='email' className='bg-[#F1F4F9] h-14' placeholder='Your email...' {...field} />
+                      <Input
+                        type='password'
+                        className='bg-[#F1F4F9] h-14'
+                        placeholder='Mật khẩu của bạn...'
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -91,55 +128,68 @@ const SettingsPage = () => {
               />
             </div>
 
-            <div className='grid md:grid-flow-col gap-x-[60px] w-full gap-y-7 md:gap-y-0'>
-              <div className='col-span-1 md:mt-3'>
-                <FormField
-                  control={form.control}
-                  name='phoneNumber'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className='text-lg opacity-80 text-[#202224]'>Phone number</FormLabel>
-                      <FormControl>
-                        <Input className='bg-[#F1F4F9] h-14' placeholder='Your phone number...' {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <div className='row-span-2 col-span-1 md:mt-7'>
-                <FormField
-                  control={form.control}
-                  name='position'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className='text-lg opacity-80 text-[#202224]'>Position</FormLabel>
-                      <FormControl>
-                        <Input className='bg-[#F1F4F9] h-14' placeholder='Your position...' {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <div className='row-span-3 md:mt-3'>
-                <FormField
-                  control={form.control}
-                  name='description'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className='text-lg opacity-80 text-[#202224]'>Description</FormLabel>
-                      <FormControl>
-                        <Textarea className='bg-[#F1F4F9] h-44' placeholder='Description...' {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+            {/* Full Name & Phone Number */}
+            <div className='grid md:grid-cols-2 gap-x-[60px] w-full gap-y-7 md:gap-y-0'>
+              <FormField
+                control={form.control}
+                name='fullName'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className='text-lg opacity-80 text-[#202224]'>Họ và Tên</FormLabel>
+                    <FormControl>
+                      <Input type='text' className='bg-[#F1F4F9] h-14' placeholder='Họ và tên của bạn...' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='phoneNumber'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className='text-lg opacity-80 text-[#202224]'>Số điện thoại</FormLabel>
+                    <FormControl>
+                      <Input className='bg-[#F1F4F9] h-14' placeholder='Số điện thoại của bạn...' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
-            <Button variant={'outline'} className='w-[418px] py-7 text-xl font-bold opacity-90' type='submit'>
-              Save
+
+            {/* Role & Address */}
+            <div className='grid md:grid-flow-col gap-x-[60px] w-full gap-y-7 md:gap-y-0'>
+              <FormField
+                control={form.control}
+                name='role'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className='text-lg opacity-80 text-[#202224]'>Vai trò</FormLabel>
+                    <FormControl>
+                      <Input className='bg-[#F1F4F9] h-14' placeholder='Vai trò của bạn...' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='address'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className='text-lg opacity-80 text-[#202224]'>Địa chỉ</FormLabel>
+                    <FormControl>
+                      <Input className='bg-[#F1F4F9] h-14' placeholder='Địa chỉ của bạn...' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <Button type='submit' className='mt-8'>
+              Lưu thay đổi
             </Button>
           </form>
         </Form>

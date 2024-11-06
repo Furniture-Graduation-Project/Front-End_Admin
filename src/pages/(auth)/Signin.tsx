@@ -32,18 +32,27 @@ const Signin = () => {
   const handleSubmit = async (data: z.infer<typeof signInSchema>) => {
     setLoading(true)
     try {
-      const { check, ...credentials } = data
-      const response = await EmployeeService.signIn(credentials.username, credentials.password)
+      const { username, password } = data
+      const response = await EmployeeService.signIn(username, password)
 
-      // localStorage.setItem('authToken', response.data.token)
+      const token = response.data.token
+      const userData = response.data.data
+
+      if (token) {
+        sessionStorage.setItem('authToken', token)
+      } else {
+        throw new Error('Token không hợp lệ.')
+      }
+      sessionStorage.setItem('userData', JSON.stringify(userData))
 
       toast({
         title: 'Đăng nhập thành công',
-        description: `Chào mừng ${response.data.data.fullName}!`,
+        description: `Chào mừng ${userData.fullName}!`,
         variant: 'default'
       })
 
       navigate('/dashboard')
+      window.location.reload()
     } catch (error) {
       toast({
         title: 'Lỗi đăng nhập',

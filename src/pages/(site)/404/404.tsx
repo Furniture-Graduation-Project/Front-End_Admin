@@ -11,7 +11,7 @@ const page404 = () => {
             <p className='sm:text-[32px] text-xl font-bold'>Looks like you’ve got lost…</p>
             <Link to='/dashboard' className='flex flex-col'>
               <Button
-                variant={'primary'}
+                variant={'outline'}
                 className='mt-9 px-4 py-2 sm:py-7 bg-blue-500 text-white rounded sm:text-xl font-bold'
               >
                 Back to Dashboard
