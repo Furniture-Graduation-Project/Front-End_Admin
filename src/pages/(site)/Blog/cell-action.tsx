@@ -31,7 +31,8 @@ export const CellAction = ({ data }: CellActionProps) => {
   const onDelete = async () => {
     try {
       setLoading(true)
-      await handleDelete({ id: data._id })
+
+      await handleDelete({ id: data._id, data: { title: '', content: '' } })
       setOpen(false)
       toast({
         title: 'Xoá thành công',
