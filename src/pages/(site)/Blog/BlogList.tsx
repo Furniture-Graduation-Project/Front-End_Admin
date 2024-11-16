@@ -42,7 +42,7 @@ const BlogList = () => {
           </Button>
         </Link>
       </div>
-      <div className='w-full mt-5 bg-white dark:bg-gray-800 rounded-xl'>
+      <div className='w-full mt-5 dark:p-5 bg-white dark:bg-gray-800 rounded-xl'>
         <div className='mr-5 pt-5'>
           <Input
             type='text'

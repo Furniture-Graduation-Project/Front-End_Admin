@@ -12,13 +12,13 @@ export const useBlogMutation = (key: BlogMutation) => {
         case 'CREATE':
           return await BlogService.create(params.data)
         case 'UPDATE':
-          if (!params.id) throw new Error('ID is required for update')
+          if (!params.id) throw new Error('Cần có ID để cập nhật')
           return await BlogService.update(params.id, params.data)
         case 'DELETE':
-          if (!params.id) throw new Error('ID is required for delete')
+          if (!params.id) throw new Error('Cần phải có ID để xóa')
           return await BlogService.delete(params.id)
         default:
-          throw new Error('Invalid mutation key')
+          throw new Error('Khóa không hợp lệ')
       }
     }
   })
