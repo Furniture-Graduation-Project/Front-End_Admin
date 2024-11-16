@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { Link } from 'react-router-dom'
 
-const page404 = () => {
+const ErrorPage = () => {
   return (
     <>
       <div className='flex items-center justify-center bg-white sm:rounded-xl h-full sm:h-auto px-28 py-24'>
@@ -24,4 +24,4 @@ const page404 = () => {
   )
 }
 
-export default page404
+export default ErrorPage

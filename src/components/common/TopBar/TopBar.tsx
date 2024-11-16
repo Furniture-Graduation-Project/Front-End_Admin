@@ -1,5 +1,5 @@
 import { Bell, CircleChevronDown, LogOut, Mail, Maximize, Minimize, Search, Settings } from 'lucide-react'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Avatar, AvatarImage } from '@/components/ui/avatar'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,14 +13,21 @@ import { SidebarInput, SidebarTrigger } from '@/components/ui/sidebar'
 import { Button } from '@/components/ui/button'
 import { DarkMode } from '@/components/modals/DarkMode'
 import useFullScreen from '@/hooks/useFullScreen'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '@/context/AuthContext'
 
 const TopBar = () => {
+  const auth = useAuth()
+
   const { isFullScreen, toggleFullScreen } = useFullScreen()
   const navigate = useNavigate()
-  const userData = JSON.parse(sessionStorage.getItem('userData') || '{}')
-  const fullName = userData.fullName
-  const role = userData.role
+
+  const handleLogout = () => {
+    auth.logout()
+    navigate(`/`)
+  }
+
+  const user = auth.user
 
   return (
     <header className='fixed md:sticky w-full top-0 left-0 right-0 z-20 flex h-16 items-center gap-2 bg-white dark:bg-slate-950 border-b border-b-slate-200 dark:border-b-slate-800'>
@@ -85,11 +92,15 @@ const TopBar = () => {
 
           <div className='h-full flex items-center space-x-2 bg-[#F5F6FA] dark:bg-slate-800 px-4 py-[10px]'>
             <Avatar>
-              <AvatarImage src='https://github.com/shadcn.png' alt='@shadcn' />
+              <AvatarImage src={user?.avatar} alt='@shadcn' />
             </Avatar>
             <div className='hidden sm:block text-[#404040] dark:text-slate-200'>
-              <p className='text-sm font-medium'>Hi {fullName}</p>
-              <p className='text-sm font-medium'>Role {role}</p>
+              {user && (
+                <>
+                  <p className='text-sm font-medium'>Hi {user.fullName}</p>
+                  <p className='text-sm font-medium'>Role {user.role}</p>
+                </>
+              )}
             </div>
 
             <DropdownMenu>
@@ -100,24 +111,15 @@ const TopBar = () => {
               </DropdownMenuTrigger>
               <DropdownMenuContent>
                 <DropdownMenuGroup>
-                  <DropdownMenuItem
-                    className='text-sm'
-                    onClick={() => {
-                      navigate(`/setting`)
-                    }}
-                  >
-                    <Settings size={14} className='mr-2' />
-                    Tài khoản
+                  <DropdownMenuItem className='dark:text-slate-200 flex items-center'>
+                    <Link to='/setting'>
+                      <Settings className='mr-2' />
+                      <span>Tài khoản</span>
+                    </Link>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  className='text-sm text-red-600'
-                  onClick={() => {
-                    sessionStorage.clear()
-                    navigate(`/`)
-                  }}
-                >
+                <DropdownMenuItem className='text-sm text-red-600' onClick={handleLogout}>
                   <LogOut size={14} className='mr-2' />
                   Đăng xuất
                 </DropdownMenuItem>

@@ -1,120 +1,207 @@
-import { Edit, Search, Trash, Plus } from 'lucide-react'
-import { Table, TableBody, TableCell, TableHeader, TableRow } from '@/components/ui/table'
-import { Button } from '@/components/ui/button'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { Edit, Search, Trash, Plus } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { ColumnDef, PaginationState } from '@tanstack/react-table';
+import { useVoucherQuery } from '@/hooks/querys/useVoucherQuery';
+import { useVoucherMutation } from '@/hooks/mutations/useVoucherMutation';
+import { useDataTable } from '@/hooks/useDataTable';
+import { DEFAULT_PAGE_SIZE } from '@/constants/pagination';
+import DataTableCustom from '@/components/common/DataTable/DataTableCustom';
+import { ToastAction } from '@/components/ui/toast';
+import { format } from 'date-fns';
+import { vi } from 'date-fns/locale';
+import { useToast } from '@/hooks/use-toast';
+import AlertAcitonDialog from '@/components/modals/AlertDialog';
 
-const VoucherList = () => {
-  const vouchers = [
-    {
-      _id: '64f58e5c4e1e9b0012cabc12',
-      code: 'SAVE10',
-      description: 'Giảm 10% cho tất cả các sản phẩm',
-      type: 'Percent',
-      value: 10,
-      startDate: '2024-09-01T00:00:00Z',
-      endDate: '2024-09-30T23:59:59Z',
-      usageLimit: 100,
-      usedCount: 25,
-      status: 'active'
-    },
-    {
-      _id: '64f58f5c4e1e9b0012cacd12',
-      code: 'FIXED50',
-      description: 'Giảm giá 50.000 VND cho đơn hàng từ 500.000 VND',
-      type: 'Fixed',
-      value: 50000,
-      startDate: '2024-09-05T00:00:00Z',
-      endDate: '2024-09-25T23:59:59Z',
-      usageLimit: 50,
-      usedCount: 10,
-      status: 'inactive'
+const VoucherList: React.FC = () => {
+  const queryClient = useQueryClient();
+  const { toast } = useToast()
+  const navigate = useNavigate();
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [search, setSearch] = useState('');
+  const { data, isLoading, isError, refetch } = useVoucherQuery(); 
+  const { mutate } = useVoucherMutation("DELETE");
+  const [pagination, setPagination] = useState<PaginationState>(DEFAULT_PAGE_SIZE)
+  
+  const [openDelete, setOpenDelete] = useState(false)
+  const [voucherId, setVoucherId] = useState<string>('')
+  const openDeleteModal = (id: string): void => {
+    setVoucherId(id)
+    setOpenDelete(true)
+  }
+
+  const handleDelete = async () => {
+    try {
+      if (voucherId == undefined) return
+      mutate({ id : voucherId }); 
+      setOpenDelete(false);
+      const date = new Date()
+      toast({
+        title: 'Đã chuyển bản ghi vào thùng rác ! ',
+        description: format(date, "d MMM yyyy 'at' hh:mm a", { locale: vi }),
+        action: <ToastAction altText='Hoàn tác'>Undo</ToastAction>
+      })
+      queryClient.invalidateQueries({ queryKey: ['Voucher'] });
+
+      navigate('/voucher');
+      
+    } catch (error) {
+      console.error('Error deleting voucher:', error);
+      setSuccessMessage('Có lỗi xảy ra khi xóa voucher!');
     }
-  ]
+  };
+  const columnVoucher: ColumnDef<any>[] = [
+  {
+    header: 'Mã phiếu giảm giá',
+    accessorKey: 'code',
+    cell: (info) => info.getValue(),
+  },
+  {
+    header: 'Mô tả',
+    accessorKey: 'description',
+    cell: (info) => info.getValue(),
+  },
+  {
+    header: 'Kiểu',
+    accessorKey: 'type',
+    cell: (info) => info.getValue(),
+  },
+  {
+    header: 'Giá trị',
+    accessorKey: 'value',
+    cell: (info) => info.getValue(),
+  },
+  {
+    header: 'Ngày bắt đầu',
+    accessorKey: 'startDate',
+    cell: (info) => {
+      const startDate = info.getValue() as string | undefined;
+      if (!startDate) return 'N/A';
+      const date = new Date(startDate);
+      return isNaN(date.getTime()) ? 'N/A' : date.toLocaleDateString('vi-VN');
+    },
+  },
+  {
+    header: 'Ngày kết thúc',
+    accessorKey: 'endDate',
+    cell: (info) => {
+      const endDate = info.getValue() as string | undefined;
+      if (!endDate) return 'N/A';
+      const date = new Date(endDate);
+      return isNaN(date.getTime()) ? 'N/A' : date.toLocaleDateString('vi-VN');
+    },
+  },
+  {
+    header: 'Giới hạn sử dụng',
+    accessorKey: 'usageLimit',
+    cell: (info) => info.getValue(),
+  },
+  {
+    header: 'Số lượng đã dùng',
+    accessorKey: 'usedCount',
+    cell: (info) => info.getValue(),
+  },
+  {
+    header: 'Trạng thái',
+    accessorKey: 'status',
+    cell: (info) => {
+      const status = info.getValue() as string | undefined;
+      if (status === undefined) return 'N/A';
+
+      const isActive = status.toLowerCase() === 'active';
+
+      return (
+        <span className={`inline-block px-3 py-1 rounded-full text-white ${isActive ? 'bg-green-500' : 'bg-red-500'}`}>
+          {status}
+        </span>
+      );
+    },
+  },
+  {
+    header: 'Actions',
+    cell: (info) => {
+      const voucher = info.row.original;
+      const meta = info.table.options.meta as { openDeleteModal: (id: string) => void } | undefined;
+
+      return (
+        <>
+          <Link to={`${voucher._id}/edit`}>
+            <button className='text-gray-600 hover:text-gray-800 transition-colors border border-gray-200 px-3 py-1 rounded-s-lg'>
+              <Edit size={18} />
+            </button>
+          </Link>
+          <button
+            className='text-red-600 hover:text-red-800 transition-colors border border-gray-200 px-3 py-1 rounded-e-lg'
+            onClick={() => meta?.openDeleteModal(voucher._id)}>
+            <Trash size={18} />
+          </button>
+        </>
+      );
+    },
+  },
+];
+
+  const { table } = useDataTable({
+    data: data?.data ?? [],
+    columns: columnVoucher,
+    totalData: data?.totalData,
+    meta: { openDeleteModal },
+    totalPage: data?.totalPage,
+    pagination,
+    setPagination
+  })
+
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) {
+    console.error('Error loading vouchers:', isError);
+    return <div>Error loading vouchers</div>;
+  }
 
   return (
     <div className='container mx-auto p-7 bg-[#f5f6fa]'>
-      {/* Thanh tìm kiếm */}
+      {successMessage && (
+        <div className='bg-green-500 text-white p-2 rounded-lg mb-4'>
+          {successMessage}
+        </div>
+      )}
+
       <div className='flex justify-between items-center mb-7'>
         <div className='text-2xl font-semibold'>Voucher List</div>
       </div>
       <div className='w-full flex justify-between pb-7'>
-        <a href='/voucher/add'>
-          <Button variant='primary' className='flex items-center space-x-2'>
+        <Link to='add'>
+          <Button variant='outline' className='mt-4 bg-blue-500 text-white hover:bg-blue-600'>
             <Plus size={18} />
             <span>Add Voucher</span>
           </Button>
-        </a>
+        </Link>
         <div className='flex items-center space-x-2'>
           <div className='flex items-center space-x-2 relative'>
             <Search className='text-gray-700 absolute left-5' size={16} />
             <input
               type='text'
               placeholder='Search voucher name'
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
               className='border rounded-3xl py-2 px-9 focus:outline-none focus:ring-2 focus:ring-blue-500'
             />
           </div>
         </div>
       </div>
-      {/* Bảng danh sách voucher */}
-      <Table className='w-full bg-white shadow-md rounded-lg overflow-hidden'>
-        <TableHeader className='border-b-2'>
-          <TableRow className='text-left'>
-            <TableCell className='p-4 font-bold'>Voucher Code</TableCell>
-            <TableCell className='p-4 font-bold'>Description</TableCell>
-            <TableCell className='p-4 font-bold'>Type</TableCell>
-            <TableCell className='p-4 font-bold'>Value</TableCell>
-            <TableCell className='p-4 font-bold'>Start Date</TableCell>
-            <TableCell className='p-4 font-bold'>End Date</TableCell>
-            <TableCell className='p-4 font-bold'>Usage Limit</TableCell>
-            <TableCell className='p-4 font-bold'>Used Count</TableCell>
-            <TableCell className='p-4 font-bold'>Status</TableCell>
-            <TableCell className='p-4 font-bold'>Actions</TableCell>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {vouchers.map((voucher) => (
-            <TableRow key={voucher._id} className='border-t hover:bg-gray-50 transition-colors'>
-              <TableCell className='p-4 font-medium'>{voucher.code}</TableCell>
-              <TableCell className='p-4'>{voucher.description}</TableCell>
-              <TableCell className='p-4'>{voucher.type}</TableCell>
-              <TableCell className='p-4'>{voucher.value}</TableCell>
-              <TableCell className='p-4'>{new Date(voucher.startDate).toLocaleDateString()}</TableCell>
-              <TableCell className='p-4'>{new Date(voucher.endDate).toLocaleDateString()}</TableCell>
-              <TableCell className='p-4'>{voucher.usageLimit}</TableCell>
-              <TableCell className='p-4'>{voucher.usedCount}</TableCell>
-              <TableCell className='p-4'>
-                <span
-                  className={`px-2 py-1 rounded-full text-white ${voucher.status === 'active' ? 'bg-green-500' : 'bg-red-500'}`}
-                >
-                  {voucher.status}
-                </span>
-              </TableCell>
-              <TableCell className='p-4'>
-                <button className=' text-gray-600 hover:text-gray-800 transition-colors border border-gray-200 px-3 py-1 rounded-s-lg'>
-                  <Edit size={18} />
-                </button>
-                <button className='text-red-600 hover:text-red-800 transition-colors border border-gray-200 px-3 py-1 rounded-e-lg'>
-                  <Trash size={18} />
-                </button>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-      {/* Phân trang */}
-      <div className='flex justify-between items-center mt-7'>
-        <p className='text-[14px] font-light'>Showing 1-2 of 2</p>
-        <div>
-          <Button variant='outline'>
-            <ChevronLeft size={18} className='mx-2' />
-          </Button>
-          <Button variant='outline'>
-            <ChevronRight size={18} className='mx-2' />
-          </Button>
-        </div>
-      </div>
-    </div>
-  )
-}
 
-export default VoucherList
+      <DataTableCustom columns={columnVoucher} isError={isError} isLoading={isLoading} refetch={refetch} table={table} />
+      <AlertAcitonDialog
+        title='Bạn chắc chắn muốn chuyển bản ghi này vào thùng rác ?'
+        description='Bản ghi khi chuyển vào thùng rác sẽ bị xóa sau 30 ngày không làm việc .'
+        variant={'destructive'}
+        isOpen={openDelete}
+        setIsOpen={setOpenDelete}
+        handleAciton={handleDelete}
+      />
+    </div>
+  );
+};
+
+export default VoucherList;

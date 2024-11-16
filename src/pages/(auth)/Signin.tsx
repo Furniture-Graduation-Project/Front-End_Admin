@@ -1,14 +1,13 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { useState } from 'react'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Link, useNavigate } from 'react-router-dom'
-import { EmployeeService } from '@/services/employee'
-import { toast } from '@/hooks/use-toast'
+import { Link } from 'react-router-dom'
+import useEmployeeMutation from '@/hooks/mutations/useEmployeeMutation'
+import { useState } from 'react'
 
 const signInSchema = z.object({
   username: z.string().min(1, { message: 'Tên đăng nhập không được để trống.' }),
@@ -17,7 +16,8 @@ const signInSchema = z.object({
 })
 
 const Signin = () => {
-  const [loading, setLoading] = useState(false)
+  const { mutate } = useEmployeeMutation({ action: 'SIGN_IN' })
+  const [loading, setLoading] = useState<boolean>(false)
   const form = useForm<z.infer<typeof signInSchema>>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
@@ -27,41 +27,8 @@ const Signin = () => {
     }
   })
 
-  const navigate = useNavigate()
-
   const handleSubmit = async (data: z.infer<typeof signInSchema>) => {
-    setLoading(true)
-    try {
-      const { username, password } = data
-      const response = await EmployeeService.signIn(username, password)
-
-      const token = response.data.token
-      const userData = response.data.data
-
-      if (token) {
-        sessionStorage.setItem('authToken', token)
-      } else {
-        throw new Error('Token không hợp lệ.')
-      }
-      sessionStorage.setItem('userData', JSON.stringify(userData))
-
-      toast({
-        title: 'Đăng nhập thành công',
-        description: `Chào mừng ${userData.fullName}!`,
-        variant: 'default'
-      })
-
-      navigate('/dashboard')
-      window.location.reload()
-    } catch (error) {
-      toast({
-        title: 'Lỗi đăng nhập',
-        description: 'Tên đăng nhập hoặc mật khẩu không đúng.',
-        variant: 'destructive'
-      })
-    } finally {
-      setLoading(false)
-    }
+    mutate({ username: data.username, password: data.password })
   }
 
   return (
@@ -124,12 +91,7 @@ const Signin = () => {
               )}
             />
             <div className='flex items-center justify-center'>
-              <Button
-                variant={'outline'}
-                className='w-[418px] py-7 text-xl font-bold opacity-90'
-                type='submit'
-                disabled={loading}
-              >
+              <Button variant={'outline'} className='w-[418px] py-7 text-xl font-bold opacity-90' type='submit'>
                 {loading ? 'Đang xử lý...' : 'Đăng nhập'}
               </Button>
             </div>
