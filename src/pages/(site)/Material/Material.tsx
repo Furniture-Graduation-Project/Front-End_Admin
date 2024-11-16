@@ -1,6 +1,6 @@
 import { Outlet } from 'react-router-dom'
 
-const Product = () => {
+const Material = () => {
   return (
     <div>
       <Outlet></Outlet>
@@ -8,4 +8,4 @@ const Product = () => {
   )
 }
 
-export default Product
+export default Material

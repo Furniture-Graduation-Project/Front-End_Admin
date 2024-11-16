@@ -41,6 +41,9 @@ import BlogList from '@/pages/(site)/Blog/BlogList'
 import BlogAdd from '@/pages/(site)/Blog/BlogAdd'
 import BlogEdit from '@/pages/(site)/Blog/BlogEdit'
 import Blog from '@/pages/(site)/Blog/Blog'
+import MaterialList from '@/pages/(site)/Material/_components/MaterialList'
+import MaterialEdit from '@/pages/(site)/Material/_components/MaterialEdit'
+import MaterialAdd from '@/pages/(site)/Material/_components/MaterialAdd'
 // import EmployeeSignIn from '@/pages/(site)/Employee/_components/EmployeeSignIn'
 
 const routes: IRoute[] = [
@@ -56,6 +59,16 @@ const routes: IRoute[] = [
       { path: '', component: CategoryList },
       { path: 'add', component: CategoryAdd },
       { path: 'edit/:id', component: CategoryEdit }
+    ]
+  },
+  {
+    path: '/material',
+    component: Category,
+    layout: MainLayout,
+    children: [
+      { path: '', component: MaterialList },
+      { path: 'add', component: MaterialAdd },
+      { path: 'edit/:id', component: MaterialEdit }
     ]
   },
   {

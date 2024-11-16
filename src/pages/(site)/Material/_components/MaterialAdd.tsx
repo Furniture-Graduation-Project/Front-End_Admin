@@ -5,57 +5,57 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { CategoryService } from '@/services/category'
+import { MaterialService } from '@/services/material'
 import { useState } from 'react'
-import { ICategory } from '@/interface/category'
+import { IMaterial } from '@/interface/material'
 import { toast } from '@/hooks/use-toast'
 import { useNavigate } from 'react-router-dom'
 
 const FormSchema = z.object({
-  categoryName: z.string().min(1, { message: 'Tên danh mục không được để trống.' }),
+  materialName: z.string().min(1, { message: 'Tên vật liệu không được để trống.' }),
   description: z.string().optional()
 })
 
-const AddCategoryForm = () => {
+const AddMaterialForm = () => {
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
-  const form = useForm<ICategory>({
+  const form = useForm<IMaterial>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      categoryName: '',
+      materialName: '',
       description: ''
     }
   })
 
-  const handleSubmit = async (data: ICategory) => {
+  const handleSubmit = async (data: IMaterial) => {
     setLoading(true)
     try {
-      await CategoryService.create(data)
+      await MaterialService.create(data)
       toast({
         title: 'Thêm thành công',
-        description: `Danh mục ${data.categoryName} đã được thêm thành công.`,
+        description: `Vật liệu ${data.materialName} đã được thêm thành công.`,
         variant: 'success',
         duration: 3000
       })
       form.reset()
-      navigate('/category')
+      navigate('/material')
     } catch (error: any) {
       if (error.response && error.response.status === 409) {
         toast({
-          title: 'Lỗi trùng tên danh mục',
-          description: `Danh mục "${data.categoryName}" đã tồn tại.`,
+          title: 'Lỗi trùng tên vật liệu',
+          description: `Vật liệu "${data.materialName}" đã tồn tại.`,
           variant: 'destructive',
           duration: 3000
         })
       } else {
         toast({
-          title: 'Lỗi thêm danh mục',
-          description: 'Đã xảy ra lỗi khi thêm danh mục.',
+          title: 'Lỗi thêm vật liệu',
+          description: 'Đã xảy ra lỗi khi thêm vật liệu.',
           variant: 'destructive',
           duration: 3000
         })
       }
-      console.error('Lỗi khi tạo danh mục:', error)
+      console.error('Lỗi khi tạo vật liệu:', error)
     } finally {
       setLoading(false)
     }
@@ -64,20 +64,20 @@ const AddCategoryForm = () => {
   return (
     <div className='bg-[#F5F6FA] dark:bg-gray-900 h-screen'>
       <Form {...form}>
-        <div className='font-bold text-2xl space-y-4 px-4 md:px-10 p-5 dark:text-gray-100'>Thêm danh mục</div>
+        <div className='font-bold text-2xl space-y-4 px-4 md:px-10 p-5 dark:text-gray-100'>Thêm vật liệu</div>
         <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-4 px-4 md:px-10'>
           <FormField
-            name='categoryName'
+            name='materialName'
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <Label htmlFor='categoryName' className='font-bold dark:text-gray-100'>
-                  Tên danh mục
+                <Label htmlFor='materialName' className='font-bold dark:text-gray-100'>
+                  Tên vật liệu
                 </Label>
                 <FormControl>
                   <Input
-                    id='categoryName'
-                    placeholder='Tên danh mục'
+                    id='materialName'
+                    placeholder='Tên vật liệu'
                     {...field}
                     aria-required='true'
                     className='dark:bg-gray-700 dark:text-gray-100'
@@ -99,7 +99,7 @@ const AddCategoryForm = () => {
                 <FormControl>
                   <Input
                     id='description'
-                    placeholder='Mô tả danh mục'
+                    placeholder='Mô tả vật liệu'
                     {...field}
                     className='dark:bg-gray-700 dark:text-gray-100'
                   />
@@ -109,7 +109,7 @@ const AddCategoryForm = () => {
             )}
           />
           <div className='flex justify-end mt-6 space-x-3'>
-            <Button type='button' variant='outline' onClick={() => navigate('/category')}>
+            <Button type='button' variant='outline' onClick={() => navigate('/material')}>
               Hủy
             </Button>
             <Button type='submit'>Thêm</Button>
@@ -120,4 +120,4 @@ const AddCategoryForm = () => {
   )
 }
 
-export default AddCategoryForm
+export default AddMaterialForm

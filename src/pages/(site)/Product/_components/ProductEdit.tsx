@@ -10,6 +10,8 @@ import { useMultipleCategoryQuery } from '@/hooks/querys/useCategoryQuery'
 import { toast } from '@/hooks/use-toast'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ProductService } from '@/services/product'
+import { useMultipleMaterialQuery } from '@/hooks/querys/useMaterialQuery'
+import { useEffect } from 'react'
 
 const FormSchema = z.object({
   name: z.string().min(3, { message: 'Tên sản phẩm phải có ít nhất 3 ký tự.' }),
@@ -28,26 +30,40 @@ const EditProductForm = () => {
   const navigate = useNavigate()
   const { id } = useParams<{ id: string }>()
 
-  const { data: productData, isLoading: isLoadingProduct } = useSingleProductQuery(id as string)
-  const { data: categoriesData, isLoading: isLoadingCategories } = useMultipleCategoryQuery()
-  const categories = categoriesData?.data || []
+  const { data: productData } = useSingleProductQuery(id as string)
+  const { data: categoriesData } = useMultipleCategoryQuery()
+  const { data: materialsData } = useMultipleMaterialQuery()
+  const categories = categoriesData || []
+  const materials = materialsData || []
   const form = useForm({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       name: '',
       category: '',
       description: '',
-      price: 0,
       SKU: '',
-      images: [],
+      images: [] as string[],
       material: '',
+      materialDetail: '',
       status: 'available'
     }
   })
 
-  if (productData) {
-    form.reset(productData as any)
-  }
+  useEffect(() => {
+    if (productData) {
+      console.log(productData)
+      form.reset({
+        name: productData.data.data.name,
+        category: productData.data.data.category.categoryName,
+        description: productData.data.data.description || '',
+        SKU: productData.data.data.SKU,
+        images: productData.data.data.images || [],
+        material: productData.data.data.material.materialName || '',
+        materialDetail: productData.data.data.materialDetail || '',
+        status: productData.data.data.status
+      })
+    }
+  }, [productData, form])
 
   const handleSubmit = async (data: any) => {
     try {
@@ -68,10 +84,6 @@ const EditProductForm = () => {
       })
       console.error('Lỗi khi cập nhật sản phẩm:', error)
     }
-  }
-
-  if (isLoadingProduct || isLoadingCategories) {
-    return <div>Loading...</div>
   }
 
   return (
@@ -148,30 +160,7 @@ const EditProductForm = () => {
               </FormItem>
             )}
           />
-          {/* Giá */}
-          <FormField
-            name='price'
-            control={form.control}
-            render={({ field }) => (
-              <FormItem>
-                <Label htmlFor='price' className='font-bold dark:text-gray-100'>
-                  Giá
-                </Label>
-                <FormControl>
-                  <Input
-                    id='price'
-                    type='number'
-                    placeholder='Giá sản phẩm'
-                    {...field}
-                    onChange={(e) => field.onChange(Number(e.target.value))}
-                    aria-required='true'
-                    className='dark:bg-gray-700 dark:text-gray-100'
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+
           {/* SKU */}
           <FormField
             name='SKU'
@@ -222,15 +211,20 @@ const EditProductForm = () => {
             render={({ field }) => (
               <FormItem>
                 <Label htmlFor='material' className='font-bold dark:text-gray-100'>
-                  Vật liệu
+                  Danh mục
                 </Label>
-                <FormControl>
-                  <Input
+                <FormControl className='ml-2 rounded-sm'>
+                  <select
                     id='material'
-                    placeholder='Vật liệu sản phẩm'
                     {...field}
-                    className='dark:bg-gray-700 dark:text-gray-100'
-                  />
+                    className='dark:bg-gray-700 dark:text-gray-100 border rounded-md p-1'
+                  >
+                    {materials?.map((material) => (
+                      <option key={material._id} value={material._id}>
+                        {material.materialName}
+                      </option>
+                    ))}
+                  </select>
                 </FormControl>
                 <FormMessage />
               </FormItem>

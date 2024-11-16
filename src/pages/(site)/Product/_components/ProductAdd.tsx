@@ -10,16 +10,16 @@ import { useMultipleCategoryQuery } from '@/hooks/querys/useCategoryQuery'
 import { toast } from '@/hooks/use-toast'
 import { useNavigate } from 'react-router-dom'
 import { ProductFormData } from '@/interface/product'
-import { ICategory } from '@/interface/category'
+import { useMultipleMaterialQuery } from '@/hooks/querys/useMaterialQuery'
 
 const FormSchema = z.object({
   name: z.string().min(3, { message: 'Tên sản phẩm phải có ít nhất 3 ký tự.' }),
   category: z.string().min(1, { message: 'Vui lòng chọn danh mục.' }),
   description: z.string().optional(),
-  price: z.number().min(0, { message: 'Giá phải là số lớn hơn hoặc bằng 0.' }),
   SKU: z.string().min(1, { message: 'SKU không được để trống.' }),
   images: z.array(z.string()).min(1, { message: 'Phải có ít nhất một ảnh sản phẩm.' }),
   material: z.string().optional(),
+  materialDetail: z.string().optional(),
   status: z.enum(['available', 'out of stock', 'discontinued'], {
     required_error: 'Vui lòng chọn trạng thái sản phẩm.'
   })
@@ -28,19 +28,19 @@ const FormSchema = z.object({
 const AddProductForm = () => {
   const navigate = useNavigate()
   const { data: categoriesResponse } = useMultipleCategoryQuery()
-
-  const categories = categoriesResponse?.data || []
-
+  const { data: materialsResponse } = useMultipleMaterialQuery()
+  const categories = categoriesResponse || []
+  const materials = materialsResponse || []
   const form = useForm<ProductFormData>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       name: '',
       category: '',
       description: '',
-      price: 0,
       SKU: '',
       images: [],
       material: '',
+      materialDetail: '',
       status: 'available'
     }
   })
@@ -150,30 +150,6 @@ const AddProductForm = () => {
               </FormItem>
             )}
           />
-          {/* Giá */}
-          <FormField
-            name='price'
-            control={form.control}
-            render={({ field }) => (
-              <FormItem>
-                <Label htmlFor='price' className='font-bold dark:text-gray-100'>
-                  Giá
-                </Label>
-                <FormControl>
-                  <Input
-                    id='price'
-                    type='number'
-                    placeholder='Giá sản phẩm'
-                    {...field}
-                    onChange={(e) => field.onChange(Number(e.target.value))}
-                    aria-required='true'
-                    className='dark:bg-gray-700 dark:text-gray-100'
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
           {/* SKU */}
           <FormField
             name='SKU'
@@ -224,12 +200,38 @@ const AddProductForm = () => {
             render={({ field }) => (
               <FormItem>
                 <Label htmlFor='material' className='font-bold dark:text-gray-100'>
-                  Vật liệu
+                  Danh mục
+                </Label>
+                <FormControl className='ml-2 rounded-sm'>
+                  <select
+                    id='material'
+                    {...field}
+                    className='dark:bg-gray-700 dark:text-gray-100 border rounded-md p-1'
+                  >
+                    {materials?.map((material) => (
+                      <option key={material._id} value={material._id}>
+                        {material.materialName}
+                      </option>
+                    ))}
+                  </select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          {/* Chi tiết vật liệu */}
+          <FormField
+            name='materialDetail'
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <Label htmlFor='materialDetail' className='font-bold dark:text-gray-100'>
+                  Chi tiết vật liệu
                 </Label>
                 <FormControl>
                   <Input
-                    id='material'
-                    placeholder='Vật liệu sản phẩm'
+                    id='materialDetail'
+                    placeholder='Chi tiết vật liệu'
                     {...field}
                     className='dark:bg-gray-700 dark:text-gray-100'
                   />

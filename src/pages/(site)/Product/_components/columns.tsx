@@ -14,7 +14,7 @@ export const columns: ColumnDef<IProduct>[] = [
   },
   {
     header: 'Category',
-    cell: ({ row }) => <p>{row.original.category?.categoryName}</p>
+    cell: ({ row }) => <p>{row.original.category?.categoryName || 'N/A'}</p>
   },
   {
     accessorKey: 'description',
@@ -22,18 +22,17 @@ export const columns: ColumnDef<IProduct>[] = [
     cell: ({ row }) => <p>{row.getValue<string>('description') || 'N/A'}</p>
   },
   {
-    accessorKey: 'price',
-    header: 'Price',
-    cell: ({ row }) => <p>${row.getValue<number>('price').toFixed(2)}</p>
-  },
-  {
     accessorKey: 'SKU',
     header: 'SKU'
   },
   {
-    accessorKey: 'material',
     header: 'Material',
-    cell: ({ row }) => <p>{row.getValue<string>('material') || 'N/A'}</p>
+    cell: ({ row }) => <p>{row.original.material?.materialName || 'N/A'}</p>
+  },
+  {
+    accessorKey: 'materialDetail',
+    header: 'Material Detail',
+    cell: ({ row }) => <p>{row.getValue<string>('materialDetail') || 'N/A'}</p>
   },
   {
     accessorKey: 'status',

@@ -1,52 +1,52 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ICategory } from '@/interface/category'
+import { IMaterial } from '@/interface/material' // Thay đổi import từ ICategory thành IMaterial
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { toast } from '@/hooks/use-toast'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { CategoryService } from '@/services/category'
+import { MaterialService } from '@/services/material' // Thay đổi từ CategoryService thành MaterialService
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
 import { Label } from '@/components/ui/label'
 
 const FormSchema = z.object({
-  categoryName: z.string().min(1, { message: 'Tên danh mục không được để trống.' }),
+  materialName: z.string().min(1, { message: 'Tên vật liệu không được để trống.' }),
   description: z.string().optional()
 })
 
-const CategoryEdit = () => {
+const MaterialEdit = () => {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const [category, setCategory] = useState<ICategory | null>(null)
+  const [material, setMaterial] = useState<IMaterial | null>(null)
   const [loading, setLoading] = useState(true)
 
-  const form = useForm<ICategory>({
+  const form = useForm<IMaterial>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      categoryName: '',
+      materialName: '',
       description: ''
     }
   })
 
   useEffect(() => {
-    const fetchCategory = async () => {
+    const fetchMaterial = async () => {
       if (!id) {
         console.error('ID không tồn tại')
         return
       }
 
       try {
-        const response = await CategoryService.getCategoryById(id)
+        const response = await MaterialService.getMaterialById(id)
         console.log(response)
-        setCategory(response.category)
-        form.reset(response.category)
+        setMaterial(response.metarial)
+        form.reset(response.metarial)
       } catch (error) {
-        console.error('Lỗi khi lấy thông tin danh mục:', error)
+        console.error('Lỗi khi lấy thông tin vật liệu:', error)
         toast({
           title: 'Lỗi',
-          description: 'Không thể lấy thông tin danh mục.',
+          description: 'Không thể lấy thông tin vật liệu.',
           variant: 'destructive'
         })
       } finally {
@@ -54,24 +54,24 @@ const CategoryEdit = () => {
       }
     }
 
-    fetchCategory()
+    fetchMaterial()
   }, [id, form])
 
-  const handleSubmit = async (data: ICategory) => {
+  const handleSubmit = async (data: IMaterial) => {
     setLoading(true)
     try {
-      await CategoryService.updateCategoryById(id!, data)
+      await MaterialService.updateMaterialById(id!, data) // Cập nhật thành gọi đến MaterialService
       toast({
         title: 'Cập nhật thành công',
-        description: `Danh mục ${data.categoryName} đã được cập nhật thành công.`,
+        description: `Vật liệu ${data.materialName} đã được cập nhật thành công.`,
         variant: 'success'
       })
-      navigate('/category')
+      navigate('/material')
     } catch (error) {
-      console.error('Lỗi khi cập nhật danh mục:', error)
+      console.error('Lỗi khi cập nhật vật liệu:', error)
       toast({
         title: 'Lỗi cập nhật',
-        description: 'Đã xảy ra lỗi khi cập nhật danh mục.',
+        description: 'Đã xảy ra lỗi khi cập nhật vật liệu.',
         variant: 'destructive'
       })
     } finally {
@@ -85,21 +85,21 @@ const CategoryEdit = () => {
 
   return (
     <div className='bg-[#F5F6FA] dark:bg-gray-900 h-screen'>
-      <h1 className='font-bold text-2xl space-y-4 px-4 md:px-10 p-5 dark:text-gray-100'>Cập nhật danh mục</h1>
+      <h1 className='font-bold text-2xl space-y-4 px-4 md:px-10 p-5 dark:text-gray-100'>Cập nhật vật liệu</h1>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-4 px-4 md:px-10'>
           <FormField
-            name='categoryName'
+            name='materialName' // Thay đổi từ categoryName thành materialName
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <Label htmlFor='categoryName' className='font-bold dark:text-gray-100'>
-                  Tên danh mục
+                <Label htmlFor='materialName' className='font-bold dark:text-gray-100'>
+                  Tên vật liệu
                 </Label>
                 <FormControl>
                   <Input
-                    id='categoryName'
-                    placeholder='Tên danh mục'
+                    id='materialName' // Thay đổi id từ categoryName thành materialName
+                    placeholder='Tên vật liệu'
                     {...field}
                     className='dark:bg-gray-700 dark:text-gray-100'
                   />
@@ -131,7 +131,7 @@ const CategoryEdit = () => {
           />
 
           <div className='flex justify-end mt-6 space-x-3'>
-            <Button type='button' variant='outline' onClick={() => navigate('/category')}>
+            <Button type='button' variant='outline' onClick={() => navigate('/material')}>
               Hủy
             </Button>
             <Button type='submit'>Cập nhật</Button>
@@ -142,4 +142,4 @@ const CategoryEdit = () => {
   )
 }
 
-export default CategoryEdit
+export default MaterialEdit

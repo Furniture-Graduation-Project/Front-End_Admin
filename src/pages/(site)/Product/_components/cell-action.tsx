@@ -57,13 +57,13 @@ export const CellAction = ({ data }: CellActionProps) => {
         <DropdownMenuContent align='end'>
           <DropdownMenuLabel className='font-bold'>Actions</DropdownMenuLabel>
           <DropdownMenuItem>
-            <Link to={`/employee/${data._id}`} className='flex items-center'>
+            <Link to={`/product/${data._id}`} className='flex items-center'>
               <UserSearch className='mr-2 h-4 w-4' />
               Info
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem>
-            <Link to={`/employee/edit/${data._id}`} className='flex items-center'>
+            <Link to={`/product/edit/${data._id}`} className='flex items-center'>
               <Edit2 className='mr-2 h-4 w-4' />
               Edit
             </Link>
