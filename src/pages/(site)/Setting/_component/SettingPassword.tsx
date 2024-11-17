@@ -4,24 +4,29 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { useAuth } from '@/context/AuthContext'
+import { axiosInstance } from '@/config/axios'
+import { toast } from '@/hooks/use-toast'
+
 const passwordSchema = z
   .object({
     oldPassword: z.string().min(6, {
-      message: 'Old password must be at least 6 characters long'
+      message: 'Mật khẩu cũ phải dài ít nhất 6 ký tự'
     }),
     newPassword: z.string().min(6, {
-      message: 'New password must be at least 6 characters long'
+      message: 'Mật khẩu mới phải dài ít nhất 6 ký tự'
     }),
     confirmPassword: z.string().min(6, {
-      message: 'Confirm password must be at least 6 characters long'
+      message: 'Xác nhận mật khẩu phải dài ít nhất 6 ký tự'
     })
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
-    message: 'Passwords must match',
+    message: 'Mật khẩu không khớp',
     path: ['confirmPassword']
   })
 
 const SettingPassword = () => {
+  const { user } = useAuth()
   const passwordForm = useForm<z.infer<typeof passwordSchema>>({
     resolver: zodResolver(passwordSchema),
     defaultValues: {
@@ -31,9 +36,45 @@ const SettingPassword = () => {
     }
   })
 
-  const handlePasswordSubmit = (data: z.infer<typeof passwordSchema>) => {
-    console.log('Password Update:', data)
+  const handlePasswordSubmit = async (data: z.infer<typeof passwordSchema>) => {
+    if (user?._id) {
+      const { oldPassword, newPassword } = data
+      try {
+        const response = await axiosInstance.put('http://localhost:8080/employee/password/' + user._id, {
+          oldPassword,
+          newPassword
+        })
+        console.log(response)
+        toast({
+          title: 'Cập nhật mật khẩu thành công',
+          description: 'Mật khẩu của bạn đã được cập nhật.',
+          variant: 'default'
+        })
+        passwordForm.reset()
+      } catch (error: any) {
+        if (
+          error.response &&
+          error.response.status === 400 &&
+          error.response.data.message === 'Mật khẩu cũ không đúng'
+        ) {
+          toast({
+            title: 'Mật khẩu không đúng',
+            description: 'Mật khẩu cũ bạn nhập không chính xác.',
+            variant: 'destructive'
+          })
+        } else {
+          toast({
+            title: 'Lỗi khi cập nhật mật khẩu',
+            description: 'Không thể cập nhật mật khẩu của bạn.',
+            variant: 'destructive'
+          })
+        }
+      }
+    } else {
+      alert('Vui lòng thử lại')
+    }
   }
+
   return (
     <Form {...passwordForm}>
       <form onSubmit={passwordForm.handleSubmit(handlePasswordSubmit)} className='space-y-6 flex flex-col px-40'>

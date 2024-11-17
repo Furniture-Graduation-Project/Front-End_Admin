@@ -1,4 +1,3 @@
-import { AlertModal } from '@/components/modals/alert-modal'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -78,22 +77,16 @@ export const CellAction = ({ data }: CellActionProps) => {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align='end'>
-          <DropdownMenuLabel className='font-bold'>Actions</DropdownMenuLabel>
-          <DropdownMenuItem>
-            <Link to={`/employee/${data._id}`} className='flex items-center'>
-              <UserSearch className='mr-2 h-4 w-4' />
-              Info
-            </Link>
-          </DropdownMenuItem>
+          <DropdownMenuLabel className='font-bold'>Hành Động</DropdownMenuLabel>
           <DropdownMenuItem>
             <Link to={`/employee/edit/${data._id}`} className='flex items-center'>
               <Edit2 className='mr-2 h-4 w-4' />
-              Edit
+              Chỉnh Sửa
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem onSelect={() => setIsDropdown(false)} onClick={() => setOpen(true)}>
             <Trash2 className='mr-2 h-4 w-4 text-red-500' />
-            Delete
+            Xóa
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
