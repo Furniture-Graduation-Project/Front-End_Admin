@@ -116,7 +116,13 @@ const BlogAdd = () => {
                       Nội dung
                     </Label>
                     <FormControl>
-                      <Input id='content' placeholder='Nội dung' {...field} aria-required='true' />
+                      <Input
+                        id='content'
+                        placeholder='Nội dung'
+                        className='dark:bg-gray-700 dark:text-white'
+                        {...field}
+                        aria-required='true'
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -158,7 +164,7 @@ const BlogAdd = () => {
               <Button
                 type='submit'
                 disabled={loading}
-                className='w-full bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700'
+                className='w-full bg-black text-white hover:bg-blue-700 dark:bg-white dark:hover:bg-slate-300 '
               >
                 {loading ? 'Đang xử lý...' : 'Thêm Blog'}
               </Button>

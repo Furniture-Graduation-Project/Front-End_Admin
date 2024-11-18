@@ -1,27 +1,29 @@
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes, Navigate } from 'react-router-dom'
 import { IRoute } from '@/interface/route'
 import routes from '@/routes'
 import { ThemeProvider } from './context/ThemeProvider'
 import { AuthProvider } from './context/AuthContext'
 
 const renderRoutes = (routes: IRoute[]) =>
-  routes.map(({ path, component: Component, layout: Layout, children }: IRoute) => (
-    <Route
-      key={path}
-      path={path}
-      element={
-        Layout ? (
-          <Layout>
-            <Component />
-          </Layout>
-        ) : (
+  routes.map(({ path, component: Component, layout: Layout, children, guard }: IRoute) => {
+    const Element = () => {
+      const hasAccess = guard ? guard() : true
+      if (!hasAccess) return <Navigate to='/unauthorized' />
+      return Layout ? (
+        <Layout>
           <Component />
-        )
-      }
-    >
-      {children && renderRoutes(children)}
-    </Route>
-  ))
+        </Layout>
+      ) : (
+        <Component />
+      )
+    }
+
+    return (
+      <Route key={path} path={path} element={<Element />}>
+        {children && renderRoutes(children)}
+      </Route>
+    )
+  })
 
 const App = () => {
   return (

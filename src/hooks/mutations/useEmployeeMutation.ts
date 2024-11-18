@@ -1,3 +1,4 @@
+import { IChangePassword } from './../../interface/employee'
 import { useAuth } from '@/context/AuthContext'
 import { useToast } from '@/hooks/use-toast'
 import { IEmployee } from '@/interface/employee'
@@ -7,7 +8,7 @@ import { SubmitHandler } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 
 type MutationQueryProps = {
-  action: 'CREATE' | 'UPDATE' | 'DELETE' | 'SIGN_IN'
+  action: 'CREATE' | 'UPDATE' | 'DELETE' | 'SIGN_IN' | 'UPDATE_PASSWORD'
 }
 
 const useEmployeeMutation = ({ action }: MutationQueryProps) => {
@@ -28,6 +29,11 @@ const useEmployeeMutation = ({ action }: MutationQueryProps) => {
       case 'UPDATE':
         toast({
           title: 'Cập nhật tài khoản nhân viên thành công!'
+        })
+        break
+      case 'UPDATE_PASSWORD':
+        toast({
+          title: 'Cập nhật mật khẩu nhân viên thành công!'
         })
         break
       case 'DELETE':
@@ -56,7 +62,7 @@ const useEmployeeMutation = ({ action }: MutationQueryProps) => {
     console.log('[EMPLOYEE]', error)
   }
 
-  const mutationFn = async (data: IEmployee | { username: string; password: string }) => {
+  const mutationFn = async (data: IEmployee | { username: string; password: string } | IChangePassword) => {
     switch (action) {
       case 'CREATE':
         return EmployeeService.create(data as IEmployee)
@@ -75,8 +81,6 @@ const useEmployeeMutation = ({ action }: MutationQueryProps) => {
   const { mutate, ...rest } = useMutation({
     mutationFn,
     onSuccess: (data: any) => {
-      console.log(data)
-
       handleSuccess(data)
     },
     onError: handleError

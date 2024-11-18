@@ -24,7 +24,7 @@ export const columns: ColumnDef<IBlog>[] = [
     header: 'Tác giả',
     cell: ({ row }) => {
       const employee = row.original.employeeId
-      return <p>{employee.fullName}</p>
+      return <p>{employee?.fullName || 'Chưa có tên'}</p>
     }
   },
   {

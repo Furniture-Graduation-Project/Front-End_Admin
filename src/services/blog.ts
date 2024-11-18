@@ -1,5 +1,3 @@
-// src/services/blog.ts
-
 import { axiosInstance } from '@/config/axios'
 import { IApiResponse } from '@/interface/apiRespose'
 import { IBlog, ICreateBlog } from '@/interface/blog'
@@ -8,7 +6,6 @@ import { AxiosResponse } from 'axios'
 const API = 'blog'
 
 export const BlogService = {
-  // Sửa kiểu dữ liệu ở đây
   create: async (data: ICreateBlog): Promise<AxiosResponse<IApiResponse<IBlog>>> => {
     try {
       const response = await axiosInstance.post<IApiResponse<IBlog>>(API, data)
@@ -39,7 +36,6 @@ export const BlogService = {
     }
   },
 
-  // Sửa kiểu dữ liệu ở đây
   update: async (id: string, data: Partial<ICreateBlog>): Promise<AxiosResponse<IApiResponse<IBlog>>> => {
     try {
       const response = await axiosInstance.put<IApiResponse<IBlog>>(`${API}/${id}`, data)

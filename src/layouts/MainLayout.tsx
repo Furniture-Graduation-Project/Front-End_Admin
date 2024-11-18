@@ -1,9 +1,17 @@
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 import SideBar from '@/components/common/SideBar/SideBar'
 import TopBar from '@/components/common/TopBar/TopBar'
+import { useAuth } from '@/context/AuthContext'
+import ErrorPage from '@/pages/(site)/404/404'
+import { Loader, Loader2 } from 'lucide-react'
 
 function MainLayout({ children }: { children: React.ReactNode }) {
-  return (
+  const { user, isLoading } = useAuth()
+  return isLoading ? (
+    <div className='flex items-center justify-center h-screen'>
+      <Loader2 size='100' className='animate-spin'></Loader2>
+    </div>
+  ) : user ? (
     <SidebarProvider className='flex-col md:flex-row'>
       <SideBar />
       <SidebarInset className='relative inset-0'>
@@ -13,6 +21,8 @@ function MainLayout({ children }: { children: React.ReactNode }) {
         </div>
       </SidebarInset>
     </SidebarProvider>
+  ) : (
+    <ErrorPage />
   )
 }
 

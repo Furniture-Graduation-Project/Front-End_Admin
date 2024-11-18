@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { Link } from 'react-router-dom'
 
-const page404 = () => {
+const ErrorPage = () => {
   return (
     <>
       <div className='flex items-center justify-center bg-white sm:rounded-xl h-full sm:h-auto px-28 py-24'>
@@ -11,7 +11,7 @@ const page404 = () => {
             <p className='sm:text-[32px] text-xl font-bold'>Looks like you’ve got lost…</p>
             <Link to='/dashboard' className='flex flex-col'>
               <Button
-                variant={'primary'}
+                variant={'outline'}
                 className='mt-9 px-4 py-2 sm:py-7 bg-blue-500 text-white rounded sm:text-xl font-bold'
               >
                 Back to Dashboard
@@ -24,4 +24,4 @@ const page404 = () => {
   )
 }
 
-export default page404
+export default ErrorPage

@@ -36,7 +36,7 @@ const EmployeeList = () => {
         <Link to='/employee/add'>
           <Button variant='outline' className='space-x-2 bg-[#F5F6FA] dark:bg-gray-800 text-black dark:text-gray-100'>
             <Plus size={18} />
-            <span>Add Employee</span>
+            <span>Thêm nhân viên</span>
           </Button>
         </Link>
       </div>
