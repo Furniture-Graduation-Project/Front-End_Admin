@@ -1,4 +1,4 @@
-import { BarChart, Bot, CreditCard, Folder, Mails, Package, User, UserCog } from 'lucide-react'
+import { BarChart, CreditCard, Folder, Mails, Newspaper, Package, TicketCheck, User, UserCog } from 'lucide-react'
 
 const navMenu = {
   user: {
@@ -10,79 +10,58 @@ const navMenu = {
     {
       title: 'Thống kê',
       url: '/dashboard',
-      icon: BarChart
+      icon: BarChart,
+      roles: ['admin', 'product', 'order', 'support']
     },
     {
       title: 'Sản Phẩm',
-      url: '#',
+      url: '/product',
       icon: Package,
-      items: [
-        {
-          title: 'Danh Sách',
-          url: '/product'
-        },
-        {
-          title: 'Thêm Mới',
-          url: '/product/add'
-        }
-      ]
+      roles: ['admin', 'product', 'order', 'support']
     },
     {
       title: 'Danh Mục',
-      url: '#',
+      url: '/category',
       icon: Folder,
-      items: [
-        {
-          title: 'Danh Sách',
-          url: '/category'
-        },
-        {
-          title: 'Thêm Mới',
-          url: '/category/add'
-        }
-      ]
+      roles: ['admin', 'product']
     },
     {
       title: 'Nhắn Tin',
-      url: '#',
+      url: '/conversation',
       icon: Mails,
-      items: [
-        {
-          title: 'Danh Sách',
-          url: '/conversation'
-        },
-        {
-          title: 'Thêm Mới',
-          url: '/conversation/texting'
-        }
-      ]
+      roles: ['admin', 'support']
     },
     {
       title: 'Đơn Hàng',
       url: '/order',
-      icon: CreditCard
+      icon: CreditCard,
+      roles: ['admin', 'order']
     },
-
     {
       title: 'Khách Hàng',
       url: '/account',
-      icon: User
+      icon: User,
+      roles: ['admin', 'product', 'order', 'support']
     },
     {
       title: 'Nhân Viên',
-      url: '#',
+      url: '/employee',
       icon: UserCog,
-      items: [
-        {
-          title: 'Danh Sách',
-          url: '/employee'
-        },
-        {
-          title: 'Thêm Mới',
-          url: '/employee/add'
-        }
-      ]
+      roles: ['admin']
+    },
+    {
+      title: 'Bài viết',
+      url: '/blog',
+      icon: Newspaper,
+      roles: ['admin', 'support']
+    },
+    {
+      title: 'Mã giảm giá',
+      url: '/voucher',
+      icon: TicketCheck,
+      roles: ['admin', 'product']
     }
   ]
 }
+
 export default navMenu
