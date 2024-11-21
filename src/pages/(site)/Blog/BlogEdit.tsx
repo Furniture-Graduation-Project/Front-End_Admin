@@ -133,7 +133,13 @@ const BlogEdit = () => {
                       Nội dung
                     </Label>
                     <FormControl>
-                      <Input id='content' placeholder='Nội dung' {...field} aria-required='true' />
+                      <Input
+                        id='content'
+                        placeholder='Nội dung'
+                        {...field}
+                        className='dark:bg-gray-700 dark:text-white'
+                        aria-required='true'
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -181,11 +187,7 @@ const BlogEdit = () => {
                 >
                   Hủy
                 </Button>
-                <Button
-                  type='submit'
-                  disabled={loading}
-                  className='bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700'
-                >
+                <Button type='submit' disabled={loading} className=''>
                   {loading ? 'Đang cập nhật...' : 'Cập nhật Blog'}
                 </Button>
               </div>
