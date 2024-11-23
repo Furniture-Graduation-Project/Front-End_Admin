@@ -59,7 +59,7 @@ const routes: IRoute[] = [
       {
         path: '',
         component: CategoryList,
-        guard: () => useCheckPermissions(['product', 'admin'])
+        guard: () => useCheckPermissions(['product', 'admin', 'support', 'order'])
       },
       {
         path: 'add',

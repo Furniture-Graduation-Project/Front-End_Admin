@@ -10,6 +10,7 @@ import { OrderService } from '@/services/order'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
 import { Label } from '@/components/ui/label'
 import AlertAcitonDialog from '@/components/modals/AlertDialog'
+// import React from 'react'
 
 const orderStatuses = [
   'pending',
@@ -164,6 +165,7 @@ const OrderEdit = () => {
   const currentStatusIndex = orderStatuses.indexOf(order.status)
 
   return (
+
     <div className='bg-gray-50 dark:bg-gray-900 min-h-screen py-8 px-4 md:px-10'>
       <div className='bg-white dark:bg-gray-800 shadow rounded-lg p-6'>
         <Form {...form}>
@@ -196,18 +198,20 @@ const OrderEdit = () => {
                 </FormItem>
               )}
             />
-            <Button
-              type='submit'
-              variant='default'
-              disabled={loading}
-              className='bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2 rounded-md dark:bg-blue-500 dark:hover:bg-blue-400'
-            >
-              {loading ? 'Đang xử lý...' : 'Cập nhật trạng thái đơn hàng'}
-            </Button>
+            <div className="flex justify-end">
+              <Button
+                type="submit"
+                variant="default"
+                disabled={loading}
+                className="bg-black hover text-white font-semibold py-2 rounded-md  dark:bg-blue-500 dark:hover:bg-blue-400"
+              >
+                {loading ? "Đang xử lý..." : "Cập nhật trạng thái đơn hàng"}
+              </Button>
+            </div>
+
           </form>
         </Form>
       </div>
-
       <div className='bg-white dark:bg-gray-800 shadow rounded-lg p-6 mt-8'>
         <h2 className='font-bold text-2xl mb-4 text-gray-800 dark:text-gray-100'>Cập nhật trạng thái thanh toán</h2>
         <select
@@ -221,14 +225,16 @@ const OrderEdit = () => {
             </option>
           ))}
         </select>
-        <Button
-          onClick={confirmPaymentUpdate}
-          variant='default'
-          disabled={loading}
-          className='bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2 rounded-md mt-4 dark:bg-blue-500 dark:hover:bg-blue-400'
-        >
-          {loading ? 'Đang xử lý...' : 'Cập nhật trạng thái thanh toán'}
-        </Button>
+        <div className="flex justify-end">
+          <Button
+            onClick={confirmPaymentUpdate}
+            variant="default"
+            disabled={loading}
+            className="bg-black hover text-white font-semibold py-2 rounded-md mt-4 dark:bg-blue-500 dark:hover:bg-blue-400"
+          >
+            {loading ? "Đang xử lý..." : "Cập nhật trạng thái thanh toán"}
+          </Button>
+        </div>
       </div>
       <AlertAcitonDialog
         title='Bạn chắc chắn muốn thay đổi trạng thái thanh toán hay không?'
@@ -237,8 +243,80 @@ const OrderEdit = () => {
         handleAciton={handleModalConfirm}
         className='dark:bg-gray-800 dark:text-white'
       />
+      <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6 mt-8">
+        <h2 className='font-bold text-2xl mb-4 text-gray-800 dark:text-gray-100'>Thông tin khách hàng</h2>
+        <div className="space-y-4">
+          <div className="flex items-center space-x-3">
+            <span role="img" aria-label="user" className="text-gray-800 dark:text-gray-100 text-2xl">👤</span>
+            <div className="flex-1">
+              <input
+                id="orderName"
+                type="text"
+                value={order.orderName}
+                readOnly
+                className="w-full border border-gray-300 dark:border-gray-700 rounded-md p-2 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
+              />
+            </div>
+          </div>
+          <div className="flex items-center space-x-3">
+            <span role="img" aria-label="phone" className="text-gray-800 dark:text-gray-100 text-2xl">📞</span>
+            <div className="flex-1">
+              <input
+                id="orderPhone"
+                type="text"
+                value={order.orderPhone}
+                readOnly
+                className="w-full border border-gray-300 dark:border-gray-700 rounded-md p-2 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
+              />
+            </div>
+          </div>
+          <div className="flex items-center space-x-3">
+            <span role="img" aria-label="address" className="text-gray-800 dark:text-gray-100 text-2xl">📍</span>
+            <div className="flex-1">
+              <input
+                id="orderAddress"
+                type="text"
+                value={order.orderAddress}
+                readOnly
+                className="w-full border border-gray-300 dark:border-gray-700 rounded-md p-2 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6 mt-8">
+        <h2 className='font-bold text-2xl mb-4 text-gray-800 dark:text-gray-100'>Danh sách sản phẩm</h2>
+        <div className="flex flex-col space-y-4 border border-gray-300 dark:border-gray-700">
+          <div className="flex font-bold text-lg text-gray-800 dark:text-gray-100 border-b border-r border-gray-300 dark:border-gray-700">
+            <div className="flex-1 p-2">STT</div>
+            <div className='flex-1 p-2'>Ảnh</div>
+            <div className="flex-1 p-2">Tên sản phẩm</div>
+            <div className='flex-1 p-2'>Biến thể</div>
+            <div className="flex-1 p-2">Giá</div>
+            <div className="flex-1 p-2">Số lượng</div>
+            <div className='flex-1 p2'>Tổng tiền</div>
+          </div>
+          {order.items.map((item, index) => (
+            <div key={item._id} className="flex space-x-4 border-b border-r border-gray-300 dark:border-gray-700">
+              <div className="flex-1 p-2">{index + 1}</div>
+              <div className="flex-1 p-2"><img src="https://assets.weimgs.com/weimgs/rk/images/wcm/products/202420/0120/meyer-wooden-drink-tables-18-21-5-o.jpg" className="w-20 h-20" /></div>
+              <div className="flex-1 p-2">{item.productName}</div>
+              <div className='flex-1 p-2'>
+                {item.variants.map((variant: any, id : any) => (
+                  <div key={id}>
+                    <span className="font-semibold">{variant.variants}:</span> {variant.value}
+                  </div>
+                ))}
+              </div>
+              <div className="flex-1 p-2">{item.price.toLocaleString()} VND</div>
+              <div className="flex-1 p-2">{item.quantity}</div>
+              <div className="flex-1 p-2">{(item.price * item.quantity).toLocaleString()} VND</div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   )
 }
-
 export default OrderEdit
+
