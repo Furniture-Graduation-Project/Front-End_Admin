@@ -5,69 +5,93 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { useSingleProductQuery } from '@/hooks/querys/useProductQuery'
-import { useMultipleCategoryQuery } from '@/hooks/querys/useCategoryQuery'
+import { CategoryService } from '@/services/category'
+import { ProductService } from '@/services/product'
+import { useState, useEffect } from 'react'
+import { IProduct } from '@/interface/product'
+import { ICategory } from '@/interface/category'
 import { toast } from '@/hooks/use-toast'
 import { useNavigate, useParams } from 'react-router-dom'
-import { ProductService } from '@/services/product'
-import { useMultipleMaterialQuery } from '@/hooks/querys/useMaterialQuery'
-import { useEffect } from 'react'
+import { IMaterial } from '@/interface/material'
+import { MaterialService } from '@/services/material'
+import AddVariants from './Variants'
 
 const FormSchema = z.object({
   name: z.string().min(3, { message: 'Tên sản phẩm phải có ít nhất 3 ký tự.' }),
   category: z.string().min(1, { message: 'Vui lòng chọn danh mục.' }),
   description: z.string().optional(),
-  price: z.number().min(0, { message: 'Giá phải là số lớn hơn hoặc bằng 0.' }),
   SKU: z.string().min(1, { message: 'SKU không được để trống.' }),
   images: z.array(z.string()).min(1, { message: 'Phải có ít nhất một ảnh sản phẩm.' }),
   material: z.string().optional(),
-  status: z.enum(['available', 'out of stock', 'discontinued'], {
+  status: z.enum(['creating', 'available', 'out of stock', 'discontinued'], {
     required_error: 'Vui lòng chọn trạng thái sản phẩm.'
   })
 })
 
 const EditProductForm = () => {
+  const [categories, setCategories] = useState<ICategory[]>([])
+  const [materials, setMaterials] = useState<IMaterial[]>([])
+  const [product, setProduct] = useState<IProduct | null>(null)
   const navigate = useNavigate()
   const { id } = useParams<{ id: string }>()
 
-  const { data: productData } = useSingleProductQuery(id as string)
-  const { data: categoriesData } = useMultipleCategoryQuery()
-  const { data: materialsData } = useMultipleMaterialQuery()
-  const categories = categoriesData || []
-  const materials = materialsData || []
-  const form = useForm({
+  const form = useForm<IProduct>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       name: '',
-      category: '',
+      category: { _id: '', categoryName: '', description: '' },
       description: '',
       SKU: '',
-      images: [] as string[],
-      material: '',
+      images: [],
+      material: { _id: '', materialName: '', description: '' },
       materialDetail: '',
       status: 'available'
     }
   })
 
-  useEffect(() => {
-    if (productData) {
-      console.log(productData)
-      form.reset({
-        name: productData.data.data.name,
-        category: productData.data.data.category.categoryName,
-        description: productData.data.data.description || '',
-        SKU: productData.data.data.SKU,
-        images: productData.data.data.images || [],
-        material: productData.data.data.material.materialName || '',
-        materialDetail: productData.data.data.materialDetail || '',
-        status: productData.data.data.status
-      })
-    }
-  }, [productData, form])
+  const handleUpdateVariant = () => {
+    navigate(`/roduct/variants/edit/${id}`)
+  }
 
-  const handleSubmit = async (data: any) => {
+  const handleAddVariant = () => {
+    navigate(`/product/variants/add/${id}`)
+  }
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await CategoryService.getAllCategories()
+        setCategories(res.data.data)
+      } catch (error) {
+        console.error('Lỗi khi lấy danh mục:', error)
+      }
+    }
+    const fetchMaterials = async () => {
+      try {
+        const res = await MaterialService.getAllMaterials()
+        setMaterials(res.data.data)
+      } catch (error) {
+        console.error('Lỗi khi lấy danh mục:', error)
+      }
+    }
+    const fetchProduct = async () => {
+      if (id) {
+        try {
+          const res = await ProductService.getById(id)
+          setProduct(res.data.data)
+          form.reset(res.data.data)
+        } catch (error) {
+          console.error('Lỗi khi lấy sản phẩm:', error)
+        }
+      }
+    }
+    fetchMaterials()
+    fetchCategories()
+    fetchProduct()
+  }, [id, form])
+
+  const handleSubmit = async (data: IProduct) => {
     try {
-      await ProductService.update(id as string, data)
+      await ProductService.update(id, data)
       toast({
         title: 'Cập nhật thành công',
         description: `Sản phẩm ${data.name} đã được cập nhật thành công.`,
@@ -76,14 +100,28 @@ const EditProductForm = () => {
       })
       navigate('/product')
     } catch (error: any) {
-      toast({
-        title: 'Lỗi cập nhật sản phẩm',
-        description: 'Đã xảy ra lỗi khi cập nhật sản phẩm.',
-        variant: 'destructive',
-        duration: 3000
-      })
+      if (error.response && error.response.status === 400 && error.response.data.message === 'SKU đã tồn tại.') {
+        toast({
+          title: 'Lỗi cập nhật sản phẩm',
+          description: 'SKU đã tồn tại. Vui lòng nhập SKU khác.',
+          variant: 'destructive',
+          duration: 3000
+        })
+      } else {
+        toast({
+          title: 'Lỗi cập nhật sản phẩm',
+          description: 'Đã xảy ra lỗi khi cập nhật sản phẩm.',
+          variant: 'destructive',
+          duration: 3000
+        })
+      }
       console.error('Lỗi khi cập nhật sản phẩm:', error)
+    } finally {
     }
+  }
+
+  if (!product) {
+    return <div>Loading...</div>
   }
 
   return (
@@ -106,39 +144,94 @@ const EditProductForm = () => {
                     placeholder='Tên sản phẩm'
                     {...field}
                     aria-required='true'
-                    className='dark:bg-gray-700 dark:text-gray-100'
+                    className='dark:bg-gray-700 dark:text-gray-100 border rounded-md p-1 min-w-[150px]'
                   />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          {/* Danh mục */}
-          <FormField
-            name='category'
-            control={form.control}
-            render={({ field }) => (
-              <FormItem>
-                <Label htmlFor='category' className='font-bold dark:text-gray-100'>
-                  Danh mục
-                </Label>
-                <FormControl className='ml-2 rounded-sm'>
-                  <select
-                    id='category'
-                    {...field}
-                    className='dark:bg-gray-700 dark:text-gray-100 border rounded-md p-1'
-                  >
-                    {categories?.map((category) => (
-                      <option key={category._id} value={category._id}>
-                        {category.categoryName}
-                      </option>
-                    ))}
-                  </select>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <div className='lg:flex lg:space-x-10 lg:items-center '>
+            {/* Danh mục */}
+            <FormField
+              name='category'
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <Label htmlFor='category' className='font-bold dark:text-gray-100'>
+                    Danh mục -
+                  </Label>
+                  <FormControl className='ml-2 rounded-sm'>
+                    <select
+                      id='category'
+                      {...field}
+                      className='dark:bg-gray-700 dark:text-gray-100 border rounded-md p-1 min-w-[150px]'
+                    >
+                      {categories.map((category) => (
+                        <option key={category._id} value={category._id}>
+                          {category.categoryName}
+                        </option>
+                      ))}
+                    </select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* chất liệu */}
+            <FormField
+              name='material'
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <Label htmlFor='material' className='font-bold dark:text-gray-100'>
+                    Chất liệu -
+                  </Label>
+                  <FormControl className='ml-2 rounded-sm'>
+                    <select
+                      id='material'
+                      {...field}
+                      className='dark:bg-gray-700 dark:text-gray-100 border rounded-md p-1 min-w-[150px]'
+                    >
+                      {materials.map((material) => (
+                        <option key={material._id} value={material._id}>
+                          {material.materialName}
+                        </option>
+                      ))}
+                    </select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {/* Trạng thái */}
+            <FormField
+              name='status'
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <Label htmlFor='status' className='font-bold dark:text-gray-100'>
+                    Trạng thái -
+                  </Label>
+                  <FormControl className='ml-2 rounded-sm'>
+                    <select
+                      id='status'
+                      {...field}
+                      className='dark:bg-gray-700 dark:text-gray-100 border rounded-md p-1 min-w-[150px]'
+                    >
+                      <option value='creating'>Đang phát triển</option>
+                      <option value='available'>Còn hàng</option>
+                      <option value='out of stock'>Hết hàng</option>
+                      <option value='discontinued'>Ngừng sản xuất</option>
+                    </select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
           {/* Mô tả */}
           <FormField
             name='description'
@@ -160,7 +253,6 @@ const EditProductForm = () => {
               </FormItem>
             )}
           />
-
           {/* SKU */}
           <FormField
             name='SKU'
@@ -182,6 +274,7 @@ const EditProductForm = () => {
               </FormItem>
             )}
           />
+
           {/* Hình ảnh */}
           <FormField
             name='images'
@@ -204,57 +297,33 @@ const EditProductForm = () => {
               </FormItem>
             )}
           />
-          {/* Vật liệu */}
+
+          {/* Chi tiết chất liệu */}
           <FormField
-            name='material'
+            name='materialDetail'
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <Label htmlFor='material' className='font-bold dark:text-gray-100'>
-                  Danh mục
+                <Label htmlFor='materialDetail' className='font-bold dark:text-gray-100'>
+                  Chi tiết chất liệu
                 </Label>
-                <FormControl className='ml-2 rounded-sm'>
-                  <select
-                    id='material'
+                <FormControl>
+                  <Input
+                    id='materialDetail'
+                    placeholder='Chi tiết chất liệu'
                     {...field}
-                    className='dark:bg-gray-700 dark:text-gray-100 border rounded-md p-1'
-                  >
-                    {materials?.map((material) => (
-                      <option key={material._id} value={material._id}>
-                        {material.materialName}
-                      </option>
-                    ))}
-                  </select>
+                    className='dark:bg-gray-700 dark:text-gray-100'
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          {/* Trạng thái */}
-          <FormField
-            name='status'
-            control={form.control}
-            render={({ field }) => (
-              <FormItem>
-                <Label htmlFor='status' className='font-bold dark:text-gray-100'>
-                  Trạng thái
-                </Label>
-                <FormControl className='ml-2 rounded-sm'>
-                  <select id='status' {...field} className='dark:bg-gray-700 dark:text-gray-100 border rounded-md p-1'>
-                    <option value='available'>Còn hàng</option>
-                    <option value='out of stock'>Hết hàng</option>
-                    <option value='discontinued'>Ngừng sản xuất</option>
-                  </select>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+
           <div className='flex justify-end mt-6 space-x-3 pb-8'>
-            <Button type='button' variant='outline' onClick={() => navigate('/product')}>
-              Hủy
-            </Button>
-            <Button type='submit'>Cập nhật</Button>
+            <Button onClick={handleUpdateVariant}>Cập nhật biến thể</Button>
+            <Button onClick={handleAddVariant}>Thêm biến thể</Button>
+            <Button type='submit'>Cập nhật sản phẩm</Button>
           </div>
         </form>
       </Form>

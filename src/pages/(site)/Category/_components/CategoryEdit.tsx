@@ -18,6 +18,7 @@ const FormSchema = z.object({
 
 const CategoryEdit = () => {
   const { id } = useParams<{ id: string }>()
+  console.log('ID danh mục:', id)
   const navigate = useNavigate()
   const [category, setCategory] = useState<ICategory | null>(null)
   const [loading, setLoading] = useState(true)
@@ -39,9 +40,8 @@ const CategoryEdit = () => {
 
       try {
         const response = await CategoryService.getCategoryById(id)
-        console.log(response)
-        setCategory(response.category)
-        form.reset(response.category)
+        setCategory(response.data.category)
+        form.reset(response.data.category)
       } catch (error) {
         console.error('Lỗi khi lấy thông tin danh mục:', error)
         toast({
@@ -81,6 +81,10 @@ const CategoryEdit = () => {
 
   if (loading) {
     return <div>Đang tải...</div>
+  }
+
+  if (!category) {
+    return <div>Không tìm thấy danh mục với ID đã cho.</div>
   }
 
   return (
@@ -131,9 +135,6 @@ const CategoryEdit = () => {
           />
 
           <div className='flex justify-end mt-6 space-x-3'>
-            <Button type='button' variant='outline' onClick={() => navigate('/category')}>
-              Hủy
-            </Button>
             <Button type='submit'>Cập nhật</Button>
           </div>
         </form>

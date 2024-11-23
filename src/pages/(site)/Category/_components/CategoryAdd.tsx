@@ -109,9 +109,6 @@ const AddCategoryForm = () => {
             )}
           />
           <div className='flex justify-end mt-6 space-x-3'>
-            <Button type='button' variant='outline' onClick={() => navigate('/category')}>
-              Hủy
-            </Button>
             <Button type='submit'>Thêm</Button>
           </div>
         </form>

@@ -12,7 +12,7 @@ import { toast } from '@/hooks/use-toast'
 import { useNavigate } from 'react-router-dom'
 
 const FormSchema = z.object({
-  materialName: z.string().min(1, { message: 'Tên vật liệu không được để trống.' }),
+  materialName: z.string().min(1, { message: 'Tên chất liệu không được để trống.' }),
   description: z.string().optional()
 })
 
@@ -33,7 +33,7 @@ const AddMaterialForm = () => {
       await MaterialService.create(data)
       toast({
         title: 'Thêm thành công',
-        description: `Vật liệu ${data.materialName} đã được thêm thành công.`,
+        description: `chất liệu ${data.materialName} đã được thêm thành công.`,
         variant: 'success',
         duration: 3000
       })
@@ -42,20 +42,20 @@ const AddMaterialForm = () => {
     } catch (error: any) {
       if (error.response && error.response.status === 409) {
         toast({
-          title: 'Lỗi trùng tên vật liệu',
-          description: `Vật liệu "${data.materialName}" đã tồn tại.`,
+          title: 'Lỗi trùng tên chất liệu',
+          description: `chất liệu "${data.materialName}" đã tồn tại.`,
           variant: 'destructive',
           duration: 3000
         })
       } else {
         toast({
-          title: 'Lỗi thêm vật liệu',
-          description: 'Đã xảy ra lỗi khi thêm vật liệu.',
+          title: 'Lỗi thêm chất liệu',
+          description: 'Đã xảy ra lỗi khi thêm chất liệu.',
           variant: 'destructive',
           duration: 3000
         })
       }
-      console.error('Lỗi khi tạo vật liệu:', error)
+      console.error('Lỗi khi tạo chất liệu:', error)
     } finally {
       setLoading(false)
     }
@@ -64,7 +64,7 @@ const AddMaterialForm = () => {
   return (
     <div className='bg-[#F5F6FA] dark:bg-gray-900 h-screen'>
       <Form {...form}>
-        <div className='font-bold text-2xl space-y-4 px-4 md:px-10 p-5 dark:text-gray-100'>Thêm vật liệu</div>
+        <div className='font-bold text-2xl space-y-4 px-4 md:px-10 p-5 dark:text-gray-100'>Thêm chất liệu</div>
         <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-4 px-4 md:px-10'>
           <FormField
             name='materialName'
@@ -72,12 +72,12 @@ const AddMaterialForm = () => {
             render={({ field }) => (
               <FormItem>
                 <Label htmlFor='materialName' className='font-bold dark:text-gray-100'>
-                  Tên vật liệu
+                  Tên chất liệu
                 </Label>
                 <FormControl>
                   <Input
                     id='materialName'
-                    placeholder='Tên vật liệu'
+                    placeholder='Tên chất liệu'
                     {...field}
                     aria-required='true'
                     className='dark:bg-gray-700 dark:text-gray-100'
@@ -99,7 +99,7 @@ const AddMaterialForm = () => {
                 <FormControl>
                   <Input
                     id='description'
-                    placeholder='Mô tả vật liệu'
+                    placeholder='Mô tả chất liệu'
                     {...field}
                     className='dark:bg-gray-700 dark:text-gray-100'
                   />
@@ -109,9 +109,6 @@ const AddMaterialForm = () => {
             )}
           />
           <div className='flex justify-end mt-6 space-x-3'>
-            <Button type='button' variant='outline' onClick={() => navigate('/material')}>
-              Hủy
-            </Button>
             <Button type='submit'>Thêm</Button>
           </div>
         </form>

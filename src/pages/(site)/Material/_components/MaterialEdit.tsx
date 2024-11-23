@@ -12,7 +12,7 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from '@/component
 import { Label } from '@/components/ui/label'
 
 const FormSchema = z.object({
-  materialName: z.string().min(1, { message: 'Tên vật liệu không được để trống.' }),
+  materialName: z.string().min(1, { message: 'Tên chất liệu không được để trống.' }),
   description: z.string().optional()
 })
 
@@ -40,13 +40,13 @@ const MaterialEdit = () => {
       try {
         const response = await MaterialService.getMaterialById(id)
         console.log(response)
-        setMaterial(response.metarial)
-        form.reset(response.metarial)
+        setMaterial(response.data)
+        form.reset(response.data)
       } catch (error) {
-        console.error('Lỗi khi lấy thông tin vật liệu:', error)
+        console.error('Lỗi khi lấy thông tin chất liệu:', error)
         toast({
           title: 'Lỗi',
-          description: 'Không thể lấy thông tin vật liệu.',
+          description: 'Không thể lấy thông tin chất liệu.',
           variant: 'destructive'
         })
       } finally {
@@ -60,18 +60,18 @@ const MaterialEdit = () => {
   const handleSubmit = async (data: IMaterial) => {
     setLoading(true)
     try {
-      await MaterialService.updateMaterialById(id!, data) // Cập nhật thành gọi đến MaterialService
+      await MaterialService.updateMaterialById(id!, data)
       toast({
         title: 'Cập nhật thành công',
-        description: `Vật liệu ${data.materialName} đã được cập nhật thành công.`,
+        description: `chất liệu ${data.materialName} đã được cập nhật thành công.`,
         variant: 'success'
       })
       navigate('/material')
     } catch (error) {
-      console.error('Lỗi khi cập nhật vật liệu:', error)
+      console.error('Lỗi khi cập nhật chất liệu:', error)
       toast({
         title: 'Lỗi cập nhật',
-        description: 'Đã xảy ra lỗi khi cập nhật vật liệu.',
+        description: 'Đã xảy ra lỗi khi cập nhật chất liệu.',
         variant: 'destructive'
       })
     } finally {
@@ -85,21 +85,21 @@ const MaterialEdit = () => {
 
   return (
     <div className='bg-[#F5F6FA] dark:bg-gray-900 h-screen'>
-      <h1 className='font-bold text-2xl space-y-4 px-4 md:px-10 p-5 dark:text-gray-100'>Cập nhật vật liệu</h1>
+      <h1 className='font-bold text-2xl space-y-4 px-4 md:px-10 p-5 dark:text-gray-100'>Cập nhật chất liệu</h1>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-4 px-4 md:px-10'>
           <FormField
-            name='materialName' // Thay đổi từ categoryName thành materialName
+            name='materialName'
             control={form.control}
             render={({ field }) => (
               <FormItem>
                 <Label htmlFor='materialName' className='font-bold dark:text-gray-100'>
-                  Tên vật liệu
+                  Tên chất liệu
                 </Label>
                 <FormControl>
                   <Input
-                    id='materialName' // Thay đổi id từ categoryName thành materialName
-                    placeholder='Tên vật liệu'
+                    id='materialName'
+                    placeholder='Tên chất liệu'
                     {...field}
                     className='dark:bg-gray-700 dark:text-gray-100'
                   />
@@ -131,9 +131,6 @@ const MaterialEdit = () => {
           />
 
           <div className='flex justify-end mt-6 space-x-3'>
-            <Button type='button' variant='outline' onClick={() => navigate('/material')}>
-              Hủy
-            </Button>
             <Button type='submit'>Cập nhật</Button>
           </div>
         </form>

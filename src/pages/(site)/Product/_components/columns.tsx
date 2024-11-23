@@ -6,44 +6,50 @@ export const columns: ColumnDef<IProduct>[] = [
   {
     accessorKey: 'STT',
     header: 'STT',
-    cell: ({ row }) => <p>{row.index + 1}</p>
+    cell: ({ row }) => {
+      return <p>{row.index + 1}</p>
+    }
   },
   {
     accessorKey: 'name',
-    header: 'Product Name'
+    header: 'Tên sản phẩm'
   },
   {
-    header: 'Category',
-    cell: ({ row }) => <p>{row.original.category?.categoryName || 'N/A'}</p>
+    header: 'Danh mục',
+    cell: ({ row }) => {
+      return <p>{row.original.category?.categoryName}</p>
+    }
   },
   {
     accessorKey: 'description',
-    header: 'Description',
-    cell: ({ row }) => <p>{row.getValue<string>('description') || 'N/A'}</p>
+    header: 'Mô tả',
+    cell: ({ row }) => {
+      return <p>{row.getValue<string>('description') || 'N/A'}</p>
+    }
   },
   {
     accessorKey: 'SKU',
     header: 'SKU'
   },
   {
-    header: 'Material',
+    header: 'Chất liệu',
     cell: ({ row }) => <p>{row.original.material?.materialName || 'N/A'}</p>
   },
   {
     accessorKey: 'materialDetail',
-    header: 'Material Detail',
+    header: 'Chi tiết Chất liệu',
     cell: ({ row }) => <p>{row.getValue<string>('materialDetail') || 'N/A'}</p>
   },
   {
     accessorKey: 'status',
-    header: 'Status',
+    header: 'Trạng thái',
     cell: ({ row }) => {
       const status = row.getValue<string>('status')
       return <p>{status.charAt(0).toUpperCase() + status.slice(1)}</p>
     }
   },
   {
-    id: 'actions',
+    id: 'Chức năng',
     cell: ({ row }) => <CellAction data={row.original} />
   }
 ]
