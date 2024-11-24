@@ -37,11 +37,10 @@ const AddProductForm = () => {
       name: '',
       category: { _id: '', categoryName: '', description: '' },
       description: '',
-      SKU: '',
       images: [],
       material: { _id: '', materialName: '', description: '' },
       materialDetail: '',
-      status: 'available'
+      status: 'Đang tạo'
     }
   })
 
@@ -196,7 +195,7 @@ const AddProductForm = () => {
                       className='dark:bg-gray-700 dark:text-gray-100 border rounded-md p-1 min-w-[150px]'
                       disabled
                     >
-                      <option value='creating'>Đang phát triển</option>
+                      <option value='Đang tạo'>Đang tạo</option>
                     </select>
                   </FormControl>
                   <FormMessage />
@@ -226,28 +225,6 @@ const AddProductForm = () => {
               </FormItem>
             )}
           />
-          {/* SKU */}
-          <FormField
-            name='SKU'
-            control={form.control}
-            render={({ field }) => (
-              <FormItem>
-                <Label htmlFor='SKU' className='font-bold dark:text-gray-100'>
-                  SKU
-                </Label>
-                <FormControl>
-                  <Input
-                    id='SKU'
-                    placeholder='SKU sản phẩm'
-                    {...field}
-                    className='dark:bg-gray-700 dark:text-gray-100'
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
           {/* Hình ảnh */}
           <FormField
             name='images'
@@ -270,7 +247,6 @@ const AddProductForm = () => {
               </FormItem>
             )}
           />
-
           {/* Chi tiết chất liệu */}
           <FormField
             name='materialDetail'
@@ -292,7 +268,6 @@ const AddProductForm = () => {
               </FormItem>
             )}
           />
-
           <div className='flex justify-end mt-6 space-x-3 pb-8'>
             <Button type='submit'>Thêm sản phẩm</Button>
           </div>

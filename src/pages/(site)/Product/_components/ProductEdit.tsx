@@ -20,7 +20,6 @@ const FormSchema = z.object({
   name: z.string().min(3, { message: 'Tên sản phẩm phải có ít nhất 3 ký tự.' }),
   category: z.string().min(1, { message: 'Vui lòng chọn danh mục.' }),
   description: z.string().optional(),
-  SKU: z.string().min(1, { message: 'SKU không được để trống.' }),
   images: z.array(z.string()).min(1, { message: 'Phải có ít nhất một ảnh sản phẩm.' }),
   material: z.string().optional(),
   status: z.enum(['creating', 'available', 'out of stock', 'discontinued'], {
@@ -41,21 +40,12 @@ const EditProductForm = () => {
       name: '',
       category: { _id: '', categoryName: '', description: '' },
       description: '',
-      SKU: '',
       images: [],
       material: { _id: '', materialName: '', description: '' },
       materialDetail: '',
-      status: 'available'
+      status: 'Đang tạo'
     }
   })
-
-  const handleUpdateVariant = () => {
-    navigate(`/roduct/variants/edit/${id}`)
-  }
-
-  const handleAddVariant = () => {
-    navigate(`/product/variants/add/${id}`)
-  }
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -100,21 +90,12 @@ const EditProductForm = () => {
       })
       navigate('/product')
     } catch (error: any) {
-      if (error.response && error.response.status === 400 && error.response.data.message === 'SKU đã tồn tại.') {
-        toast({
-          title: 'Lỗi cập nhật sản phẩm',
-          description: 'SKU đã tồn tại. Vui lòng nhập SKU khác.',
-          variant: 'destructive',
-          duration: 3000
-        })
-      } else {
-        toast({
-          title: 'Lỗi cập nhật sản phẩm',
-          description: 'Đã xảy ra lỗi khi cập nhật sản phẩm.',
-          variant: 'destructive',
-          duration: 3000
-        })
-      }
+      toast({
+        title: 'Lỗi cập nhật sản phẩm',
+        description: 'Đã xảy ra lỗi khi cập nhật sản phẩm.',
+        variant: 'destructive',
+        duration: 3000
+      })
       console.error('Lỗi khi cập nhật sản phẩm:', error)
     } finally {
     }
@@ -220,10 +201,9 @@ const EditProductForm = () => {
                       {...field}
                       className='dark:bg-gray-700 dark:text-gray-100 border rounded-md p-1 min-w-[150px]'
                     >
-                      <option value='creating'>Đang phát triển</option>
-                      <option value='available'>Còn hàng</option>
-                      <option value='out of stock'>Hết hàng</option>
-                      <option value='discontinued'>Ngừng sản xuất</option>
+                      <option value='Đang tạo'>Đang tạo</option>
+                      <option value='còn hàng'>Còn hàng</option>
+                      <option value='Khóa'>Khóa</option>
                     </select>
                   </FormControl>
                   <FormMessage />
@@ -253,28 +233,6 @@ const EditProductForm = () => {
               </FormItem>
             )}
           />
-          {/* SKU */}
-          <FormField
-            name='SKU'
-            control={form.control}
-            render={({ field }) => (
-              <FormItem>
-                <Label htmlFor='SKU' className='font-bold dark:text-gray-100'>
-                  SKU
-                </Label>
-                <FormControl>
-                  <Input
-                    id='SKU'
-                    placeholder='SKU sản phẩm'
-                    {...field}
-                    className='dark:bg-gray-700 dark:text-gray-100'
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
           {/* Hình ảnh */}
           <FormField
             name='images'
@@ -297,7 +255,6 @@ const EditProductForm = () => {
               </FormItem>
             )}
           />
-
           {/* Chi tiết chất liệu */}
           <FormField
             name='materialDetail'
@@ -319,10 +276,7 @@ const EditProductForm = () => {
               </FormItem>
             )}
           />
-
           <div className='flex justify-end mt-6 space-x-3 pb-8'>
-            <Button onClick={handleUpdateVariant}>Cập nhật biến thể</Button>
-            <Button onClick={handleAddVariant}>Thêm biến thể</Button>
             <Button type='submit'>Cập nhật sản phẩm</Button>
           </div>
         </form>

@@ -5,20 +5,18 @@ export interface IProduct {
   name: string
   category: ICategory
   description?: string
-  SKU: string
   images: string[]
   material: IMaterial
   materialDetail: string
-  status: 'available' | 'out of stock' | 'discontinued'
+  status: 'Đang tạo' | 'Còn hàng' | 'Khóa'
 }
 
 export interface ProductFormData {
   name: string
   category: string
   description?: string
-  SKU: string
   images: string[]
   material: string
   materialDetail: string
-  status: 'available' | 'out of stock' | 'discontinued'
+  status: 'Đang tạo' | 'Còn hàng' | 'Khóa'
 }

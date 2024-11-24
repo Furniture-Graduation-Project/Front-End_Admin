@@ -7,6 +7,7 @@ import { toast } from '@/hooks/use-toast'
 import { ProductItem } from '@/interface/productItem'
 import { ProductItemService } from '@/services/productItem'
 import { useParams } from 'react-router-dom'
+import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 
 const VariantFormSchema = {
   fixedVariants: ['Màu sắc', 'Mùi hương', 'Kích cỡ']
@@ -29,29 +30,39 @@ const VariantCheckbox = ({
 
 const AddVariants = () => {
   const { productId } = useParams<{ productId: string }>()
-  const { register, handleSubmit } = useForm<{
-    productItems: ProductItem[]
-  }>({
+  const { register, handleSubmit, reset } = useForm<ProductItem>({
     defaultValues: {
-      productItems: []
+      productId: productId || '',
+      variants: [],
+      stock: 0,
+      outStock: 0,
+      price: 0,
+      image: '',
+      SKU: ''
     }
   })
 
   const [selectedVariants, setSelectedVariants] = useState<string[]>([])
-  const [isAddingProductItem, setIsAddingProductItem] = useState(false)
-
   const handleVariantChange = useCallback((variant: string) => {
     setSelectedVariants((prev) => (prev.includes(variant) ? prev.filter((v) => v !== variant) : [...prev, variant]))
   }, [])
 
-  const handleAddProductItem = () => {
-    setIsAddingProductItem(true)
-  }
-
   const handleAddProductItemSubmit = async (data: ProductItem) => {
+    if (!productId) {
+      toast({
+        title: 'Lỗi',
+        description: 'Không tìm thấy ID sản phẩm.',
+        variant: 'destructive'
+      })
+      return
+    }
     try {
-      await ProductItemService.create({ ...data, productId })
-      setIsAddingProductItem(false)
+      const productData = {
+        ...data,
+        productId: productId as string,
+        outStock: data.outStock ?? 0
+      }
+      await ProductItemService.create({ ...productData })
       toast({
         title: 'Thành công',
         description: 'Biến thể mới đã được thêm.',
@@ -78,91 +89,95 @@ const AddVariants = () => {
             onChange={handleVariantChange}
           />
         ))}
-        <Button variant='outline' onClick={handleAddProductItem} className='dark:bg-gray-700 dark:text-gray-100'>
-          Thêm biến thể mới
-        </Button>
-      </div>
-
-      {isAddingProductItem && (
-        <form
-          onSubmit={handleSubmit((data) => handleAddProductItemSubmit(data as unknown as ProductItem))}
-          className='space-y-4 mt-6 p-4 bg-[#f5f6fa] rounded-md dark:bg-gray-800'
-        >
-          <Label className='dark:text-gray-100'>Biến thể mới</Label>
-          <div className='space-y-4'>
-            {selectedVariants.includes('Màu sắc') && (
-              <div>
-                <Label className='dark:text-gray-100'>Màu sắc</Label>
-                <Input
-                  {...register('color' as const)}
-                  placeholder='Nhập màu sắc'
-                  className='dark:bg-gray-700 dark:text-gray-100'
-                />
-              </div>
-            )}
-            {selectedVariants.includes('Mùi hương') && (
-              <div>
-                <Label className='dark:text-gray-100'>Mùi hương</Label>
-                <Input
-                  {...register('scent' as const)}
-                  placeholder='Nhập mùi hương'
-                  className='dark:bg-gray-700 dark:text-gray-100'
-                />
-              </div>
-            )}
-            {selectedVariants.includes('Kích cỡ') && (
-              <div>
-                <Label className='dark:text-gray-100'>Kích cỡ</Label>
-                <Input
-                  {...register('size' as const)}
-                  placeholder='Nhập kích cỡ'
-                  className='dark:bg-gray-700 dark:text-gray-100'
-                />
-              </div>
-            )}
-          </div>
-          <div>
-            <Label className='dark:text-gray-100'>Số lượng</Label>
-            <Input
-              {...register('stock' as const)}
-              placeholder='Số lượng'
-              type='number'
-              className='dark:bg-gray-700 dark:text-gray-100'
-            />
-          </div>
-          <div>
-            <Label className='dark:text-gray-100'>Giá</Label>
-            <Input
-              {...register('price' as const)}
-              placeholder='Giá sản phẩm'
-              type='number'
-              className='dark:bg-gray-700 dark:text-gray-100'
-            />
-          </div>
-          <div>
-            <Label className='dark:text-gray-100'>Ảnh biến thể</Label>
-            <Input
-              {...register('image' as const)}
-              placeholder='URL ảnh (tùy chọn)'
-              type='text'
-              className='dark:bg-gray-700 dark:text-gray-100'
-            />
-          </div>
-
-          <div className='flex space-x-4 justify-end'>
-            <Button type='submit' className='dark:bg-gray-700 dark:text-gray-100'>
-              Thêm biến thể
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant='outline' className='dark:bg-gray-700 dark:text-gray-100'>
+              Thêm biến thể mới
             </Button>
-            <Button
-              variant='outline'
-              onClick={() => setIsAddingProductItem(false)}
-              className='border text-black dark:text-gray-100'
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Thêm biến thể mới</DialogTitle>
+            </DialogHeader>
+            <form
+              onSubmit={handleSubmit(handleAddProductItemSubmit)}
+              className='space-y-4 mt-6 p-4 bg-[#f5f6fa] rounded-md dark:bg-gray-800'
             >
-              Hủy
-            </Button>
-          </div>
-        </form>
-      )}
+              <div className='space-y-4'>
+                {selectedVariants.includes('Màu sắc') && (
+                  <div>
+                    <Label className='dark:text-gray-100'>Màu sắc</Label>
+                    <Input
+                      {...register('variants.0.value')}
+                      placeholder='Nhập màu sắc'
+                      className='dark:bg-gray-700 dark:text-gray-100'
+                    />
+                  </div>
+                )}
+                {selectedVariants.includes('Mùi hương') && (
+                  <div>
+                    <Label className='dark:text-gray-100'>Mùi hương</Label>
+                    <Input
+                      {...register('variants.1.value')}
+                      placeholder='Nhập mùi hương'
+                      className='dark:bg-gray-700 dark:text-gray-100'
+                    />
+                  </div>
+                )}
+                {selectedVariants.includes('Kích cỡ') && (
+                  <div>
+                    <Label className='dark:text-gray-100'>Kích cỡ</Label>
+                    <Input
+                      {...register('variants.2.value')}
+                      placeholder='Nhập kích cỡ'
+                      className='dark:bg-gray-700 dark:text-gray-100'
+                    />
+                  </div>
+                )}
+              </div>
+              <div>
+                <Label className='dark:text-gray-100'>Số lượng</Label>
+                <Input
+                  {...register('stock', { valueAsNumber: true })}
+                  placeholder='Số lượng'
+                  type='number'
+                  className='dark:bg-gray-700 dark:text-gray-100'
+                />
+              </div>
+              <div>
+                <Label className='dark:text-gray-100'>Giá</Label>
+                <Input
+                  {...register('price', { valueAsNumber: true })}
+                  placeholder='Giá sản phẩm'
+                  type='number'
+                  className='dark:bg-gray-700 dark:text-gray-100'
+                />
+              </div>
+              <div>
+                <Label className='dark:text-gray-100'>Ảnh biến thể</Label>
+                <Input
+                  {...register('image')}
+                  placeholder='URL ảnh (tùy chọn)'
+                  type='text'
+                  className='dark:bg-gray-700 dark:text-gray-100'
+                />
+              </div>
+              <div>
+                <Label className='dark:text-gray-100'>SKU</Label>
+                <Input {...register('SKU')} placeholder='Mã SKU' className='dark:bg-gray-700 dark:text-gray-100' />
+              </div>
+              <DialogFooter>
+                <Button type='submit' className='dark:bg-gray-700 dark:text-gray-100'>
+                  Thêm biến thể
+                </Button>
+                <Button variant='outline' className='dark:bg-gray-700 dark:text-gray-100'>
+                  Hủy
+                </Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
+      </div>
     </div>
   )
 }
