@@ -17,6 +17,7 @@ export interface ProductFormData {
   description?: string
   price: number
   SKU: string
+  image: string
   images: string[]
   material?: string
   status: 'available' | 'out of stock' | 'discontinued'

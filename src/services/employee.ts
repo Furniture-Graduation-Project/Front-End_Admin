@@ -1,4 +1,5 @@
 import { axiosInstance } from '@/config/axios'
+import useLocalStorage from '@/hooks/useLocalStorage'
 import { IApiResponse } from '@/interface/apiRespose'
 import { IEmployee } from '@/interface/employee'
 import { AxiosResponse } from 'axios'
@@ -56,10 +57,10 @@ export const EmployeeService = {
     }
   },
 
-  signIn: async (username: string, password: string): Promise<AxiosResponse<IApiResponse<IEmployee>>> => {
+  signIn: async (email: string, password: string): Promise<AxiosResponse<IApiResponse<IEmployee>>> => {
     try {
       const response: AxiosResponse<IApiResponse<IEmployee>> = await axiosInstance.post(`${API}/signin`, {
-        username,
+        email,
         password
       })
       return response

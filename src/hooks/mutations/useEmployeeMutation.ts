@@ -56,7 +56,7 @@ const useEmployeeMutation = ({ action }: MutationQueryProps) => {
     console.log('[EMPLOYEE]', error)
   }
 
-  const mutationFn = async (data: IEmployee | { username: string; password: string }) => {
+  const mutationFn = async (data: IEmployee | { email: string; password: string }) => {
     switch (action) {
       case 'CREATE':
         return EmployeeService.create(data as IEmployee)
@@ -65,8 +65,8 @@ const useEmployeeMutation = ({ action }: MutationQueryProps) => {
       case 'DELETE':
         return EmployeeService.delete((data as IEmployee)._id as string)
       case 'SIGN_IN':
-        const { username, password } = data as { username: string; password: string }
-        return EmployeeService.signIn(username, password)
+        const { email, password } = data as { email: string; password: string }
+        return EmployeeService.signIn(email, password)
       default:
         return Promise.reject(new Error('Invalid action'))
     }
@@ -82,7 +82,7 @@ const useEmployeeMutation = ({ action }: MutationQueryProps) => {
     onError: handleError
   })
 
-  const onSubmit: SubmitHandler<IEmployee | { username: string; password: string }> = (data) => {
+  const onSubmit: SubmitHandler<IEmployee | { email: string; password: string }> = (data) => {
     mutate(data)
   }
 

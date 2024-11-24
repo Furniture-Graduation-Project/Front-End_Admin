@@ -11,6 +11,8 @@ import { toast } from '@/hooks/use-toast'
 import { useNavigate } from 'react-router-dom'
 import { ProductFormData } from '@/interface/product'
 import { ICategory } from '@/interface/category'
+import { FileUpload } from '@/components/UploadImage'
+import UploadImages from '@/components/modals/UploadImages'
 
 const FormSchema = z.object({
   name: z.string().min(3, { message: 'Tên sản phẩm phải có ít nhất 3 ký tự.' }),
@@ -18,7 +20,10 @@ const FormSchema = z.object({
   description: z.string().optional(),
   price: z.number().min(0, { message: 'Giá phải là số lớn hơn hoặc bằng 0.' }),
   SKU: z.string().min(1, { message: 'SKU không được để trống.' }),
-  images: z.array(z.string()).min(1, { message: 'Phải có ít nhất một ảnh sản phẩm.' }),
+  image: z.string().min(1, {
+    message: 'Phải có ít nhất một ảnh sản phẩm.'
+  }),
+  // images: z.array(z.string()).min(1, { message: 'Phải có ít nhất một ảnh sản phẩm.' }),
   material: z.string().optional(),
   status: z.enum(['available', 'out of stock', 'discontinued'], {
     required_error: 'Vui lòng chọn trạng thái sản phẩm.'
@@ -39,7 +44,7 @@ const AddProductForm = () => {
       description: '',
       price: 0,
       SKU: '',
-      images: [],
+      image: '',
       material: '',
       status: 'available'
     }
@@ -197,22 +202,14 @@ const AddProductForm = () => {
           />
           {/* Hình ảnh */}
           <FormField
-            name='images'
+            name='image'
             control={form.control}
             render={({ field }) => (
               <FormItem>
                 <Label htmlFor='images' className='font-bold dark:text-gray-100'>
                   Hình ảnh
                 </Label>
-                <FormControl>
-                  <Input
-                    id='images'
-                    placeholder='URL hình ảnh (ngăn cách bằng dấu phẩy)'
-                    {...field}
-                    className='dark:bg-gray-700 dark:text-gray-100'
-                    onChange={(e) => field.onChange(e.target.value.split(','))}
-                  />
-                </FormControl>
+                <UploadImages />
                 <FormMessage />
               </FormItem>
             )}
