@@ -2,17 +2,17 @@ import { DEFAULT_PAGE_SIZE } from '@/constants/pagination'
 import DataTableCustom from '@/components/common/DataTable/DataTableCustom'
 import React, { useState } from 'react'
 import { columns } from './columns'
-import { useMultipleProductQuery } from '@/hooks/querys/useProductQuery'
+import { useMultipleMaterialQuery } from '@/hooks/querys/useMaterialQuery'
 import { useDataTable } from '@/hooks/useDataTable'
 import { PaginationState } from '@tanstack/react-table'
 import { Plus } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
-import ProductListHeader from './ProductListHeader'
+import MaterialListHeader from './MaterialListHeader '
 
-const ProductList = () => {
+const MaterialList = () => {
   const [pagination, setPagination] = useState<PaginationState>(DEFAULT_PAGE_SIZE)
-  const { data, isLoading, isError, refetch } = useMultipleProductQuery(pagination)
+  const { data, isLoading, isError, refetch } = useMultipleMaterialQuery(pagination)
 
   const { table } = useDataTable({
     data: data?.data ?? [],
@@ -25,23 +25,23 @@ const ProductList = () => {
 
   return (
     <>
-      <h1 className='text-[32px] font-semibold dark:text-gray-100'>Danh sách sản phẩm</h1>
+      <h1 className='text-[32px] font-semibold dark:text-gray-100'>Danh sách chất liệu</h1>
       <div className='w-full pt-5'>
-        <Link to='/product/add'>
+        <Link to='/material/add'>
           <Button variant='outline' className='space-x-2 bg-[#F5F6FA] dark:bg-gray-800 text-black dark:text-gray-100'>
             <Plus size={18} />
-            <span>Thêm sản phẩm</span>
+            <span>Thêm chất liệu</span>
           </Button>
         </Link>
       </div>
       <div className='w-full mt-5 bg-white dark:bg-gray-800 rounded-xl p-4'>
-        <ProductListHeader table={table} setPagination={setPagination} />
+        <MaterialListHeader table={table} setPagination={setPagination} />
         {isLoading && <div className='text-center'>Đang tải...</div>}
-        {isError && <div className='text-red-600'>Lỗi khi tải sản phẩm. Vui lòng thử lại.</div>}
+        {isError && <div className='text-red-600'>Lỗi khi tải chất liệu. Vui lòng thử lại.</div>}
         <DataTableCustom columns={columns} isError={isError} isLoading={isLoading} refetch={refetch} table={table} />
       </div>
     </>
   )
 }
 
-export default ProductList
+export default MaterialList
