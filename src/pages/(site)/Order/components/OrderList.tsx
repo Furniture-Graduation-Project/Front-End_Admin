@@ -18,7 +18,6 @@ const OrderList = () => {
     pagination,
     setPagination
   })
-
   return (
     <>
       <h1 className='text-[32px] font-semibold dark:text-gray-100'>Danh sách đơn hàng</h1>
