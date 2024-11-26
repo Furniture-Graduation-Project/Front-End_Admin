@@ -8,7 +8,7 @@ export interface IProduct {
   images: string[]
   material: IMaterial
   materialDetail: string
-  status: 'Đang tạo' | 'Còn hàng' | 'Khóa'
+  status: 'creating' | 'available' | 'disable'
 }
 
 export interface ProductFormData {
@@ -18,5 +18,5 @@ export interface ProductFormData {
   images: string[]
   material: string
   materialDetail: string
-  status: 'Đang tạo' | 'Còn hàng' | 'Khóa'
+  status: 'creating' | 'available' | 'disable'
 }

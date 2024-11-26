@@ -1,6 +1,6 @@
 import { DEFAULT_PAGE_SIZE } from '@/constants/pagination'
 import DataTableCustom from '@/components/common/DataTable/DataTableCustom'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { columns } from './columns'
 import { useMultipleCategoryQuery } from '@/hooks/querys/useCategoryQuery'
 import { useDataTable } from '@/hooks/useDataTable'
@@ -22,7 +22,6 @@ const CategoryList = () => {
     pagination,
     setPagination
   })
-
   return (
     <>
       <h1 className='text-[32px] font-semibold dark:text-gray-100'>Danh sách danh mục</h1>

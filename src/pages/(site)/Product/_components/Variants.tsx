@@ -1,41 +1,33 @@
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
-import { useForm } from 'react-hook-form'
-import { useState, useCallback } from 'react'
+import { useForm, Controller } from 'react-hook-form'
+import { useState, useCallback, FC } from 'react'
 import { toast } from '@/hooks/use-toast'
-import { ProductItem } from '@/interface/productItem'
 import { ProductItemService } from '@/services/productItem'
-import { useParams } from 'react-router-dom'
 import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { ProductItem } from '@/interface/productItem'
 
 const VariantFormSchema = {
   fixedVariants: ['Màu sắc', 'Mùi hương', 'Kích cỡ']
 }
 
-const VariantCheckbox = ({
-  variant,
-  isChecked,
-  onChange
-}: {
-  variant: string
-  isChecked: boolean
-  onChange: (variant: string) => void
-}) => (
-  <div key={variant} className='flex items-center space-x-2'>
-    <input type='checkbox' checked={isChecked} onChange={() => onChange(variant)} id={variant} />
-    <Label htmlFor={variant}>{variant}</Label>
-  </div>
-)
+interface AddVariantsProps {
+  productId: string
+}
 
-const AddVariants = () => {
-  const { productId } = useParams<{ productId: string }>()
-  const { register, handleSubmit, reset } = useForm<ProductItem>({
+const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { errors },
+    reset
+  } = useForm<ProductItem>({
     defaultValues: {
       productId: productId || '',
       variants: [],
       stock: 0,
-      outStock: 0,
       price: 0,
       image: '',
       SKU: ''
@@ -43,53 +35,101 @@ const AddVariants = () => {
   })
 
   const [selectedVariants, setSelectedVariants] = useState<string[]>([])
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+
   const handleVariantChange = useCallback((variant: string) => {
     setSelectedVariants((prev) => (prev.includes(variant) ? prev.filter((v) => v !== variant) : [...prev, variant]))
   }, [])
+
+  const validateStock = (value: number) => {
+    if (value <= 0) {
+      return 'Số lượng phải lớn hơn 0'
+    }
+    return true
+  }
+
+  const validatePrice = (value: number) => {
+    if (value <= 0) {
+      return 'Giá phải lớn hơn 0'
+    }
+    return true
+  }
+
+  const validateSKU = async (value: string) => {
+    if (!value || value.trim().length < 1) {
+      return 'SKU không được để trống'
+    }
+    return true
+  }
 
   const handleAddProductItemSubmit = async (data: ProductItem) => {
     if (!productId) {
       toast({
         title: 'Lỗi',
         description: 'Không tìm thấy ID sản phẩm.',
-        variant: 'destructive'
+        variant: 'destructive',
+        duration: 3000
       })
-      return
+      return true
     }
+
+    const variantInputs = selectedVariants.map((variant, index) => ({
+      variant,
+      value: data.variants[index]?.value || ''
+    }))
+
     try {
       const productData = {
         ...data,
         productId: productId as string,
-        outStock: data.outStock ?? 0
+        variants: variantInputs
       }
       await ProductItemService.create({ ...productData })
       toast({
         title: 'Thành công',
         description: 'Biến thể mới đã được thêm.',
-        variant: 'success'
+        variant: 'success',
+        duration: 3000
       })
-    } catch (error) {
-      toast({
-        title: 'Lỗi',
-        description: 'Đã xảy ra lỗi khi thêm biến thể.',
-        variant: 'destructive'
-      })
+    } catch (error: any) {
+      if (error.response && error.response.status === 409) {
+        toast({
+          title: 'Mã SKU đã tồn tại !',
+          variant: 'destructive',
+          duration: 3000
+        })
+      } else {
+        toast({
+          title: 'Lỗi',
+          description: 'Đã xảy ra lỗi khi thêm biến thể.',
+          variant: 'destructive',
+          duration: 3000
+        })
+      }
     }
   }
 
+  const handleCancel = () => {
+    setIsDialogOpen(false)
+    reset()
+  }
+
   return (
-    <div className='space-y-4 pb-8 bg-[#f5f6fa] dark:bg-gray-900'>
+    <div className='space-y-4 pb-8 bg-[#f5f6fa] dark:bg-gray-900 container'>
       <Label className='font-bold text-2xl dark:text-gray-100'>Biến thể sản phẩm</Label>
       <div className='flex flex-wrap gap-4'>
         {VariantFormSchema.fixedVariants.map((variant) => (
-          <VariantCheckbox
-            key={variant}
-            variant={variant}
-            isChecked={selectedVariants.includes(variant)}
-            onChange={handleVariantChange}
-          />
+          <div key={variant} className='flex items-center space-x-2'>
+            <input
+              type='checkbox'
+              checked={selectedVariants.includes(variant)}
+              onChange={() => handleVariantChange(variant)}
+              id={variant}
+            />
+            <Label htmlFor={variant}>{variant}</Label>
+          </div>
         ))}
-        <Dialog>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button variant='outline' className='dark:bg-gray-700 dark:text-gray-100'>
               Thêm biến thể mới
@@ -97,61 +137,52 @@ const AddVariants = () => {
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Thêm biến thể mới</DialogTitle>
+              <DialogTitle className=' dark:text-gray-100'>Thêm biến thể mới</DialogTitle>
             </DialogHeader>
             <form
               onSubmit={handleSubmit(handleAddProductItemSubmit)}
               className='space-y-4 mt-6 p-4 bg-[#f5f6fa] rounded-md dark:bg-gray-800'
             >
               <div className='space-y-4'>
-                {selectedVariants.includes('Màu sắc') && (
-                  <div>
-                    <Label className='dark:text-gray-100'>Màu sắc</Label>
-                    <Input
-                      {...register('variants.0.value')}
-                      placeholder='Nhập màu sắc'
-                      className='dark:bg-gray-700 dark:text-gray-100'
+                {selectedVariants.map((variant, index) => (
+                  <div key={variant}>
+                    <Label className='dark:text-gray-100'>{variant}</Label>
+                    <Controller
+                      name={`variants.${index}.value`}
+                      control={control}
+                      render={({ field }) => (
+                        <Input
+                          {...field}
+                          placeholder={`Nhập ${variant.toLowerCase()}`}
+                          className='dark:bg-gray-700 dark:text-gray-100'
+                        />
+                      )}
                     />
+                    {errors.variants?.[index]?.value && (
+                      <p className='text-red-500 text-sm'>{errors.variants[index]?.value?.message}</p>
+                    )}
                   </div>
-                )}
-                {selectedVariants.includes('Mùi hương') && (
-                  <div>
-                    <Label className='dark:text-gray-100'>Mùi hương</Label>
-                    <Input
-                      {...register('variants.1.value')}
-                      placeholder='Nhập mùi hương'
-                      className='dark:bg-gray-700 dark:text-gray-100'
-                    />
-                  </div>
-                )}
-                {selectedVariants.includes('Kích cỡ') && (
-                  <div>
-                    <Label className='dark:text-gray-100'>Kích cỡ</Label>
-                    <Input
-                      {...register('variants.2.value')}
-                      placeholder='Nhập kích cỡ'
-                      className='dark:bg-gray-700 dark:text-gray-100'
-                    />
-                  </div>
-                )}
+                ))}
               </div>
               <div>
                 <Label className='dark:text-gray-100'>Số lượng</Label>
                 <Input
-                  {...register('stock', { valueAsNumber: true })}
+                  {...register('stock', { validate: validateStock })}
                   placeholder='Số lượng'
                   type='number'
                   className='dark:bg-gray-700 dark:text-gray-100'
                 />
+                {errors.stock && <p className='text-red-500 text-sm'>{errors.stock?.message}</p>}
               </div>
               <div>
                 <Label className='dark:text-gray-100'>Giá</Label>
                 <Input
-                  {...register('price', { valueAsNumber: true })}
+                  {...register('price', { validate: validatePrice })}
                   placeholder='Giá sản phẩm'
                   type='number'
                   className='dark:bg-gray-700 dark:text-gray-100'
                 />
+                {errors.price && <p className='text-red-500 text-sm'>{errors.price?.message}</p>}
               </div>
               <div>
                 <Label className='dark:text-gray-100'>Ảnh biến thể</Label>
@@ -164,13 +195,18 @@ const AddVariants = () => {
               </div>
               <div>
                 <Label className='dark:text-gray-100'>SKU</Label>
-                <Input {...register('SKU')} placeholder='Mã SKU' className='dark:bg-gray-700 dark:text-gray-100' />
+                <Input
+                  {...register('SKU', { validate: validateSKU })}
+                  placeholder='Mã SKU'
+                  className='dark:bg-gray-700 dark:text-gray-100'
+                />
+                {errors.SKU && <p className='text-red-500 text-sm'>{errors.SKU?.message}</p>}
               </div>
               <DialogFooter>
                 <Button type='submit' className='dark:bg-gray-700 dark:text-gray-100'>
                   Thêm biến thể
                 </Button>
-                <Button variant='outline' className='dark:bg-gray-700 dark:text-gray-100'>
+                <Button variant='outline' className='dark:bg-gray-700 dark:text-gray-100' onClick={handleCancel}>
                   Hủy
                 </Button>
               </DialogFooter>

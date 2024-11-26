@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { IMaterial } from '@/interface/material' // Thay đổi import từ ICategory thành IMaterial
+import { IMaterial } from '@/interface/material'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { toast } from '@/hooks/use-toast'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { MaterialService } from '@/services/material' // Thay đổi từ CategoryService thành MaterialService
+import { MaterialService } from '@/services/material'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
 import { Label } from '@/components/ui/label'
 
@@ -36,10 +36,8 @@ const MaterialEdit = () => {
         console.error('ID không tồn tại')
         return
       }
-
       try {
         const response = await MaterialService.getMaterialById(id)
-        console.log(response)
         setMaterial(response.data)
         form.reset(response.data)
       } catch (error) {
@@ -47,7 +45,8 @@ const MaterialEdit = () => {
         toast({
           title: 'Lỗi',
           description: 'Không thể lấy thông tin chất liệu.',
-          variant: 'destructive'
+          variant: 'destructive',
+          duration: 3000
         })
       } finally {
         setLoading(false)
@@ -64,7 +63,8 @@ const MaterialEdit = () => {
       toast({
         title: 'Cập nhật thành công',
         description: `chất liệu ${data.materialName} đã được cập nhật thành công.`,
-        variant: 'success'
+        variant: 'success',
+        duration: 3000
       })
       navigate('/material')
     } catch (error) {
@@ -72,7 +72,8 @@ const MaterialEdit = () => {
       toast({
         title: 'Lỗi cập nhật',
         description: 'Đã xảy ra lỗi khi cập nhật chất liệu.',
-        variant: 'destructive'
+        variant: 'destructive',
+        duration: 3000
       })
     } finally {
       setLoading(false)

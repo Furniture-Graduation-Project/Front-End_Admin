@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input'
 import { CategoryService } from '@/services/category'
 import { ProductService } from '@/services/product'
 import { useState, useEffect } from 'react'
-import { IProduct } from '@/interface/product'
+import { ProductFormData } from '@/interface/product'
 import { ICategory } from '@/interface/category'
 import { toast } from '@/hooks/use-toast'
 import { useNavigate } from 'react-router-dom'
@@ -19,11 +19,10 @@ const FormSchema = z.object({
   name: z.string().min(3, { message: 'Tên sản phẩm phải có ít nhất 3 ký tự.' }),
   category: z.string().min(1, { message: 'Vui lòng chọn danh mục.' }),
   description: z.string().optional(),
-  SKU: z.string().min(1, { message: 'SKU không được để trống.' }),
   images: z.array(z.string()).min(1, { message: 'Phải có ít nhất một ảnh sản phẩm.' }),
   material: z.string().min(1, { message: 'Vui lòng chọn chất liệu.' }),
   materialDetail: z.string().optional(),
-  status: z.enum(['creating', 'available', 'out of stock', 'discontinued'])
+  status: z.enum(['creating', 'available', 'disable'])
 })
 
 const AddProductForm = () => {
@@ -31,16 +30,16 @@ const AddProductForm = () => {
   const [materials, setMaterials] = useState<IMaterial[]>([])
   const navigate = useNavigate()
 
-  const form = useForm<IProduct>({
+  const form = useForm<ProductFormData>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       name: '',
-      category: { _id: '', categoryName: '', description: '' },
+      category: '',
       description: '',
       images: [],
-      material: { _id: '', materialName: '', description: '' },
+      material: '',
       materialDetail: '',
-      status: 'Đang tạo'
+      status: 'creating'
     }
   })
 
@@ -65,7 +64,7 @@ const AddProductForm = () => {
     fetchCategories()
   }, [])
 
-  const handleSubmit = async (data: IProduct) => {
+  const handleSubmit = async (data: ProductFormData) => {
     try {
       await ProductService.create(data)
       toast({
@@ -195,7 +194,7 @@ const AddProductForm = () => {
                       className='dark:bg-gray-700 dark:text-gray-100 border rounded-md p-1 min-w-[150px]'
                       disabled
                     >
-                      <option value='Đang tạo'>Đang tạo</option>
+                      <option value='creating'>Đang tạo</option>
                     </select>
                   </FormControl>
                   <FormMessage />

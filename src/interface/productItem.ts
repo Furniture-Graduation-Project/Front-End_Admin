@@ -1,8 +1,7 @@
-interface Variant {
+export interface Variant {
   variant: string
   value: string
 }
-
 export interface ProductItem {
   _id?: string
   productId: string

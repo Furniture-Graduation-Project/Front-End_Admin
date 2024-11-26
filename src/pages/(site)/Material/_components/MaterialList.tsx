@@ -1,6 +1,6 @@
 import { DEFAULT_PAGE_SIZE } from '@/constants/pagination'
 import DataTableCustom from '@/components/common/DataTable/DataTableCustom'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { columns } from './columns'
 import { useMultipleMaterialQuery } from '@/hooks/querys/useMaterialQuery'
 import { useDataTable } from '@/hooks/useDataTable'

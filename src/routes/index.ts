@@ -31,8 +31,6 @@ import Material from '@/pages/(site)/Material/Material'
 import MaterialList from '@/pages/(site)/Material/_components/MaterialList'
 import AddMaterialForm from '@/pages/(site)/Material/_components/MaterialAdd'
 import MaterialEdit from '@/pages/(site)/Material/_components/MaterialEdit'
-import AddVariants from '@/pages/(site)/Product/_components/Variants'
-// import EmployeeSignIn from '@/pages/(site)/Employee/_components/EmployeeSignIn'
 
 const routes: IRoute[] = [
   { path: '/', component: Signin, layout: AuthLayout },
@@ -65,8 +63,7 @@ const routes: IRoute[] = [
     children: [
       { path: '', component: ProductList },
       { path: 'add', component: ProductAdd },
-      { path: 'edit/:id', component: ProductEdit },
-      { path: 'variants/add/:id', component: AddVariants }
+      { path: 'edit/:id', component: ProductEdit }
     ]
   },
   {

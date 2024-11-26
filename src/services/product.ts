@@ -17,9 +17,9 @@ export const ProductService = {
     }
   },
 
-  getById: async (id: string): Promise<AxiosResponse<IApiResponse<IProduct>>> => {
+  getById: async (id: string): Promise<AxiosResponse<IApiResponse<ProductFormData>>> => {
     try {
-      const response: AxiosResponse<IApiResponse<IProduct>> = await axiosInstance.get(`${API_URL}/${id}`)
+      const response: AxiosResponse<IApiResponse<ProductFormData>> = await axiosInstance.get(`${API_URL}/${id}`)
       return response
     } catch (error) {
       console.error(`Lỗi khi lấy sản phẩm với ID ${id}:`, error)
@@ -95,6 +95,28 @@ export const ProductService = {
       return response
     } catch (error) {
       console.error(`Lỗi khi tìm kiếm sản phẩm theo tên "${name}":`, error)
+      throw error
+    }
+  },
+  getProductCountByCategory: async (categoryId: string): Promise<any> => {
+    try {
+      const response: IApiResponse<any> = await axiosInstance.get(`${API_URL}/count-by-category`, {
+        params: { categoryId }
+      })
+      return response.data.data
+    } catch (error) {
+      console.error('Lỗi khi lấy số lượng sản phẩm theo danh mục:', error)
+      throw error
+    }
+  },
+  getProductCountByMaterial: async (materialId: string): Promise<any> => {
+    try {
+      const response: IApiResponse<any> = await axiosInstance.get(`${API_URL}/count-by-material`, {
+        params: { materialId }
+      })
+      return response.data.data
+    } catch (error) {
+      console.error('Lỗi khi lấy số lượng sản phẩm theo chất liệu:', error)
       throw error
     }
   }
