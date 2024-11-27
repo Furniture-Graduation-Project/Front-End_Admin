@@ -17,7 +17,7 @@ export const columns: ColumnDef<UserColumn>[] = [
     accessorKey: 'name',
     header: ({ column }) => {
       return (
-        <Button variant='column' className='p-0' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+        <Button variant='default' className='p-0' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
           Name
           <ArrowUpDown className='ml-2 h-4 w-4' />
         </Button>
@@ -28,7 +28,7 @@ export const columns: ColumnDef<UserColumn>[] = [
     accessorKey: 'email',
     header: ({ column }) => {
       return (
-        <Button variant='column' className='p-0' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+        <Button variant='default' className='p-0' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
           Email
           <ArrowUpDown className='ml-2 h-4 w-4' />
         </Button>
@@ -43,7 +43,7 @@ export const columns: ColumnDef<UserColumn>[] = [
     accessorKey: 'createdAt',
     header: ({ column }) => {
       return (
-        <Button variant='column' className='p-0' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+        <Button variant='default' className='p-0' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
           Date
           <ArrowUpDown className='ml-2 h-4 w-4' />
         </Button>

@@ -4,5 +4,6 @@ export interface IShipment {
     title: string
     description: string
     shipmentDate?: Date
-  }[]
+  }[];
+  locations?: string[];
 }
