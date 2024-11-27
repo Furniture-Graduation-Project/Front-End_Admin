@@ -1,7 +1,7 @@
 import { IApiResponse } from '@/interface/apiRespose'
 import { AxiosResponse } from 'axios'
 import { axiosInstance } from '@/config/axios'
-import { IMaterial, IMaterialDataResponse } from '@/interface/material'
+import { IMaterial } from '@/interface/material'
 
 const API_URL = '/material'
 
@@ -26,9 +26,9 @@ export const MaterialService = {
     }
   },
 
-  getMaterialById: async (id: string): Promise<IMaterialDataResponse> => {
+  getMaterialById: async (id: string): Promise<IApiResponse<IMaterial>> => {
     try {
-      const response: AxiosResponse<IMaterialDataResponse> = await axiosInstance.get(`${API_URL}/${id}`)
+      const response: AxiosResponse<IApiResponse<IMaterial>> = await axiosInstance.get(`${API_URL}/${id}`)
       return response.data
     } catch (error) {
       console.error(`Lỗi khi lấy vật liệu với ID ${id}:`, error)

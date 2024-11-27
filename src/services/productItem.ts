@@ -13,8 +13,8 @@ export const ProductItemService = {
     return response
   },
 
-  create: async () => {
-    const response = await axiosInstance.post(API)
+  create: async (data: any) => {
+    const response = await axiosInstance.post(API, data)
     return response
   },
 

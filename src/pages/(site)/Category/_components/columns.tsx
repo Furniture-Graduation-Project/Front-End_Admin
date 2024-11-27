@@ -1,5 +1,5 @@
 import { ColumnDef } from '@tanstack/react-table'
-import { CellAction } from './cell-action' 
+import { CellAction } from './cell-action'
 import { ICategory } from '@/interface/category'
 
 export const columns: ColumnDef<ICategory>[] = [
