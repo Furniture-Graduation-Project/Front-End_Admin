@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input'
 import { CategoryService } from '@/services/category'
 import { ProductService } from '@/services/product'
 import { useState, useEffect } from 'react'
-import { IProduct } from '@/interface/product'
+import { ProductFormData } from '@/interface/product'
 import { ICategory } from '@/interface/category'
 import { toast } from '@/hooks/use-toast'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -20,10 +20,9 @@ const FormSchema = z.object({
   name: z.string().min(3, { message: 'Tên sản phẩm phải có ít nhất 3 ký tự.' }),
   category: z.string().min(1, { message: 'Vui lòng chọn danh mục.' }),
   description: z.string().optional(),
-  SKU: z.string().min(1, { message: 'SKU không được để trống.' }),
   images: z.array(z.string()).min(1, { message: 'Phải có ít nhất một ảnh sản phẩm.' }),
   material: z.string().optional(),
-  status: z.enum(['creating', 'available', 'out of stock', 'discontinued'], {
+  status: z.enum(['creating', 'available', 'disable'], {
     required_error: 'Vui lòng chọn trạng thái sản phẩm.'
   })
 })
@@ -31,31 +30,21 @@ const FormSchema = z.object({
 const EditProductForm = () => {
   const [categories, setCategories] = useState<ICategory[]>([])
   const [materials, setMaterials] = useState<IMaterial[]>([])
-  const [product, setProduct] = useState<IProduct | null>(null)
+  const [product, setProduct] = useState<ProductFormData | null>(null)
   const navigate = useNavigate()
   const { id } = useParams<{ id: string }>()
-
-  const form = useForm<IProduct>({
+  const form = useForm<ProductFormData>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       name: '',
-      category: { _id: '', categoryName: '', description: '' },
+      category: '',
       description: '',
-      SKU: '',
       images: [],
-      material: { _id: '', materialName: '', description: '' },
+      material: '',
       materialDetail: '',
-      status: 'available'
+      status: 'creating'
     }
   })
-
-  const handleUpdateVariant = () => {
-    navigate(`/roduct/variants/edit/${id}`)
-  }
-
-  const handleAddVariant = () => {
-    navigate(`/product/variants/add/${id}`)
-  }
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -89,32 +78,25 @@ const EditProductForm = () => {
     fetchProduct()
   }, [id, form])
 
-  const handleSubmit = async (data: IProduct) => {
+  const handleSubmit = async (data: ProductFormData) => {
     try {
-      await ProductService.update(id, data)
+      if (id) {
+        await ProductService.update(id, data)
+        toast({
+          title: 'Cập nhật thành công',
+          description: `Sản phẩm ${data.name} đã được cập nhật thành công.`,
+          variant: 'success',
+          duration: 3000
+        })
+        navigate('/product')
+      }
+    } catch (error: any) {
       toast({
-        title: 'Cập nhật thành công',
-        description: `Sản phẩm ${data.name} đã được cập nhật thành công.`,
-        variant: 'success',
+        title: 'Lỗi cập nhật sản phẩm',
+        description: 'Đã xảy ra lỗi khi cập nhật sản phẩm.',
+        variant: 'destructive',
         duration: 3000
       })
-      navigate('/product')
-    } catch (error: any) {
-      if (error.response && error.response.status === 400 && error.response.data.message === 'SKU đã tồn tại.') {
-        toast({
-          title: 'Lỗi cập nhật sản phẩm',
-          description: 'SKU đã tồn tại. Vui lòng nhập SKU khác.',
-          variant: 'destructive',
-          duration: 3000
-        })
-      } else {
-        toast({
-          title: 'Lỗi cập nhật sản phẩm',
-          description: 'Đã xảy ra lỗi khi cập nhật sản phẩm.',
-          variant: 'destructive',
-          duration: 3000
-        })
-      }
       console.error('Lỗi khi cập nhật sản phẩm:', error)
     } finally {
     }
@@ -220,10 +202,9 @@ const EditProductForm = () => {
                       {...field}
                       className='dark:bg-gray-700 dark:text-gray-100 border rounded-md p-1 min-w-[150px]'
                     >
-                      <option value='creating'>Đang phát triển</option>
+                      <option value='creating'>Đang tạo</option>
                       <option value='available'>Còn hàng</option>
-                      <option value='out of stock'>Hết hàng</option>
-                      <option value='discontinued'>Ngừng sản xuất</option>
+                      <option value='disable'>Khóa</option>
                     </select>
                   </FormControl>
                   <FormMessage />
@@ -253,28 +234,6 @@ const EditProductForm = () => {
               </FormItem>
             )}
           />
-          {/* SKU */}
-          <FormField
-            name='SKU'
-            control={form.control}
-            render={({ field }) => (
-              <FormItem>
-                <Label htmlFor='SKU' className='font-bold dark:text-gray-100'>
-                  SKU
-                </Label>
-                <FormControl>
-                  <Input
-                    id='SKU'
-                    placeholder='SKU sản phẩm'
-                    {...field}
-                    className='dark:bg-gray-700 dark:text-gray-100'
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
           {/* Hình ảnh */}
           <FormField
             name='images'
@@ -297,7 +256,6 @@ const EditProductForm = () => {
               </FormItem>
             )}
           />
-
           {/* Chi tiết chất liệu */}
           <FormField
             name='materialDetail'
@@ -319,14 +277,12 @@ const EditProductForm = () => {
               </FormItem>
             )}
           />
-
           <div className='flex justify-end mt-6 space-x-3 pb-8'>
-            <Button onClick={handleUpdateVariant}>Cập nhật biến thể</Button>
-            <Button onClick={handleAddVariant}>Thêm biến thể</Button>
             <Button type='submit'>Cập nhật sản phẩm</Button>
           </div>
         </form>
       </Form>
+      {id && <AddVariants productId={id} />}
     </div>
   )
 }
