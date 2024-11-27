@@ -1,4 +1,15 @@
-import { BarChart, CreditCard, Folder, Mails, Newspaper, Package, TicketCheck, User, UserCog } from 'lucide-react'
+import {
+  Anvil,
+  BarChart,
+  CreditCard,
+  Folder,
+  Mails,
+  Newspaper,
+  Package,
+  TicketCheck,
+  User,
+  UserCog
+} from 'lucide-react'
 
 const navMenu = {
   user: {
@@ -23,6 +34,12 @@ const navMenu = {
       title: 'Danh Mục',
       url: '/category',
       icon: Folder,
+      roles: ['admin', 'product']
+    },
+    {
+      title: 'Chất liệu',
+      url: '/material',
+      icon: Anvil,
       roles: ['admin', 'product']
     },
     {
