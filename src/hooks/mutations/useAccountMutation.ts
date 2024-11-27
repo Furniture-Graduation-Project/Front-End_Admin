@@ -1,11 +1,9 @@
-import { IUser } from '@/interface/account'
 import { AccountService } from '@/services/account'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { SubmitHandler } from 'react-hook-form'
 import { useToast } from '@/hooks/use-toast'
 
 type MutationQueryProps = {
-  action: 'SIGNIN' | 'SIGNUP' | 'DELETE'
+  action: 'LOCK' | 'UNLOCK' | 'DELETE'
 }
 
 const useAccountMutation = ({ action }: MutationQueryProps) => {
@@ -14,64 +12,61 @@ const useAccountMutation = ({ action }: MutationQueryProps) => {
 
   const handleSuccess = () => {
     queryClient.invalidateQueries({
-      queryKey: ['ACCOUNT']
+      queryKey: ['ACCOUNT'],
     })
     switch (action) {
-      case 'SIGNUP':
+      case 'LOCK':
         toast({
-          title: 'Đăng ký thành công!',
-          description: 'Chuyển đến trang đăng nhập...',
-          variant: 'success'
+          title: 'Khóa tài khoản thành công!',
+          description: 'Tài khoản đã được khóa.',
+          variant: 'success',
         })
         break
-      case 'SIGNIN':
+      case 'UNLOCK':
         toast({
-          title: 'Đăng nhập thành công!',
-          description: 'Chuyển đến trang chính...',
-          variant: 'success'
+          title: 'Mở khóa tài khoản thành công!',
+          description: 'Tài khoản đã được mở khóa.',
+          variant: 'success',
         })
         break
       case 'DELETE':
         toast({
-          title: 'Xóa thành công!',
-          variant: 'success'
+          title: 'Xóa tài khoản thành công!',
+          variant: 'success',
         })
         break
     }
   }
 
-  const handleError = (error: { response: { data: { message: string } } }) => {
+  const handleError = (error: any) => {
     const message = error.response?.data?.message || 'Có lỗi xảy ra!'
     toast({
       title: 'Có lỗi xảy ra!',
       description: message,
-      variant: 'destructive'
+      variant: 'destructive',
     })
     console.log('[ACCOUNT]', error)
   }
 
   const { mutate, ...rest } = useMutation({
-    mutationFn: async (data: IUser) => {
+    mutationKey: ['ACCOUNT'],
+    mutationFn: async (id: string) => {
       switch (action) {
-        case 'SIGNUP':
-          return await AccountService.signUp(data)
-        case 'SIGNIN':
-          return await AccountService.signIn(data)
+        case 'LOCK':
+          return await AccountService.lockUser(id, { active: false })
+        case 'UNLOCK':
+          return await AccountService.lockUser(id, { active: true })
         case 'DELETE':
-          return await AccountService.delete(data?._id || '')
+          return await AccountService.delete(id)
         default:
           return null
       }
     },
     onSuccess: handleSuccess,
-    onError: handleError
+    onError: handleError,
   })
 
-  const onSubmit: SubmitHandler<IUser> = (data) => {
-    mutate(data)
-  }
-
-  return { mutate, onSubmit, ...rest }
+  return { mutate, ...rest }
 }
 
 export default useAccountMutation
