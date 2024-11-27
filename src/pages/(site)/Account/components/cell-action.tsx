@@ -71,7 +71,7 @@ export const CellAction = ({ data }: CellActionProps) => {
         <DropdownMenuContent align='end'>
           <DropdownMenuLabel className='font-bold'>Actions</DropdownMenuLabel>
           <DropdownMenuItem>
-            <Link to={`/account/${data.id}`} className='flex items-center'>
+            <Link to={`/account/${data._id}`} className='flex items-center'>
               <UserSearch className='mr-2 h-4 w-4' />
               Info
             </Link>
