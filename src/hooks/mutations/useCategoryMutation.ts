@@ -1,4 +1,4 @@
-import { CategoryService } from '@/services/category' // Import CategoryService
+import { CategoryService } from '@/services/category'
 import { useMutation } from '@tanstack/react-query'
 
 type CategoryMutation = 'CREATE' | 'UPDATE' | 'DELETE'

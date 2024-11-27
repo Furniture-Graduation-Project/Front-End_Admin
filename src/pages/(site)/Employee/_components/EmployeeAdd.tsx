@@ -201,7 +201,7 @@ const AddEmployeeForm = () => {
             type='submit'
             variant='default'
             disabled={loading}
-            className='bg-blue-600 hover:bg-blue-400 dark:bg-blue-500 dark:hover:bg-blue-400'
+            className='bg-black text-white hover:bg-gray-800 dark:bg-black dark:hover:bg-gray-800 ml-auto block'
           >
             {loading ? 'Đang xử lý...' : 'Thêm nhân viên'}
           </Button>

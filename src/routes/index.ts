@@ -14,16 +14,7 @@ import ProductEdit from '@/pages/(site)/Product/_components/ProductEdit'
 import Product from '@/pages/(site)/Product/Product'
 import CategoryList from '@/pages/(site)/Category/_components/CategoryList'
 import CategoryAdd from '@/pages/(site)/Category/_components/CategoryAdd'
-import Category from '@/pages/(site)/Category/Category'
 import CategoryEdit from '@/pages/(site)/Category/_components/CategoryEdit'
-import Voucher from '@/pages/(site)/Voucher/Voucher'
-import VoucherList from '@/pages/(site)/Voucher/VoucherList'
-import VoucherAdd from '@/pages/(site)/Voucher/VoucherAdd'
-import VoucherEdit from '@/pages/(site)/Voucher/VoucherEdit'
-import Promotion from '@/pages/(site)/Promotion/Promotion'
-import PromotionList from '@/pages/(site)/Promotion/PromotionList'
-import PromotionAdd from '@/pages/(site)/Promotion/PromotionAdd'
-import PromotionEdit from '@/pages/(site)/Promotion/PromotionEdit'
 import AccountPage from '@/pages/(site)/Account/AccountPage'
 import AccountDetail from '@/pages/(site)/Account/components/AccountDetail/AccountDetail'
 import AccountLayout from '@/pages/(site)/Account/AccountLayout'
@@ -31,23 +22,23 @@ import EmployeePage from '@/pages/(site)/Employee/EmployeePage'
 import AddEmployeeForm from '@/pages/(site)/Employee/_components/EmployeeAdd'
 import EmployeeEdit from '@/pages/(site)/Employee/_components/EmployeeEdit'
 import EmployeeList from '@/pages/(site)/Employee/_components/EmployeeList'
-import SettingsPage from '@/pages/(site)/Setting/Setting'
+import SettingsPage from '@/pages/(site)/Settings/page'
 import OrderPage from '@/pages/(site)/Order/OrderPage'
 import OrderList from '@/pages/(site)/Order/components/OrderList'
 import OrderEdit from '@/pages/(site)/Order/components/OrderEdit'
-import SettingAccount from '@/pages/(site)/Setting/_component/SettingAccount'
-import SettingPassword from '@/pages/(site)/Setting/_component/SettingPassword'
-import BlogList from '@/pages/(site)/Blog/BlogList'
-import BlogAdd from '@/pages/(site)/Blog/BlogAdd'
-import BlogEdit from '@/pages/(site)/Blog/BlogEdit'
-import Blog from '@/pages/(site)/Blog/Blog'
+import Category from '@/pages/(site)/Category/Category'
+import Material from '@/pages/(site)/Material/Material'
+import MaterialList from '@/pages/(site)/Material/_components/MaterialList'
+import AddMaterialForm from '@/pages/(site)/Material/_components/MaterialAdd'
+import MaterialEdit from '@/pages/(site)/Material/_components/MaterialEdit'
+import AddVariants from '@/pages/(site)/Product/_components/Variants'
+import TestPage from '@/pages/(site)/test'
 // import EmployeeSignIn from '@/pages/(site)/Employee/_components/EmployeeSignIn'
 
 const routes: IRoute[] = [
   { path: '/', component: Signin, layout: AuthLayout },
   { path: '/signup', component: Signup, layout: AuthLayout },
   { path: '/dashboard', component: Dashboard, layout: MainLayout },
-
   {
     path: '/category',
     component: Category,
@@ -59,13 +50,24 @@ const routes: IRoute[] = [
     ]
   },
   {
+    path: '/material',
+    component: Material,
+    layout: MainLayout,
+    children: [
+      { path: '', component: MaterialList },
+      { path: 'add', component: AddMaterialForm },
+      { path: 'edit/:id', component: MaterialEdit }
+    ]
+  },
+  {
     path: '/product',
     component: Product,
     layout: MainLayout,
     children: [
       { path: '', component: ProductList },
       { path: 'add', component: ProductAdd },
-      { path: 'edit/:id', component: ProductEdit }
+      { path: 'edit/:id', component: ProductEdit },
+      { path: 'variants/add/:id', component: AddVariants }
     ]
   },
   {
@@ -78,32 +80,12 @@ const routes: IRoute[] = [
     ]
   },
   {
-    path: '/voucher',
-    component: Voucher,
-    layout: MainLayout,
-    children: [
-      { path: '', component: VoucherList },
-      { path: 'add', component: VoucherAdd },
-      { path: ':id/edit', component: VoucherEdit }
-    ]
-  },
-  {
     path: '/order',
     component: OrderPage,
     layout: MainLayout,
     children: [
       { path: '', component: OrderList },
       { path: 'edit/:id', component: OrderEdit }
-    ]
-  },
-  {
-    path: '/blog',
-    component: Blog,
-    layout: MainLayout,
-    children: [
-      { path: '', component: BlogList },
-      { path: 'add', component: BlogAdd },
-      { path: 'edit/:id', component: BlogEdit }
     ]
   },
   {
@@ -134,17 +116,12 @@ const routes: IRoute[] = [
   {
     path: '/setting',
     component: SettingsPage,
-    layout: MainLayout,
-    children: [
-      {
-        path: '',
-        component: SettingAccount
-      },
-      {
-        path: 'security',
-        component: SettingPassword
-      }
-    ]
+    layout: MainLayout
+  },
+  {
+    path: '/test',
+    component: TestPage,
+    layout: MainLayout
   },
 
   { path: '/*', component: page404, layout: AuthLayout }

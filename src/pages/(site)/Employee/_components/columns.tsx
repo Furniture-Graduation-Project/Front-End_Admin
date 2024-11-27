@@ -14,7 +14,7 @@ export const columns: ColumnDef<IEmployee>[] = [
   },
   {
     accessorKey: 'avatar',
-    header: 'Avatar',
+    header: 'Ảnh đại diện',
     cell: ({ row }) => {
       return (
         <img
@@ -30,51 +30,27 @@ export const columns: ColumnDef<IEmployee>[] = [
   },
   {
     accessorKey: 'fullName',
-    // header: ({ column }) => {
-    //   return (
-    //     <Button className='p-0' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-    //       Full Name
-    //       <ArrowUpDown className='ml-2 h-4 w-4' />
-    //     </Button>
-    //   )
-    // }
-    header: 'Full Name'
+    header: 'Họ và Tên'
   },
   {
     accessorKey: 'username',
-    // header: ({ column }) => {
-    //   return (
-    //     <Button className='p-0' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-    //       User Name
-    //       <ArrowUpDown className='ml-2 h-4 w-4' />
-    //     </Button>
-    //   )
-    // }
-    header: 'User Name'
+    header: 'Tên người dùng'
   },
   {
     accessorKey: 'phoneNumber',
-    header: 'Phone Number'
+    header: 'Số điện thoại'
   },
   {
     accessorKey: 'address',
-    header: 'Address'
+    header: 'Địa chỉ'
   },
   {
     accessorKey: 'role',
-    header: 'Role'
+    header: 'Vai trò'
   },
   {
     accessorKey: 'createdAt',
-    // header: ({ column }) => {
-    //   return (
-    //     <Button className='p-0' onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-    //       Date
-    //       <ArrowUpDown className='ml-2 h-4 w-4' />
-    //     </Button>
-    //   )
-    // },
-    header: 'Date',
+    header: 'Ngày tạo',
     cell: ({ row }) => {
       const formattedDate = format(row.getValue('createdAt'), 'Pp', { locale: vi })
       return <div className='font-medium'>{formattedDate}</div>

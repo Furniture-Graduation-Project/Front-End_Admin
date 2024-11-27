@@ -155,7 +155,6 @@ const VoucherList: React.FC = () => {
 
   if (isLoading) return <div>Loading...</div>;
   if (isError) {
-    console.error('Error loading vouchers:', isError);
     return <div>Error loading vouchers</div>;
   }
 

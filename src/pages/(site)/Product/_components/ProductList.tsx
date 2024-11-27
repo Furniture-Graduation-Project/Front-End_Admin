@@ -1,6 +1,6 @@
 import { DEFAULT_PAGE_SIZE } from '@/constants/pagination'
 import DataTableCustom from '@/components/common/DataTable/DataTableCustom'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { columns } from './columns'
 import { useMultipleProductQuery } from '@/hooks/querys/useProductQuery'
 import { useDataTable } from '@/hooks/useDataTable'
@@ -9,22 +9,13 @@ import { Plus } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import ProductListHeader from './ProductListHeader'
-import { IProduct } from '@/interface/product'
 
 const ProductList = () => {
   const [pagination, setPagination] = useState<PaginationState>(DEFAULT_PAGE_SIZE)
-  const { data, isLoading, isError } = useMultipleProductQuery(pagination)
-
-  const [products, setProducts] = useState<IProduct[]>([])
-
-  useEffect(() => {
-    if (data) {
-      setProducts(data.data)
-    }
-  }, [data])
+  const { data, isLoading, isError, refetch } = useMultipleProductQuery(pagination)
 
   const { table } = useDataTable({
-    data: products,
+    data: data?.data ?? [],
     columns: columns,
     totalData: data?.totalData,
     totalPage: data?.totalPage,
@@ -39,7 +30,7 @@ const ProductList = () => {
         <Link to='/product/add'>
           <Button variant='outline' className='space-x-2 bg-[#F5F6FA] dark:bg-gray-800 text-black dark:text-gray-100'>
             <Plus size={18} />
-            <span>Add Product</span>
+            <span>Thêm sản phẩm</span>
           </Button>
         </Link>
       </div>
@@ -47,15 +38,7 @@ const ProductList = () => {
         <ProductListHeader table={table} setPagination={setPagination} />
         {isLoading && <div className='text-center'>Đang tải...</div>}
         {isError && <div className='text-red-600'>Lỗi khi tải sản phẩm. Vui lòng thử lại.</div>}
-        <DataTableCustom
-          columns={columns}
-          isError={isError}
-          isLoading={isLoading}
-          table={table}
-          refetch={function (): void {
-            throw new Error('Function not implemented.')
-          }}
-        />
+        <DataTableCustom columns={columns} isError={isError} isLoading={isLoading} refetch={refetch} table={table} />
       </div>
     </>
   )

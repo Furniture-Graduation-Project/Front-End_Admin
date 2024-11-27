@@ -1,18 +1,18 @@
-import { DEFAULT_PAGE_SIZE } from '@/constants/pagination';
-import DataTableCustom from '@/components/common/DataTable/DataTableCustom';
-import React, { useState } from 'react';
-import { columns } from './columns';
-import { useMultipleCategoryQuery } from '@/hooks/querys/useCategoryQuery';
-import { useDataTable } from '@/hooks/useDataTable';
-import { PaginationState } from '@tanstack/react-table';
-import { Plus } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import CategoryListHeader from './CategoryListHeader ';
+import { DEFAULT_PAGE_SIZE } from '@/constants/pagination'
+import DataTableCustom from '@/components/common/DataTable/DataTableCustom'
+import React, { useState } from 'react'
+import { columns } from './columns'
+import { useMultipleCategoryQuery } from '@/hooks/querys/useCategoryQuery'
+import { useDataTable } from '@/hooks/useDataTable'
+import { PaginationState } from '@tanstack/react-table'
+import { Plus } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { Button } from '@/components/ui/button'
+import CategoryListHeader from './CategoryListHeader '
 
 const CategoryList = () => {
-  const [pagination, setPagination] = useState<PaginationState>(DEFAULT_PAGE_SIZE);
-  const { data, isLoading, isError, refetch } = useMultipleCategoryQuery(pagination);
+  const [pagination, setPagination] = useState<PaginationState>(DEFAULT_PAGE_SIZE)
+  const { data, isLoading, isError, refetch } = useMultipleCategoryQuery(pagination)
 
   const { table } = useDataTable({
     data: data?.data ?? [],
@@ -20,8 +20,8 @@ const CategoryList = () => {
     totalData: data?.totalData,
     totalPage: data?.totalPage,
     pagination,
-    setPagination,
-  });
+    setPagination
+  })
 
   return (
     <>
@@ -30,7 +30,7 @@ const CategoryList = () => {
         <Link to='/category/add'>
           <Button variant='outline' className='space-x-2 bg-[#F5F6FA] dark:bg-gray-800 text-black dark:text-gray-100'>
             <Plus size={18} />
-            <span>Add Category</span>
+            <span>Thêm danh mục</span>
           </Button>
         </Link>
       </div>
@@ -41,7 +41,7 @@ const CategoryList = () => {
         <DataTableCustom columns={columns} isError={isError} isLoading={isLoading} refetch={refetch} table={table} />
       </div>
     </>
-  );
-};
+  )
+}
 
-export default CategoryList;
+export default CategoryList

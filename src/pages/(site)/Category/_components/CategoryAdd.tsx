@@ -13,18 +13,18 @@ import { useNavigate } from 'react-router-dom'
 
 const FormSchema = z.object({
   categoryName: z.string().min(1, { message: 'Tên danh mục không được để trống.' }),
-  description: z.string().optional(),
+  description: z.string().optional()
 })
 
 const AddCategoryForm = () => {
   const [loading, setLoading] = useState(false)
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   const form = useForm<ICategory>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       categoryName: '',
-      description: '',
-    },
+      description: ''
+    }
   })
 
   const handleSubmit = async (data: ICategory) => {
@@ -35,24 +35,24 @@ const AddCategoryForm = () => {
         title: 'Thêm thành công',
         description: `Danh mục ${data.categoryName} đã được thêm thành công.`,
         variant: 'success',
-        duration: 3000,
+        duration: 3000
       })
       form.reset()
-      navigate('/category');
+      navigate('/category')
     } catch (error: any) {
       if (error.response && error.response.status === 409) {
         toast({
           title: 'Lỗi trùng tên danh mục',
           description: `Danh mục "${data.categoryName}" đã tồn tại.`,
           variant: 'destructive',
-          duration: 3000,
+          duration: 3000
         })
       } else {
         toast({
           title: 'Lỗi thêm danh mục',
           description: 'Đã xảy ra lỗi khi thêm danh mục.',
           variant: 'destructive',
-          duration: 3000,
+          duration: 3000
         })
       }
       console.error('Lỗi khi tạo danh mục:', error)
@@ -64,9 +64,7 @@ const AddCategoryForm = () => {
   return (
     <div className='bg-[#F5F6FA] dark:bg-gray-900 h-screen'>
       <Form {...form}>
-        <div className='font-bold text-2xl space-y-4 px-4 md:px-10 p-5 dark:text-gray-100'>
-          Thêm danh mục
-        </div>
+        <div className='font-bold text-2xl space-y-4 px-4 md:px-10 p-5 dark:text-gray-100'>Thêm danh mục</div>
         <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-4 px-4 md:px-10'>
           <FormField
             name='categoryName'
@@ -110,10 +108,7 @@ const AddCategoryForm = () => {
               </FormItem>
             )}
           />
-           <div className='flex justify-end mt-6 space-x-3'>
-            <Button type='button' variant='outline' onClick={() => navigate('/category')}>
-              Hủy
-            </Button>
+          <div className='flex justify-end mt-6 space-x-3'>
             <Button type='submit'>Thêm</Button>
           </div>
         </form>

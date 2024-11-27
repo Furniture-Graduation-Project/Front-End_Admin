@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom'
 import { z } from 'zod'
 
 const signInSchema = z.object({
-  email: z.string().min(1, { message: 'Tên đăng nhập không được để trống.' }),
+  username: z.string().min(1, { message: 'Tên đăng nhập không được để trống.' }),
   password: z.string().min(6, { message: 'Mật khẩu phải ít nhất 6 ký tự.' }),
   check: z.boolean().default(false).optional()
 })
@@ -19,7 +19,7 @@ const Signin = () => {
   const form = useForm<z.infer<typeof signInSchema>>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
-      email: '',
+      username: '',
       password: '',
       check: false
     }
@@ -27,7 +27,7 @@ const Signin = () => {
   const isLoading = form.formState.isSubmitting
 
   const handleSubmit = async (data: z.infer<typeof signInSchema>) => {
-    mutate({ email: data.email, password: data.password })
+    mutate({ username: data.username, password: data.password })
   }
 
   return (
@@ -41,7 +41,7 @@ const Signin = () => {
           <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-10 mt-9'>
             <FormField
               control={form.control}
-              name='email'
+              name='username'
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className='text-lg opacity-80 text-[#202224]'>Tên đăng nhập</FormLabel>

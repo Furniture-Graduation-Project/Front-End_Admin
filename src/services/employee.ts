@@ -5,7 +5,6 @@ import { IEmployee } from '@/interface/employee'
 import { AxiosResponse } from 'axios'
 
 const API = 'employee'
-
 export const EmployeeService = {
   create: async (data: IEmployee): Promise<AxiosResponse<IApiResponse<IEmployee>>> => {
     try {
@@ -38,6 +37,7 @@ export const EmployeeService = {
   },
 
   update: async (id: string, data: Partial<IEmployee>): Promise<AxiosResponse<IApiResponse<IEmployee>>> => {
+    console.log('Dữ liệu gửi đi:', data)
     try {
       const response: AxiosResponse<IApiResponse<IEmployee>> = await axiosInstance.put(`${API}/${id}`, data)
       return response
@@ -46,6 +46,15 @@ export const EmployeeService = {
       throw error
     }
   },
+  // updateUserId: async (userId: string, data: Partial<IEmployee>): Promise<AxiosResponse<IApiResponse<IEmployee>>> => {
+  //   try {
+  //     const response: AxiosResponse<IApiResponse<IEmployee>> = await axiosInstance.put(`${API}/${userId}`, data)
+  //     return response
+  //   } catch (error) {
+  //     console.error(`Lỗi khi cập nhật thông tin người dùng với ID ${userId}:`, error)
+  //     throw error
+  //   }
+  // },
 
   delete: async (id: string): Promise<AxiosResponse<IApiResponse<void>>> => {
     try {
@@ -57,10 +66,10 @@ export const EmployeeService = {
     }
   },
 
-  signIn: async (email: string, password: string): Promise<AxiosResponse<IApiResponse<IEmployee>>> => {
+  signIn: async (username: string, password: string): Promise<AxiosResponse<IApiResponse<IEmployee>>> => {
     try {
       const response: AxiosResponse<IApiResponse<IEmployee>> = await axiosInstance.post(`${API}/signin`, {
-        email,
+        username,
         password
       })
       return response
@@ -85,7 +94,6 @@ export const EmployeeService = {
     }
   },
 
-  // Phương thức mới để tìm kiếm theo fullName
   getByFullName: async (fullName: string): Promise<AxiosResponse<IApiResponse<IEmployee[]>>> => {
     try {
       const response: AxiosResponse<IApiResponse<IEmployee[]>> = await axiosInstance.get(

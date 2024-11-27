@@ -40,8 +40,8 @@ const CategoryEdit = () => {
 
       try {
         const response = await CategoryService.getCategoryById(id)
-        setCategory(response.category)
-        form.reset(response.category)
+        setCategory(response.data.category)
+        form.reset(response.data.category)
       } catch (error) {
         console.error('Lỗi khi lấy thông tin danh mục:', error)
         toast({
@@ -135,9 +135,6 @@ const CategoryEdit = () => {
           />
 
           <div className='flex justify-end mt-6 space-x-3'>
-            <Button type='button' variant='outline' onClick={() => navigate('/category')}>
-              Hủy
-            </Button>
             <Button type='submit'>Cập nhật</Button>
           </div>
         </form>
