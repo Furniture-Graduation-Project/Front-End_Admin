@@ -28,7 +28,7 @@ export const ProductItemService = {
     return response
   },
 
-  getProductById: async (id: string) => {
+  getByProductId: async (id: string) => {
     const response = await axiosInstance.get(`${API}/product/${id}`)
     return response
   }
