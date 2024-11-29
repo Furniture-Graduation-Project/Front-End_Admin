@@ -23,8 +23,7 @@ const ProductListHeader = ({
 
   return (
     <CardHeader className='grid grid-cols-2 sm:grid-cols-3 p-3'>
-      <div className='flex items-center space-x-2'> 
-      </div>
+      <div className='flex items-center space-x-2'></div>
       <Input
         placeholder='Tìm kiếm theo tên sản phẩm...'
         value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
