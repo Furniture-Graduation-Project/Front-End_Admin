@@ -28,10 +28,6 @@ export const columns: ColumnDef<IProduct>[] = [
     }
   },
   {
-    accessorKey: 'SKU',
-    header: 'SKU'
-  },
-  {
     header: 'Chất liệu',
     cell: ({ row }) => <p>{row.original.material?.materialName || 'N/A'}</p>
   },

@@ -1,48 +1,57 @@
 import { Button } from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
-import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
+import { FileInput, FileUploader } from '@/components/ui/file-upload'
+import { Form, FormControl, FormDescription, FormField, FormItem, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { CategoryService } from '@/services/category'
-import { ProductService } from '@/services/product'
-import { useState, useEffect } from 'react'
-import { IProduct } from '@/interface/product'
-import { ICategory } from '@/interface/category'
+import { Label } from '@/components/ui/label'
 import { toast } from '@/hooks/use-toast'
-import { useNavigate } from 'react-router-dom'
-import { MaterialService } from '@/services/material'
+import { ICategory } from '@/interface/category'
 import { IMaterial } from '@/interface/material'
-import UploadImage from '@/components/ui/upload-image'
+import { ProductFormData } from '@/interface/product'
+import { CategoryService } from '@/services/category'
+import { MaterialService } from '@/services/material'
+import { ProductService } from '@/services/product'
+import { uploadFileCloudinary } from '@/utils/upload-cloudinary'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { CloudUpload, X } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { useNavigate } from 'react-router-dom'
+import { z } from 'zod'
 
 const FormSchema = z.object({
   name: z.string().min(3, { message: 'Tên sản phẩm phải có ít nhất 3 ký tự.' }),
   category: z.string().min(1, { message: 'Vui lòng chọn danh mục.' }),
   description: z.string().optional(),
-  SKU: z.string().min(1, { message: 'SKU không được để trống.' }),
-  images: z.array(z.string()).min(1, { message: 'Phải có ít nhất một ảnh sản phẩm.' }),
+  images: z.array(z.string()).optional(),
   material: z.string().min(1, { message: 'Vui lòng chọn chất liệu.' }),
   materialDetail: z.string().optional(),
-  status: z.enum(['creating', 'available', 'out of stock', 'discontinued'])
+  status: z.enum(['creating', 'available', 'disable'])
 })
 
 const AddProductForm = () => {
   const [categories, setCategories] = useState<ICategory[]>([])
   const [materials, setMaterials] = useState<IMaterial[]>([])
+  const [files, setFiles] = useState<File[] | null>(null)
+  const [galleryPreview, setGalleryPreview] = useState<string[]>([])
+
+  const dropZoneConfig = {
+    maxFiles: 5,
+    maxSize: 1024 * 1024 * 4,
+    multiple: true
+  }
+
   const navigate = useNavigate()
 
-  const form = useForm<IProduct>({
+  const form = useForm<ProductFormData>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       name: '',
-      category: { _id: '', categoryName: '', description: '' },
+      category: '',
       description: '',
-      SKU: '',
       images: [],
-      material: { _id: '', materialName: '', description: '' },
+      material: '',
       materialDetail: '',
-      status: 'available'
+      status: 'creating'
     }
   })
 
@@ -67,9 +76,9 @@ const AddProductForm = () => {
     fetchCategories()
   }, [])
 
-  const handleSubmit = async (data: IProduct) => {
+  const handleSubmit = async (data: any) => {
     try {
-      await ProductService.create(data)
+      await ProductService.create({ ...data, images: files || [] })
       toast({
         title: 'Thêm thành công',
         description: `Sản phẩm ${data.name} đã được thêm thành công.`,
@@ -96,6 +105,32 @@ const AddProductForm = () => {
       }
       console.error('Lỗi khi tạo sản phẩm:', error)
     }
+  }
+
+  const onChangeImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const images = e.target.files
+    if (images && images.length > 5) {
+      toast({
+        title: 'Lỗi',
+        description: 'Chỉ được tối đa 5 hình ảnh',
+        variant: 'destructive'
+      })
+      return
+    }
+    if (!images) return
+    const urls = await Promise.all(Array.from(images).map(uploadFileCloudinary))
+    setFiles(urls)
+    setGalleryPreview(Array.from(images).map((file) => URL.createObjectURL(file)))
+  }
+
+  const handleRemoveImage = (index: number) => {
+    if (!galleryPreview || !files) return
+
+    const updatedGalleryPreview = galleryPreview.filter((_, i) => i !== index)
+    setGalleryPreview(updatedGalleryPreview)
+
+    const updatedFiles = files.filter((_, i) => i !== index)
+    setFiles(updatedFiles)
   }
 
   return (
@@ -197,7 +232,7 @@ const AddProductForm = () => {
                       className='dark:bg-gray-700 dark:text-gray-100 border rounded-md p-1 min-w-[150px]'
                       disabled
                     >
-                      <option value='creating'>Đang phát triển</option>
+                      <option value='creating'>Đang tạo</option>
                     </select>
                   </FormControl>
                   <FormMessage />
@@ -227,51 +262,60 @@ const AddProductForm = () => {
               </FormItem>
             )}
           />
-          {/* SKU */}
-          <FormField
-            name='SKU'
-            control={form.control}
-            render={({ field }) => (
-              <FormItem>
-                <Label htmlFor='SKU' className='font-bold dark:text-gray-100'>
-                  SKU
-                </Label>
-                <FormControl>
-                  <Input
-                    id='SKU'
-                    placeholder='SKU sản phẩm'
-                    {...field}
-                    className='dark:bg-gray-700 dark:text-gray-100'
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
           {/* Hình ảnh */}
-          {/* <FormField
-            name='image'
+
+          <FormField
             control={form.control}
-            render={({ field }) => (
+            name='images'
+            render={() => (
               <FormItem>
-                <Label htmlFor='images' className='font-bold dark:text-gray-100'>
+                <Label htmlFor='materialDetail' className='font-bold dark:text-gray-100'>
                   Hình ảnh
                 </Label>
                 <FormControl>
-                  <Input
-                    id='images'
-                    placeholder='URL hình ảnh ( ngăn cách bằng dấu phẩy )'
-                    {...field}
-                    className='dark:bg-gray-700 dark:text-gray-100'
-                    onChange={(e) => field.onChange(e.target.value.split(','))}
-                  />
+                  <FileUploader
+                    value={files}
+                    onValueChange={setFiles}
+                    dropzoneOptions={dropZoneConfig}
+                    className='relative bg-background rounded-lg p-2'
+                  >
+                    <FileInput
+                      id='fileInput'
+                      className='outline-dashed outline-1 outline-slate-500'
+                      onChange={onChangeImage}
+                    >
+                      <div className='flex items-center justify-center flex-col p-8 w-full '>
+                        <CloudUpload className='text-gray-500 w-10 h-10' />
+                        <p className='mb-1 text-sm text-gray-500 dark:text-gray-400'>
+                          <span className='font-semibold'>Bấm để upload</span>
+                          &nbsp; hoặc là kéo vào đây
+                        </p>
+                        <p className='text-xs text-gray-500 dark:text-gray-400'>PNG or JPG </p>
+                      </div>
+                    </FileInput>
+                  </FileUploader>
                 </FormControl>
-                <FormMessage />
+                <FormDescription>Chọn file để upload.</FormDescription>
               </FormItem>
             )}
-          /> */}
-          <UploadImage />
+          />
+          <div className='flex gap-x-6 mt-4'>
+            {galleryPreview &&
+              galleryPreview.length > 0 &&
+              galleryPreview.map((url, index) => (
+                <div className='relative' key={index}>
+                  <img
+                    src={url}
+                    alt={`product-${index}`}
+                    className='h-40 object-contain border border-gray-200 rounded-2xl outline outline-offset-2 outline-gray-200'
+                  />
+                  <X
+                    onClick={() => handleRemoveImage(index)}
+                    className='absolute -top-1 -right-1 bg-white border rounded-full w-4 h-4 cursor-pointer'
+                  />
+                </div>
+              ))}
+          </div>
           {/* Chi tiết chất liệu */}
           <FormField
             name='materialDetail'
@@ -293,7 +337,6 @@ const AddProductForm = () => {
               </FormItem>
             )}
           />
-
           <div className='flex justify-end mt-6 space-x-3 pb-8'>
             <Button type='submit'>Thêm sản phẩm</Button>
           </div>
