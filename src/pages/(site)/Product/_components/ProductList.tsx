@@ -1,6 +1,6 @@
 import { DEFAULT_PAGE_SIZE } from '@/constants/pagination'
 import DataTableCustom from '@/components/common/DataTable/DataTableCustom'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { columns } from './columns'
 import { useMultipleProductQuery } from '@/hooks/querys/useProductQuery'
 import { useDataTable } from '@/hooks/useDataTable'
@@ -12,7 +12,8 @@ import ProductListHeader from './ProductListHeader'
 
 const ProductList = () => {
   const [pagination, setPagination] = useState<PaginationState>(DEFAULT_PAGE_SIZE)
-  const { data, isLoading, isError, refetch } = useMultipleProductQuery(pagination)
+  const [status, setStatus] = useState('all')
+  const { data, isLoading, isError, refetch } = useMultipleProductQuery(pagination, status)
 
   const { table } = useDataTable({
     data: data?.data ?? [],
@@ -22,7 +23,14 @@ const ProductList = () => {
     pagination,
     setPagination
   })
-
+  useEffect(() => {
+    setPagination((prev) => ({
+      ...prev,
+      pageIndex: 0
+    }))
+    refetch()
+    console.log(status)
+  }, [status])
   return (
     <>
       <h1 className='text-[32px] font-semibold dark:text-gray-100'>Danh sách sản phẩm</h1>
@@ -35,7 +43,12 @@ const ProductList = () => {
         </Link>
       </div>
       <div className='w-full mt-5 bg-white dark:bg-gray-800 rounded-xl p-4'>
-        <ProductListHeader table={table} setPagination={setPagination} />
+        <ProductListHeader
+          table={table}
+          setPagination={setPagination}
+          selectedStatus={status}
+          setSelectedStatus={setStatus}
+        />
         {isLoading && <div className='text-center'>Đang tải...</div>}
         {isError && <div className='text-red-600'>Lỗi khi tải sản phẩm. Vui lòng thử lại.</div>}
         <DataTableCustom columns={columns} isError={isError} isLoading={isLoading} refetch={refetch} table={table} />
