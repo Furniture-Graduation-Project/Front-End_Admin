@@ -8,8 +8,6 @@ export const useProductItemMutation = (key: ProductItemMutation) => {
     mutationKey: ['ProductItem'],
     mutationFn: async (params: { id?: string; data?: any }) => {
       switch (key) {
-        case 'CREATE':
-          return await ProductItemService.create()
         case 'UPDATE':
           if (!params.id) throw new Error('Cần có ID để cập nhật')
           return await ProductItemService.update(params.id, params.data)
@@ -24,6 +22,5 @@ export const useProductItemMutation = (key: ProductItemMutation) => {
       }
     }
   })
-
   return { mutate }
 }

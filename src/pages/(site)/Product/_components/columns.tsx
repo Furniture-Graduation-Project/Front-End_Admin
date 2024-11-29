@@ -16,6 +16,8 @@ export const columns: ColumnDef<IProduct>[] = [
   },
   {
     header: 'Danh mục',
+    accessorKey: 'categoryName',
+    accessorFn: (row: IProduct) => row.category?.categoryName || '',
     cell: ({ row }) => {
       return <p>{row.original.category?.categoryName}</p>
     }
@@ -26,10 +28,6 @@ export const columns: ColumnDef<IProduct>[] = [
     cell: ({ row }) => {
       return <p>{row.getValue<string>('description') || 'N/A'}</p>
     }
-  },
-  {
-    accessorKey: 'SKU',
-    header: 'SKU'
   },
   {
     header: 'Chất liệu',
