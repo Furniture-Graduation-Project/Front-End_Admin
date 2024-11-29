@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { CardHeader } from '@/components/ui/card'
 import {
@@ -9,31 +10,90 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { IProduct } from '@/interface/product'
 import { Table } from '@tanstack/react-table'
 import { Settings2 } from 'lucide-react'
+import { useMultipleCategoryQuery } from '@/hooks/querys/useCategoryQuery'
+import { ICategory } from '@/interface/category'
+
 const ProductListHeader = ({
   table,
-  setPagination
+  selectedStatus,
+  setPagination,
+  setSelectedStatus
 }: {
   table: Table<IProduct>
+  selectedStatus: string
   setPagination: (pagination: { pageIndex: number; pageSize: number }) => void
+  setSelectedStatus: (selectedStatus: string) => void
 }) => {
   const pageSizeOptions: number[] = [10, 20, 30, 40, 50]
 
+  const [searchTerm, setSearchTerm] = useState('')
+  const [selectedCategory, setSelectedCategory] = useState<string>('all')
+
+  const { data: categories, isLoading } = useMultipleCategoryQuery()
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value
+    setSearchTerm(value)
+    table.getColumn('name')?.setFilterValue(value)
+  }
+
   return (
-    <CardHeader className='grid grid-cols-2 sm:grid-cols-3 p-3'>
-      <div className='flex items-center space-x-2'></div>
-      <Input
-        placeholder='Tìm kiếm theo tên sản phẩm...'
-        value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
-        onChange={(event) => {
-          const value = event.target.value
-          console.log('Giá trị tìm kiếm mới:', value)
-          table.getColumn('name')?.setFilterValue(value)
+    <CardHeader className='grid grid-cols-1 sm:grid-cols-4 gap-4 p-3 place-items-center'>
+      <Input placeholder='Tìm kiếm sản phẩm...' value={searchTerm} onChange={handleSearchChange} />
+
+      <Select
+        value={selectedCategory}
+        onValueChange={(value) => {
+          setSelectedCategory(value)
+          table.getColumn('categoryName')?.setFilterValue(value === 'all' ? undefined : value)
         }}
-        className='order-last sm:order-first col-span-2 sm:col-span-1'
-      />
+        disabled={isLoading}
+      >
+        <SelectTrigger>
+          <SelectValue placeholder='Chọn danh mục' />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectGroup>
+            <SelectItem value='all'>Tất cả danh mục</SelectItem>
+            {isLoading ? (
+              <SelectItem disabled value='loading'>
+                Đang tải...
+              </SelectItem>
+            ) : (
+              categories?.data?.map((category: ICategory) => (
+                <SelectItem key={category._id} value={category.categoryName}>
+                  {category.categoryName}
+                </SelectItem>
+              ))
+            )}
+          </SelectGroup>
+        </SelectContent>
+      </Select>
+
+      <Select
+        value={selectedStatus}
+        onValueChange={(value) => {
+          setSelectedStatus(value)
+          table.getColumn('status')?.setFilterValue(value === 'all' ? undefined : value)
+        }}
+      >
+        <SelectTrigger>
+          <SelectValue placeholder='Danh sách' />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectGroup>
+            <SelectItem value='all'>Tất cả danh sách</SelectItem>
+            <SelectItem value='creating'>Chưa bán</SelectItem>
+            <SelectItem value='available'>Đang bán</SelectItem>
+            <SelectItem value='disable'>Đã ngừng bán</SelectItem>
+          </SelectGroup>
+        </SelectContent>
+      </Select>
+
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant='outline' className='ml-auto'>
@@ -47,18 +107,16 @@ const ProductListHeader = ({
           {table
             .getAllColumns()
             .filter((column) => typeof column.accessorFn !== 'undefined' && column.getCanHide())
-            .map((column) => {
-              return (
-                <DropdownMenuCheckboxItem
-                  key={column.id}
-                  className='capitalize'
-                  checked={column.getIsVisible()}
-                  onCheckedChange={(value) => column.toggleVisibility(!!value)}
-                >
-                  {column.id}
-                </DropdownMenuCheckboxItem>
-              )
-            })}
+            .map((column) => (
+              <DropdownMenuCheckboxItem
+                key={column.id}
+                className='capitalize'
+                checked={column.getIsVisible()}
+                onCheckedChange={(value) => column.toggleVisibility(!!value)}
+              >
+                {column.id}
+              </DropdownMenuCheckboxItem>
+            ))}
           <DropdownMenuLabel>Bản ghi mỗi trang</DropdownMenuLabel>
           <DropdownMenuSeparator />
           {pageSizeOptions.map((pageSize) => (

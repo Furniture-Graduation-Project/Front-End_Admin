@@ -3,10 +3,13 @@ import SideBar from '@/components/common/SideBar/SideBar'
 import TopBar from '@/components/common/TopBar/TopBar'
 import { useAuth } from '@/context/AuthContext'
 import ErrorPage from '@/pages/(site)/404/404'
-import { Loader, Loader2 } from 'lucide-react'
+import {  Loader2 } from 'lucide-react'
+import useListenOrder from '@/hooks/useListenOrder'
+import { Toaster } from 'sonner'
 
 function MainLayout({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth()
+  useListenOrder()
   return isLoading ? (
     <div className='flex items-center justify-center h-screen'>
       <Loader2 size='100' className='animate-spin'></Loader2>
@@ -19,6 +22,7 @@ function MainLayout({ children }: { children: React.ReactNode }) {
         <div className='px-3 sm:px-5 flex-1 overflow-auto mt-16 md:mt-0 bg-slate-50 dark:bg-slate-900 relative h-full pt-5 pb-16 sm:py-5 space-y-2 sm:space-y-4 box-border'>
           <div className='h-full min-h-full md:h-0 dark:text-slate-200'>{children}</div>
         </div>
+        <Toaster />
       </SidebarInset>
     </SidebarProvider>
   ) : (

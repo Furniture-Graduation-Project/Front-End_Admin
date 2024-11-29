@@ -73,13 +73,16 @@ export const ProductService = {
     }
   },
 
-  getLimited: async (pagination: {
-    pageIndex: number
-    pageSize: number
-  }): Promise<AxiosResponse<IApiResponse<IProduct[]>>> => {
+  getLimited: async (
+    pagination: {
+      pageIndex: number
+      pageSize: number
+    },
+    status: string
+  ): Promise<AxiosResponse<IApiResponse<IProduct[]>>> => {
     try {
       const response: AxiosResponse<IApiResponse<IProduct[]>> = await axiosInstance.get(
-        `${API_URL}/limited?page=${pagination.pageIndex}&limit=${pagination.pageSize}`
+        `${API_URL}/limited?page=${pagination.pageIndex}&limit=${pagination.pageSize}&status=${status}`
       )
       return response
     } catch (error) {
