@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 // routes/index.ts
 import { IRoute } from '@/interface/route'
 import AuthLayout from '@/layouts/AuthLayout'
@@ -48,7 +49,6 @@ import Material from '@/pages/(site)/Material/Material'
 import AddMaterialForm from '@/pages/(site)/Material/_components/MaterialAdd'
 import MaterialEdit from '@/pages/(site)/Material/_components/MaterialEdit'
 import MaterialList from '@/pages/(site)/Material/_components/MaterialList'
-// import EmployeeSignIn from '@/pages/(site)/Employee/_components/EmployeeSignIn'
 
 const routes: IRoute[] = [
   { path: '/', component: Signin, layout: AuthLayout },
