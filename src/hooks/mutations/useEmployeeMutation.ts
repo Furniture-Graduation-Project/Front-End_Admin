@@ -70,9 +70,10 @@ const useEmployeeMutation = ({ action }: MutationQueryProps) => {
         return EmployeeService.update((data as IEmployee)._id as string, data as IEmployee)
       case 'DELETE':
         return EmployeeService.delete((data as IEmployee)._id as string)
-      case 'SIGN_IN':
+      case 'SIGN_IN': {
         const { username, password } = data as { username: string; password: string }
         return EmployeeService.signIn(username, password)
+      }
       default:
         return Promise.reject(new Error('Invalid action'))
     }

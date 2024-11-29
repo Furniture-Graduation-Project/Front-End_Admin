@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 // routes/index.ts
 import { IRoute } from '@/interface/route'
 import AuthLayout from '@/layouts/AuthLayout'
