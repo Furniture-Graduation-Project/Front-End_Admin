@@ -16,6 +16,8 @@ export const columns: ColumnDef<IProduct>[] = [
   },
   {
     header: 'Danh mục',
+    accessorKey: 'categoryName',
+    accessorFn: (row: IProduct) => row.category?.categoryName || '',
     cell: ({ row }) => {
       return <p>{row.original.category?.categoryName}</p>
     }
