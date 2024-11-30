@@ -21,17 +21,20 @@ const ProductListHeader = ({
   table,
   selectedStatus,
   setPagination,
-  setSelectedStatus
+  setSelectedStatus,
+  selectedCategory,
+  setSelectedCategory
 }: {
   table: Table<IProduct>
   selectedStatus: string
   setPagination: (pagination: { pageIndex: number; pageSize: number }) => void
   setSelectedStatus: (selectedStatus: string) => void
+  selectedCategory: string
+  setSelectedCategory: (category: string) => void
 }) => {
   const pageSizeOptions: number[] = [10, 20, 30, 40, 50]
 
   const [searchTerm, setSearchTerm] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState<string>('all')
 
   const { data: categories, isLoading } = useMultipleCategoryQuery()
 
@@ -65,7 +68,7 @@ const ProductListHeader = ({
               </SelectItem>
             ) : (
               categories?.data?.map((category: ICategory) => (
-                <SelectItem key={category._id} value={category.categoryName}>
+                <SelectItem key={category._id} value={category._id as string}>
                   {category.categoryName}
                 </SelectItem>
               ))
