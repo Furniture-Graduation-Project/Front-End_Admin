@@ -16,6 +16,7 @@ export const useSingleProductQuery = (id: string) => {
 export const useMultipleProductQuery = (
   pagination?: any,
   status: string = 'all',
+  categoryId: string = '',
   searchTerm: string = '',
   categorySearchTerm: string = ''
 ) => {
@@ -25,7 +26,7 @@ export const useMultipleProductQuery = (
     queryKey: ['PRODUCT', pageIndex, searchTerm, categorySearchTerm],
     queryFn: async () => {
       if (pagination) {
-        const response = await ProductService.getLimited({ pageIndex, pageSize }, status)
+        const response = await ProductService.getLimited({ pageIndex, pageSize }, status, categoryId)
         return response.data
       }
       const response = await ProductService.getAll()

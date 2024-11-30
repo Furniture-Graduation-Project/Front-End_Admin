@@ -70,10 +70,10 @@ const DashboardHeader = () => {
         </TooltipProvider>
       </div>
       <div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4'>
-        <DashboardHeaderCard data={dataUser} period={period} />
-        <DashboardHeaderCard data={dataOrderCount} period={period} />
-        <DashboardHeaderCard data={dataProduct} period={period} />
-        <DashboardHeaderCard data={datahOrderRevenue} period={period} />
+        <DashboardHeaderCard data={dataUser} period={period} type={'user'} />
+        <DashboardHeaderCard data={dataOrderCount} period={period} type={'order'} />
+        <DashboardHeaderCard data={dataProduct} period={period} type={'product'} />
+        <DashboardHeaderCard data={datahOrderRevenue} period={period} type={'revenue'} />
       </div>
     </>
   )

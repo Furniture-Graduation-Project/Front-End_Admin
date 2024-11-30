@@ -3,6 +3,7 @@ import { CellAction } from './cell-action'
 import { IBlog } from '@/interface/blog'
 import { format } from 'date-fns'
 import { vi } from 'date-fns/locale'
+import { formatDate } from '@/utils/formatDate'
 
 export const columns: ColumnDef<IBlog>[] = [
   {
@@ -14,7 +15,7 @@ export const columns: ColumnDef<IBlog>[] = [
   },
   {
     accessorKey: 'title',
-    header: 'Title',
+    header: 'Tiêu đề',
     cell: ({ row }) => {
       return <p>{row.getValue('title')}</p>
     }
@@ -29,7 +30,7 @@ export const columns: ColumnDef<IBlog>[] = [
   },
   {
     accessorKey: 'content',
-    header: 'Content',
+    header: 'Nội dung',
     cell: ({ row }) => {
       const content = row.getValue('content') as string
       return <p>{content.slice(0, 50)}...</p>
@@ -37,7 +38,7 @@ export const columns: ColumnDef<IBlog>[] = [
   },
   {
     accessorKey: 'tags',
-    header: 'Tag',
+    header: 'Nhãn',
     cell: ({ row }) => {
       const tags = row.getValue('tags') as string[]
       return <p>{tags.join(', ')}</p>
@@ -45,18 +46,17 @@ export const columns: ColumnDef<IBlog>[] = [
   },
   {
     accessorKey: 'image',
-    header: 'Image',
+    header: 'Ảnh',
     cell: ({ row }) => {
       const imageUrl = row.getValue('image') as string
-      return imageUrl ? <img src={imageUrl} alt='Blog' className='w-16 h-16 object-cover' /> : <p>No Image</p>
+      return imageUrl ? <img src={imageUrl} alt='Blog' className='w-16 h-16 object-cover' /> : <p>Không có ảnh</p>
     }
   },
   {
     accessorKey: 'createdAt',
-    header: 'Date',
+    header: 'Ngày tạo',
     cell: ({ row }) => {
-      const formattedDate = format(new Date(row.getValue('createdAt')), 'Pp', { locale: vi })
-      return <p>{formattedDate}</p>
+      return <p>{formatDate(row.getValue('createdAt'))}</p>
     }
   },
   {
