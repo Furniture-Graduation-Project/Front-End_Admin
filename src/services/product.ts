@@ -123,5 +123,13 @@ export const ProductService = {
       console.error('Lỗi khi lấy số lượng sản phẩm theo chất liệu:', error)
       throw error
     }
+  },
+  count: async (period: string): Promise<AxiosResponse<IApiResponse<any>>> => {
+    try {
+      const response: AxiosResponse<IApiResponse<any>> = await axiosInstance.get(`${API_URL}/count?period=${period}`)
+      return response
+    } catch (error) {
+      throw error
+    }
   }
 }

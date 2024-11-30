@@ -36,3 +36,13 @@ export const useMultipleProductQuery = (
 
   return { data, ...rest }
 }
+export const useProuductCount = (period: string) => {
+  const { data, ...rest } = useQuery({
+    queryKey: ['PRODUCT'],
+    queryFn: async () => {
+      const res = await ProductService.count(period)
+      return res.data
+    }
+  })
+  return { data, ...rest }
+}
