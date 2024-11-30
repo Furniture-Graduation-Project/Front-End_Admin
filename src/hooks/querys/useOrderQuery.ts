@@ -28,3 +28,23 @@ export const useMultipleOrderQuery = (pagination?: any) => {
   })
   return { data, ...rest }
 }
+export const useOrderCount = (period: string) => {
+  const { data, ...rest } = useQuery({
+    queryKey: ['ORDER_COUNT'],
+    queryFn: async () => {
+      const res = await OrderService.count(period)
+      return res.data
+    }
+  })
+  return { data, ...rest }
+}
+export const useOrderRevenue = (period: string) => {
+  const { data, ...rest } = useQuery({
+    queryKey: ['ORDER_REVENUE'],
+    queryFn: async () => {
+      const res = await OrderService.revenue(period)
+      return res.data
+    }
+  })
+  return { data, ...rest }
+}

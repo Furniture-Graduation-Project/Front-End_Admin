@@ -2,34 +2,17 @@
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
-import DashboardCartHeader from './components/DashboardCartHeader'
-import DashboardSectionHeader from './components/DashboardSectionHeader'
 import RevenueChart from './components/DashboardRevenueChart'
 import { SalesChart } from './components/DashboardSaleChart'
+import DashboardHeader from './components/DashboardHeader'
 
 const Dashboard = () => {
   return (
     <>
       <div className='min-h-screen bg-[#F5F6FA]'>
-        <h1 className='p-10 text-[32px] font-bold'>Dashboard</h1>
-
-        <div className='ml-5 mr-5'>
-          <div className='grid grid-cols-3 gap-10'>
-            <DashboardSectionHeader />
-            <DashboardSectionHeader />
-            <DashboardSectionHeader />
-          </div>
+        <div className='ml-5 mr-5 mt-7 bg-white p-5 rounded-lg'>
+          <DashboardHeader />
         </div>
-
-        <div className='ml-5 mr-5 mt-7'>
-          <div className='grid grid-cols-4 gap-8'>
-            <DashboardCartHeader />
-            <DashboardCartHeader />
-            <DashboardCartHeader />
-            <DashboardCartHeader />
-          </div>
-        </div>
-
         <div className='bg-white ml-5 mr-5 rounded-lg mt-7'>
           <p className='p-5 font-bold text-[24px]'>Sales Details</p>
           <div className='p-5'>

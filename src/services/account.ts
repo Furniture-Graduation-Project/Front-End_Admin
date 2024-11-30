@@ -1,22 +1,18 @@
 import { axiosInstance } from '@/config/axios'
-import { IUser } from '@/interface/account'
 import { IApiResponse } from '@/interface/apiRespose'
 import { AxiosResponse } from 'axios'
 const API_URL = 'users'
 export const AccountService = {
-  lockUser: async (id : string , data: any) => {
+  lockUser: async (id: string, data: any) => {
     try {
-      const response = await axiosInstance.put('/update/'+id, data)
+      const response = await axiosInstance.put('/update/' + id, data)
       return response
     } catch (error) {
       console.log(error)
       throw error
     }
   },
-  getAll: async (pagination: {
-    pageIndex: number
-    pageSize: number
-  }): Promise<AxiosResponse<IApiResponse<any>>> => {
+  getAll: async (pagination: { pageIndex: number; pageSize: number }): Promise<AxiosResponse<IApiResponse<any>>> => {
     try {
       const response: AxiosResponse<IApiResponse<any>> = await axiosInstance.get(
         `${API_URL}?page=${pagination.pageIndex}&limit=${pagination.pageSize}`
@@ -24,6 +20,14 @@ export const AccountService = {
       return response
     } catch (error) {
       console.error(`Lỗi khi lấy sản phẩm giới hạn:`, error)
+      throw error
+    }
+  },
+  count: async (period : string): Promise<AxiosResponse<IApiResponse<any>>> => {
+    try {
+      const response: AxiosResponse<IApiResponse<any>> = await axiosInstance.get(`users/count?period=${period}`)
+      return response
+    } catch (error) {
       throw error
     }
   },
