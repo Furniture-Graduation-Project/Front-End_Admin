@@ -17,6 +17,12 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 
 const TopBar = () => {
+  const roleMap: Record<string, string> = {
+    admin: 'Quản trị viên',
+    product: 'Quản lý kho',
+    order: 'Nhân viên bán hàng',
+    support: 'Nhân viên hỗ trợ'
+  }
   const auth = useAuth()
 
   const { isFullScreen, toggleFullScreen } = useFullScreen()
@@ -88,8 +94,8 @@ const TopBar = () => {
             <div className='hidden sm:block text-[#404040] dark:text-slate-200'>
               {user && (
                 <>
-                  <p className='text-sm font-medium'>Hi {user.fullName}</p>
-                  <p className='text-sm font-medium'>Role {user.role}</p>
+                  <p className='text-sm font-medium'>{user.fullName}</p>
+                  <p className='text-sm font-medium'>{roleMap[user?.role ?? ''] || 'Không xác định'}</p>
                 </>
               )}
             </div>

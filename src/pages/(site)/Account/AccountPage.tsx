@@ -8,22 +8,22 @@ import { useState } from 'react'
 
 const AccountPage = () => {
   const [pagination, setPagination] = useState<PaginationState>(DEFAULT_PAGE_SIZE)
-  const { data, isLoading, isError, refetch} = useAccountQueryLimited(pagination)
+  const { data, isLoading, isError, refetch } = useAccountQueryLimited(pagination)
 
-console.log(data);
+  console.log(data)
 
-const {table} = useDataTable({
-  columns: columns,
-  data: data?.data || [],
-  totalData: data?.totalData,
-  totalPage: data?.totalPage,
-  pagination,
-  setPagination
-})
+  const { table } = useDataTable({
+    columns: columns,
+    data: data?.data || [],
+    totalData: data?.totalData,
+    totalPage: data?.totalPage,
+    pagination,
+    setPagination
+  })
   return (
     <div>
-      <h1 className='text-[32px] font-semibold'>Account Lists</h1>
-      <DataTableCustom table={table} columns={columns} isLoading={isLoading} isError={isError} refetch={refetch}/>
+      <h1 className='text-[32px] font-semibold'>Danh sách tài khoản người dùng</h1>
+      <DataTableCustom table={table} columns={columns} isLoading={isLoading} isError={isError} refetch={refetch} />
     </div>
   )
 }

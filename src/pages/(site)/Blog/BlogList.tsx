@@ -31,14 +31,14 @@ const BlogList = () => {
 
   return (
     <div className='bg-white dark:bg-gray-900 p-5 rounded-lg'>
-      <h1 className='text-[32px] font-semibold text-gray-900 dark:text-white'>Danh sách Blog</h1>
+      <h1 className='text-[32px] font-semibold text-gray-900 dark:text-white'>Danh sách bài viết</h1>
       <div className='w-full pt-5'>
         <Link to='/blog/add'>
           <Button
             variant={'outline'}
             className='space-x-2 bg-[#F5F6FA] text-black dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-white dark:hover:text-black'
           >
-            <span>Thêm Blog</span>
+            <span>Thêm bài viết</span>
           </Button>
         </Link>
       </div>

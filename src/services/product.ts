@@ -78,11 +78,12 @@ export const ProductService = {
       pageIndex: number
       pageSize: number
     },
-    status: string
+    status: string,
+    categoryId: string
   ): Promise<AxiosResponse<IApiResponse<IProduct[]>>> => {
     try {
       const response: AxiosResponse<IApiResponse<IProduct[]>> = await axiosInstance.get(
-        `${API_URL}/limited?page=${pagination.pageIndex}&limit=${pagination.pageSize}&status=${status}`
+        `${API_URL}/limited?page=${pagination.pageIndex}&limit=${pagination.pageSize}&status=${status}&categoryId=${categoryId}`
       )
       return response
     } catch (error) {
