@@ -15,7 +15,7 @@ interface AddVariantsProps {
 }
 
 const VariantFormSchema = {
-  fixedVariants: ['Màu sắc', 'Mùi hương', 'Kích cỡ']
+  fixedVariants: ['Màu sắc', 'Mùi hương', 'Kích cỡ', 'Phong cách']
 }
 
 const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
@@ -35,7 +35,7 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
       image: '',
       SKU: ''
     },
-    mode: 'onBlur' // Chế độ validate sau khi mất focus
+    mode: 'onBlur'
   })
 
   const [productItems, setProductItems] = useState<ProductItem[]>([])
