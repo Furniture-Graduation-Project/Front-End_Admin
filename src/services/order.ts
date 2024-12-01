@@ -81,5 +81,21 @@ export const OrderService = {
       console.error('Lỗi khi tìm kiếm đơn hàng theo mã đơn hàng:', error)
       throw error
     }
+  },
+  count: async (period: string): Promise<AxiosResponse<IApiResponse<any>>> => {
+    try {
+      const response: AxiosResponse<IApiResponse<any>> = await axiosInstance.get(`${API}/count?period=${period}`)
+      return response
+    } catch (error) {
+      throw error
+    }
+  },
+  revenue: async (period: string): Promise<AxiosResponse<IApiResponse<any>>> => {
+    try {
+      const response: AxiosResponse<IApiResponse<any>> = await axiosInstance.get(`${API}/revenue?period=${period}`)
+      return response
+    } catch (error) {
+      throw error
+    }
   }
 }

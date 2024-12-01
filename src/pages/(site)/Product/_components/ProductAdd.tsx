@@ -1,35 +1,46 @@
 import { Button } from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
-import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
+import { FileInput, FileUploader } from '@/components/ui/file-upload'
+import { Form, FormControl, FormDescription, FormField, FormItem, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { ProductService } from '@/services/product'
-import { useMultipleCategoryQuery } from '@/hooks/querys/useCategoryQuery'
+import { Label } from '@/components/ui/label'
 import { toast } from '@/hooks/use-toast'
-import { useNavigate } from 'react-router-dom'
-import { ProductFormData } from '@/interface/product'
 import { ICategory } from '@/interface/category'
+import { IMaterial } from '@/interface/material'
+import { ProductFormData } from '@/interface/product'
+import { CategoryService } from '@/services/category'
+import { MaterialService } from '@/services/material'
+import { ProductService } from '@/services/product'
+import { uploadFileCloudinary } from '@/utils/upload-cloudinary'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { CloudUpload, X } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { useNavigate } from 'react-router-dom'
+import { z } from 'zod'
 
 const FormSchema = z.object({
   name: z.string().min(3, { message: 'Tên sản phẩm phải có ít nhất 3 ký tự.' }),
   category: z.string().min(1, { message: 'Vui lòng chọn danh mục.' }),
   description: z.string().optional(),
-  price: z.number().min(0, { message: 'Giá phải là số lớn hơn hoặc bằng 0.' }),
-  SKU: z.string().min(1, { message: 'SKU không được để trống.' }),
-  images: z.array(z.string()).min(1, { message: 'Phải có ít nhất một ảnh sản phẩm.' }),
-  material: z.string().optional(),
-  status: z.enum(['available', 'out of stock', 'discontinued'], {
-    required_error: 'Vui lòng chọn trạng thái sản phẩm.'
-  })
+  images: z.array(z.string()).optional(),
+  material: z.string().min(1, { message: 'Vui lòng chọn chất liệu.' }),
+  materialDetail: z.string().optional(),
+  status: z.enum(['creating', 'available', 'disable'])
 })
 
 const AddProductForm = () => {
-  const navigate = useNavigate()
-  const { data: categoriesResponse } = useMultipleCategoryQuery()
+  const [categories, setCategories] = useState<ICategory[]>([])
+  const [materials, setMaterials] = useState<IMaterial[]>([])
+  const [files, setFiles] = useState<File[] | null>(null)
+  const [galleryPreview, setGalleryPreview] = useState<string[]>([])
 
-  const categories = categoriesResponse?.data || []
+  const dropZoneConfig = {
+    maxFiles: 5,
+    maxSize: 1024 * 1024 * 4,
+    multiple: true
+  }
+
+  const navigate = useNavigate()
 
   const form = useForm<ProductFormData>({
     resolver: zodResolver(FormSchema),
@@ -37,17 +48,37 @@ const AddProductForm = () => {
       name: '',
       category: '',
       description: '',
-      price: 0,
-      SKU: '',
       images: [],
       material: '',
-      status: 'available'
+      materialDetail: '',
+      status: 'creating'
     }
   })
 
-  const handleSubmit = async (data: ProductFormData) => {
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await CategoryService.getAllCategories()
+        setCategories(res.data.data || [])
+      } catch (error) {
+        console.error('Lỗi khi lấy danh mục:', error)
+      }
+    }
+    const fetchMaterials = async () => {
+      try {
+        const res = await MaterialService.getAllMaterials()
+        setMaterials(res.data.data || [])
+      } catch (error) {
+        console.error('Lỗi khi lấy chất liệu:', error)
+      }
+    }
+    fetchMaterials()
+    fetchCategories()
+  }, [])
+
+  const handleSubmit = async (data: any) => {
     try {
-      await ProductService.create(data)
+      await ProductService.create({ ...data, images: files || [] })
       toast({
         title: 'Thêm thành công',
         description: `Sản phẩm ${data.name} đã được thêm thành công.`,
@@ -56,9 +87,8 @@ const AddProductForm = () => {
       })
       form.reset()
       navigate('/product')
-    } catch (error) {
-      const errorMessage = (error as { response?: { data?: { message?: string } } })?.response?.data?.message
-      if (errorMessage === 'SKU đã tồn tại.') {
+    } catch (error: any) {
+      if (error.response && error.response.status === 400 && error.response.data.message === 'SKU đã tồn tại.') {
         toast({
           title: 'Lỗi thêm sản phẩm',
           description: 'SKU đã tồn tại. Vui lòng nhập SKU khác.',
@@ -73,7 +103,34 @@ const AddProductForm = () => {
           duration: 3000
         })
       }
+      console.error('Lỗi khi tạo sản phẩm:', error)
     }
+  }
+
+  const onChangeImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const images = e.target.files
+    if (images && images.length > 5) {
+      toast({
+        title: 'Lỗi',
+        description: 'Chỉ được tối đa 5 hình ảnh',
+        variant: 'destructive'
+      })
+      return
+    }
+    if (!images) return
+    const urls = await Promise.all(Array.from(images).map(uploadFileCloudinary))
+    setFiles(urls)
+    setGalleryPreview(Array.from(images).map((file) => URL.createObjectURL(file)))
+  }
+
+  const handleRemoveImage = (index: number) => {
+    if (!galleryPreview || !files) return
+
+    const updatedGalleryPreview = galleryPreview.filter((_, i) => i !== index)
+    setGalleryPreview(updatedGalleryPreview)
+
+    const updatedFiles = files.filter((_, i) => i !== index)
+    setFiles(updatedFiles)
   }
 
   return (
@@ -103,32 +160,87 @@ const AddProductForm = () => {
               </FormItem>
             )}
           />
-          {/* Danh mục */}
-          <FormField
-            name='category'
-            control={form.control}
-            render={({ field }) => (
-              <FormItem>
-                <Label htmlFor='category' className='font-bold dark:text-gray-100'>
-                  Danh mục
-                </Label>
-                <FormControl className='ml-2 rounded-sm'>
-                  <select
-                    id='category'
-                    {...field}
-                    className='dark:bg-gray-700 dark:text-gray-100 border rounded-md p-1'
-                  >
-                    {categories?.map((category) => (
-                      <option key={category._id} value={category._id}>
-                        {category.categoryName}
-                      </option>
-                    ))}
-                  </select>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <div className='lg:flex lg:space-x-10 lg:items-center '>
+            {/* Danh mục */}
+            <FormField
+              name='category'
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <Label htmlFor='category' className='font-bold dark:text-gray-100'>
+                    Danh mục -
+                  </Label>
+                  <FormControl className='ml-2 rounded-sm'>
+                    <select
+                      id='category'
+                      {...field}
+                      className='dark:bg-gray-700 dark:text-gray-100 border rounded-md p-1 min-w-[150px]'
+                    >
+                      <option value=''>Chọn danh mục</option>
+                      {categories.map((category) => (
+                        <option key={category._id} value={category._id}>
+                          {category.categoryName}
+                        </option>
+                      ))}
+                    </select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* chất liệu */}
+            <FormField
+              name='material'
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <Label htmlFor='material' className='font-bold dark:text-gray-100'>
+                    Chất liệu -
+                  </Label>
+                  <FormControl className='ml-2 rounded-sm'>
+                    <select
+                      id='material'
+                      {...field}
+                      className='dark:bg-gray-700 dark:text-gray-100 border rounded-md p-1 min-w-[150px]'
+                    >
+                      <option value=''>Chọn chất liệu</option>
+                      {materials.map((material) => (
+                        <option key={material._id} value={material._id}>
+                          {material.materialName}
+                        </option>
+                      ))}
+                    </select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {/* Trạng thái */}
+            <FormField
+              name='status'
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <Label htmlFor='status' className='font-bold dark:text-gray-100'>
+                    Trạng thái -
+                  </Label>
+                  <FormControl className='ml-2 rounded-sm'>
+                    <select
+                      id='status'
+                      {...field}
+                      className='dark:bg-gray-700 dark:text-gray-100 border rounded-md p-1 min-w-[150px]'
+                      disabled
+                    >
+                      <option value='creating'>Đang tạo</option>
+                    </select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
           {/* Mô tả */}
           <FormField
             name='description'
@@ -150,119 +262,83 @@ const AddProductForm = () => {
               </FormItem>
             )}
           />
-          {/* Giá */}
-          <FormField
-            name='price'
-            control={form.control}
-            render={({ field }) => (
-              <FormItem>
-                <Label htmlFor='price' className='font-bold dark:text-gray-100'>
-                  Giá
-                </Label>
-                <FormControl>
-                  <Input
-                    id='price'
-                    type='number'
-                    placeholder='Giá sản phẩm'
-                    {...field}
-                    onChange={(e) => field.onChange(Number(e.target.value))}
-                    aria-required='true'
-                    className='dark:bg-gray-700 dark:text-gray-100'
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          {/* SKU */}
-          <FormField
-            name='SKU'
-            control={form.control}
-            render={({ field }) => (
-              <FormItem>
-                <Label htmlFor='SKU' className='font-bold dark:text-gray-100'>
-                  SKU
-                </Label>
-                <FormControl>
-                  <Input
-                    id='SKU'
-                    placeholder='SKU sản phẩm'
-                    {...field}
-                    className='dark:bg-gray-700 dark:text-gray-100'
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
           {/* Hình ảnh */}
+
           <FormField
-            name='images'
             control={form.control}
-            render={({ field }) => (
+            name='images'
+            render={() => (
               <FormItem>
-                <Label htmlFor='images' className='font-bold dark:text-gray-100'>
+                <Label htmlFor='materialDetail' className='font-bold dark:text-gray-100'>
                   Hình ảnh
                 </Label>
                 <FormControl>
-                  <Input
-                    id='images'
-                    placeholder='URL hình ảnh (ngăn cách bằng dấu phẩy)'
-                    {...field}
-                    className='dark:bg-gray-700 dark:text-gray-100'
-                    onChange={(e) => field.onChange(e.target.value.split(','))}
-                  />
+                  <FileUploader
+                    value={files}
+                    onValueChange={setFiles}
+                    dropzoneOptions={dropZoneConfig}
+                    className='relative bg-background rounded-lg p-2'
+                  >
+                    <FileInput
+                      id='fileInput'
+                      className='outline-dashed outline-1 outline-slate-500'
+                      onChange={onChangeImage}
+                    >
+                      <div className='flex items-center justify-center flex-col p-8 w-full '>
+                        <CloudUpload className='text-gray-500 w-10 h-10' />
+                        <p className='mb-1 text-sm text-gray-500 dark:text-gray-400'>
+                          <span className='font-semibold'>Bấm để upload</span>
+                          &nbsp; hoặc là kéo vào đây
+                        </p>
+                        <p className='text-xs text-gray-500 dark:text-gray-400'>PNG or JPG </p>
+                      </div>
+                    </FileInput>
+                  </FileUploader>
                 </FormControl>
-                <FormMessage />
+                <FormDescription>Chọn file để upload.</FormDescription>
               </FormItem>
             )}
           />
-          {/* Vật liệu */}
+          <div className='flex gap-x-6 mt-4'>
+            {galleryPreview &&
+              galleryPreview.length > 0 &&
+              galleryPreview.map((url, index) => (
+                <div className='relative' key={index}>
+                  <img
+                    src={url}
+                    alt={`product-${index}`}
+                    className='h-40 object-contain border border-gray-200 rounded-2xl outline outline-offset-2 outline-gray-200'
+                  />
+                  <X
+                    onClick={() => handleRemoveImage(index)}
+                    className='absolute -top-1 -right-1 bg-white border rounded-full w-4 h-4 cursor-pointer'
+                  />
+                </div>
+              ))}
+          </div>
+          {/* Chi tiết chất liệu */}
           <FormField
-            name='material'
+            name='materialDetail'
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <Label htmlFor='material' className='font-bold dark:text-gray-100'>
-                  Vật liệu
+                <Label htmlFor='materialDetail' className='font-bold dark:text-gray-100'>
+                  Chi tiết chất liệu
                 </Label>
                 <FormControl>
                   <Input
-                    id='material'
-                    placeholder='Vật liệu sản phẩm'
+                    id='materialDetail'
+                    placeholder='Chi tiết chất liệu'
                     {...field}
                     className='dark:bg-gray-700 dark:text-gray-100'
                   />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          {/* Trạng thái */}
-          <FormField
-            name='status'
-            control={form.control}
-            render={({ field }) => (
-              <FormItem>
-                <Label htmlFor='status' className='font-bold dark:text-gray-100'>
-                  Trạng thái
-                </Label>
-                <FormControl className='ml-2 rounded-sm'>
-                  <select id='status' {...field} className='dark:bg-gray-700 dark:text-gray-100 border rounded-md p-1'>
-                    <option value='available'>Còn hàng</option>
-                    <option value='out of stock'>Hết hàng</option>
-                    <option value='discontinued'>Ngừng sản xuất</option>
-                  </select>
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
           <div className='flex justify-end mt-6 space-x-3 pb-8'>
-            <Button type='button' variant='outline' onClick={() => navigate('/product')}>
-              Hủy
-            </Button>
-            <Button type='submit'>Thêm mới</Button>
+            <Button type='submit'>Thêm sản phẩm</Button>
           </div>
         </form>
       </Form>

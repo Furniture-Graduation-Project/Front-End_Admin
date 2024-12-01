@@ -13,14 +13,20 @@ export const useSingleProductQuery = (id: string) => {
   return { data, ...rest }
 }
 
-export const useMultipleProductQuery = (pagination?: any, searchTerm: string = '') => {
+export const useMultipleProductQuery = (
+  pagination?: any,
+  status: string = 'all',
+  categoryId: string = '',
+  searchTerm: string = '',
+  categorySearchTerm: string = ''
+) => {
   const { pageIndex = DEFAULT_PAGE_SIZE.pageIndex, pageSize = DEFAULT_PAGE_SIZE.pageSize } = pagination || {}
 
   const { data, ...rest } = useQuery({
-    queryKey: ['PRODUCT', pageIndex, searchTerm],
+    queryKey: ['PRODUCT', pageIndex, searchTerm, categorySearchTerm],
     queryFn: async () => {
       if (pagination) {
-        const response = await ProductService.getLimited({ pageIndex, pageSize })
+        const response = await ProductService.getLimited({ pageIndex, pageSize }, status, categoryId)
         return response.data
       }
       const response = await ProductService.getAll()
@@ -28,5 +34,15 @@ export const useMultipleProductQuery = (pagination?: any, searchTerm: string = '
     }
   })
 
+  return { data, ...rest }
+}
+export const useProuductCount = (period: string) => {
+  const { data, ...rest } = useQuery({
+    queryKey: ['PRODUCT'],
+    queryFn: async () => {
+      const res = await ProductService.count(period)
+      return res.data
+    }
+  })
   return { data, ...rest }
 }

@@ -1,4 +1,3 @@
-// routes/index.ts
 import { IRoute } from '@/interface/route'
 import AuthLayout from '@/layouts/AuthLayout'
 import MainLayout from '@/layouts/MainLayout'
@@ -21,10 +20,6 @@ import Voucher from '@/pages/(site)/Voucher/Voucher'
 import VoucherList from '@/pages/(site)/Voucher/VoucherList'
 import VoucherAdd from '@/pages/(site)/Voucher/VoucherAdd'
 import VoucherEdit from '@/pages/(site)/Voucher/VoucherEdit'
-import Promotion from '@/pages/(site)/Promotion/Promotion'
-import PromotionList from '@/pages/(site)/Promotion/PromotionList'
-import PromotionAdd from '@/pages/(site)/Promotion/PromotionAdd'
-import PromotionEdit from '@/pages/(site)/Promotion/PromotionEdit'
 import AccountPage from '@/pages/(site)/Account/AccountPage'
 import AccountDetail from '@/pages/(site)/Account/components/AccountDetail/AccountDetail'
 import AccountLayout from '@/pages/(site)/Account/AccountLayout'
@@ -44,7 +39,10 @@ import BlogEdit from '@/pages/(site)/Blog/BlogEdit'
 import Blog from '@/pages/(site)/Blog/Blog'
 import Unauthorized from '@/pages/(site)/Unauthorized/unauthorized'
 import useCheckPermissions from '@/hooks/useCheckPermissions'
-// import EmployeeSignIn from '@/pages/(site)/Employee/_components/EmployeeSignIn'
+import Material from '@/pages/(site)/Material/Material'
+import AddMaterialForm from '@/pages/(site)/Material/_components/MaterialAdd'
+import MaterialEdit from '@/pages/(site)/Material/_components/MaterialEdit'
+import MaterialList from '@/pages/(site)/Material/_components/MaterialList'
 
 const routes: IRoute[] = [
   { path: '/', component: Signin, layout: AuthLayout },
@@ -71,6 +69,16 @@ const routes: IRoute[] = [
         component: CategoryEdit,
         guard: () => useCheckPermissions(['product', 'admin'])
       }
+    ]
+  },
+  {
+    path: '/material',
+    component: Material,
+    layout: MainLayout,
+    children: [
+      { path: '', component: MaterialList, guard: () => useCheckPermissions(['product', 'admin']) },
+      { path: 'add', component: AddMaterialForm, guard: () => useCheckPermissions(['product', 'admin']) },
+      { path: 'edit/:id', component: MaterialEdit, guard: () => useCheckPermissions(['product', 'admin']) }
     ]
   },
   {

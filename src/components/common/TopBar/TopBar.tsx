@@ -1,4 +1,4 @@
-import { Bell, CircleChevronDown, LogOut, Mail, Maximize, Minimize, Search, Settings } from 'lucide-react'
+import { Bell, CircleChevronDown, LogOut, Mail, Maximize, Minimize, Settings } from 'lucide-react'
 import { Avatar, AvatarImage } from '@/components/ui/avatar'
 import {
   DropdownMenu,
@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { Separator } from '@/components/ui/separator'
-import { SidebarInput, SidebarTrigger } from '@/components/ui/sidebar'
+import { SidebarTrigger } from '@/components/ui/sidebar'
 import { Button } from '@/components/ui/button'
 import { DarkMode } from '@/components/modals/DarkMode'
 import useFullScreen from '@/hooks/useFullScreen'
@@ -17,6 +17,12 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 
 const TopBar = () => {
+  const roleMap: Record<string, string> = {
+    admin: 'Quản trị viên',
+    product: 'Quản lý kho',
+    order: 'Nhân viên bán hàng',
+    support: 'Nhân viên hỗ trợ'
+  }
   const auth = useAuth()
 
   const { isFullScreen, toggleFullScreen } = useFullScreen()
@@ -35,15 +41,6 @@ const TopBar = () => {
         <div className='flex items-center px-3 sm:px-5'>
           <SidebarTrigger className='-ml-1 dark:text-slate-200' />
           <Separator orientation='vertical' className='mx-2 h-4' />
-          <div className='relative'>
-            <SidebarInput
-              className='rounded-full py-1 ps-10 dark:bg-slate-800 dark:text-slate-200'
-              placeholder='Nhập để tìm kiếm...'
-            />
-            <Button variant={'ghost'} className='absolute left-0 top-1/2 transform -translate-y-1/2'>
-              <Search size={20} strokeWidth={2.25} className='dark:text-slate-200' />
-            </Button>
-          </div>
         </div>
 
         <div className='flex items-center space-x-4 sm:space-x-8 h-full'>
@@ -97,8 +94,8 @@ const TopBar = () => {
             <div className='hidden sm:block text-[#404040] dark:text-slate-200'>
               {user && (
                 <>
-                  <p className='text-sm font-medium'>Hi {user.fullName}</p>
-                  <p className='text-sm font-medium'>Role {user.role}</p>
+                  <p className='text-sm font-medium'>{user.fullName}</p>
+                  <p className='text-sm font-medium'>{roleMap[user?.role ?? ''] || 'Không xác định'}</p>
                 </>
               )}
             </div>
@@ -111,10 +108,10 @@ const TopBar = () => {
               </DropdownMenuTrigger>
               <DropdownMenuContent>
                 <DropdownMenuGroup>
-                  <DropdownMenuItem className='dark:text-slate-200 flex items-center'>
-                    <Link to='/setting'>
-                      <Settings className='mr-2' />
-                      <span>Tài khoản</span>
+                  <DropdownMenuItem className='dark:text-slate-200 flex items-center space-x-2'>
+                    <Settings className='shrink-0' />
+                    <Link to='/setting' className='flex-1'>
+                      Tài khoản
                     </Link>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>

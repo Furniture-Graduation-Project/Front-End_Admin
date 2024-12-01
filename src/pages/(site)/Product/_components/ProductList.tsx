@@ -1,6 +1,6 @@
 import { DEFAULT_PAGE_SIZE } from '@/constants/pagination'
 import DataTableCustom from '@/components/common/DataTable/DataTableCustom'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { columns } from './columns'
 import { useMultipleProductQuery } from '@/hooks/querys/useProductQuery'
 import { useDataTable } from '@/hooks/useDataTable'
@@ -10,21 +10,20 @@ import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import ProductListHeader from './ProductListHeader'
 import { IProduct } from '@/interface/product'
+import { useAuth } from '@/context/AuthContext'
 
 const ProductList = () => {
   const [pagination, setPagination] = useState<PaginationState>(DEFAULT_PAGE_SIZE)
-  const { data, isLoading, isError } = useMultipleProductQuery(pagination)
+  const [status, setStatus] = useState('all')
+  const [selectedCategory, setSelectedCategory] = useState('all')
 
-  const [products, setProducts] = useState<IProduct[]>([])
+  const { data, isLoading, isError, refetch } = useMultipleProductQuery(pagination, status, selectedCategory)
 
-  useEffect(() => {
-    if (data) {
-      setProducts(data.data)
-    }
-  }, [data])
+  const auth = useAuth()
+  const userRole = auth.user?.role
 
   const { table } = useDataTable({
-    data: products,
+    data: data?.data ?? ([] as IProduct[]),
     columns: columns,
     totalData: data?.totalData,
     totalPage: data?.totalPage,
@@ -32,30 +31,40 @@ const ProductList = () => {
     setPagination
   })
 
+  useEffect(() => {
+    setPagination((prev) => ({
+      ...prev,
+      pageIndex: 0
+    }))
+    refetch()
+  }, [status, selectedCategory])
+
   return (
     <>
       <h1 className='text-[32px] font-semibold dark:text-gray-100'>Danh sách sản phẩm</h1>
       <div className='w-full pt-5'>
-        <Link to='/product/add'>
-          <Button variant='outline' className='space-x-2 bg-[#F5F6FA] dark:bg-gray-800 text-black dark:text-gray-100'>
-            <Plus size={18} />
-            <span>Add Product</span>
-          </Button>
-        </Link>
+        {(userRole === 'admin' || userRole === 'product') && (
+          <Link to='/product/add'>
+            <Button variant='outline' className='space-x-2 bg-[#F5F6FA] dark:bg-gray-800 text-black dark:text-gray-100'>
+              <Plus size={18} />
+              <span>Thêm sản phẩm</span>
+            </Button>
+          </Link>
+        )}
       </div>
       <div className='w-full mt-5 bg-white dark:bg-gray-800 rounded-xl p-4'>
-        <ProductListHeader table={table} setPagination={setPagination} />
+        <ProductListHeader
+          table={table}
+          setPagination={setPagination}
+          selectedStatus={status}
+          setSelectedStatus={setStatus}
+          selectedCategory={selectedCategory}
+          setSelectedCategory={setSelectedCategory}
+        />
+
         {isLoading && <div className='text-center'>Đang tải...</div>}
         {isError && <div className='text-red-600'>Lỗi khi tải sản phẩm. Vui lòng thử lại.</div>}
-        <DataTableCustom
-          columns={columns}
-          isError={isError}
-          isLoading={isLoading}
-          table={table}
-          refetch={function (): void {
-            throw new Error('Function not implemented.')
-          }}
-        />
+        <DataTableCustom columns={columns} isError={isError} isLoading={isLoading} refetch={refetch} table={table} />
       </div>
     </>
   )

@@ -1,24 +1,29 @@
-import useAccountQuery from '@/hooks/querys/useAccountQuery'
-import { columns, UserColumn } from './components/columns'
-import { format } from 'date-fns'
-import { DataTable } from '@/components/ui/data-table'
+import { useAccountQueryLimited } from '@/hooks/querys/useAccountQuery'
+import { columns } from './components/columns'
+import DataTableCustom from '@/components/common/DataTable/DataTableCustom'
+import { useDataTable } from '@/hooks/useDataTable'
+import { PaginationState } from '@tanstack/react-table'
+import { DEFAULT_PAGE_SIZE } from '@/constants/pagination'
+import { useState } from 'react'
 
 const AccountPage = () => {
-  const { data } = useAccountQuery()
-  const users = data?.data?.users || []
+  const [pagination, setPagination] = useState<PaginationState>(DEFAULT_PAGE_SIZE)
+  const { data, isLoading, isError, refetch } = useAccountQueryLimited(pagination)
 
-  const formattedUsers: UserColumn[] = users.map((user: UserColumn) => ({
-    id: user._id,
-    name: user.name,
-    email: user.email,
-    role: user.role,
-    createdAt: format(new Date(user.createdAt), 'dd/MM/yyyy')
-  }))
+  console.log(data)
 
+  const { table } = useDataTable({
+    columns: columns,
+    data: data?.data || [],
+    totalData: data?.totalData,
+    totalPage: data?.totalPage,
+    pagination,
+    setPagination
+  })
   return (
     <div>
-      <h1 className='text-[32px] font-semibold'>Account Lists</h1>
-      <DataTable columns={columns} data={formattedUsers} searchKey='name' />
+      <h1 className='text-[32px] font-semibold'>Danh sách tài khoản người dùng</h1>
+      <DataTableCustom table={table} columns={columns} isLoading={isLoading} isError={isError} refetch={refetch} />
     </div>
   )
 }

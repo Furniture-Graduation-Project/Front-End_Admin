@@ -1,36 +1,39 @@
 import { axiosInstance } from '@/config/axios'
-import { IUser } from '@/interface/account'
-
+import { IApiResponse } from '@/interface/apiRespose'
+import { AxiosResponse } from 'axios'
+const API_URL = 'users'
 export const AccountService = {
-  signIn: async (data: IUser) => {
+  lockUser: async (id: string, data: any) => {
     try {
-      const response = await axiosInstance.post('/signin', data)
+      const response = await axiosInstance.put('/update/' + id, data)
       return response
     } catch (error) {
       console.log(error)
       throw error
     }
   },
-  signUp: async (data: IUser) => {
+  getAll: async (pagination: { pageIndex: number; pageSize: number }): Promise<AxiosResponse<IApiResponse<any>>> => {
     try {
-      const response = await axiosInstance.post('/signup', data)
+      const response: AxiosResponse<IApiResponse<any>> = await axiosInstance.get(
+        `${API_URL}?page=${pagination.pageIndex}&limit=${pagination.pageSize}`
+      )
       return response
     } catch (error) {
-      console.log(error)
+      console.error(`Lỗi khi lấy sản phẩm giới hạn:`, error)
       throw error
     }
   },
-  getAll: async () => {
+  count: async (period : string): Promise<AxiosResponse<IApiResponse<any>>> => {
     try {
-      const response = await axiosInstance.get('/users')
+      const response: AxiosResponse<IApiResponse<any>> = await axiosInstance.get(`users/count?period=${period}`)
       return response
     } catch (error) {
-      console.log(error)
+      throw error
     }
   },
   getById: async (id: string) => {
     try {
-      const response = await axiosInstance.get(`/users/${id}`)
+      const response = await axiosInstance.get(`users/${id}`)
       return response
     } catch (error) {
       console.log(error)

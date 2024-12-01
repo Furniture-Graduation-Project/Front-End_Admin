@@ -1,13 +1,12 @@
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Link } from 'react-router-dom'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
 import useEmployeeMutation from '@/hooks/mutations/useEmployeeMutation'
-import { useState } from 'react'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+import { Link } from 'react-router-dom'
+import { z } from 'zod'
 
 const signInSchema = z.object({
   username: z.string().min(1, { message: 'Tên đăng nhập không được để trống.' }),
@@ -17,7 +16,6 @@ const signInSchema = z.object({
 
 const Signin = () => {
   const { mutate } = useEmployeeMutation({ action: 'SIGN_IN' })
-  const [loading, setLoading] = useState<boolean>(false)
   const form = useForm<z.infer<typeof signInSchema>>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
@@ -26,6 +24,7 @@ const Signin = () => {
       check: false
     }
   })
+  const isLoading = form.formState.isSubmitting
 
   const handleSubmit = async (data: z.infer<typeof signInSchema>) => {
     mutate({ username: data.username, password: data.password })
@@ -92,7 +91,7 @@ const Signin = () => {
             />
             <div className='flex items-center justify-center'>
               <Button variant={'outline'} className='w-[418px] py-7 text-xl font-bold opacity-90' type='submit'>
-                {loading ? 'Đang xử lý...' : 'Đăng nhập'}
+                {isLoading ? 'Đang xử lý...' : 'Đăng nhập'}
               </Button>
             </div>
           </form>

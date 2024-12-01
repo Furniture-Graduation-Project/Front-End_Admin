@@ -3,6 +3,7 @@ import { CellAction } from './cell-action'
 import { IEmployee } from '@/interface/employee'
 import { format } from 'date-fns'
 import { vi } from 'date-fns/locale'
+import { formatDate } from '@/utils/formatDate'
 
 export const columns: ColumnDef<IEmployee>[] = [
   {
@@ -46,14 +47,25 @@ export const columns: ColumnDef<IEmployee>[] = [
   },
   {
     accessorKey: 'role',
-    header: 'Vai trò'
+    header: 'Vai trò',
+    cell: ({ row }) => {
+      const roleMap: Record<string, string> = {
+        admin: 'Quản trị viên',
+        product: 'Quản lý kho',
+        order: 'Nhân viên bán hàng',
+        support: 'Nhân viên hỗ trợ'
+      }
+
+      const role = row.getValue('role') as string
+
+      return <span>{roleMap[role] || 'Không xác định'}</span>
+    }
   },
   {
     accessorKey: 'createdAt',
     header: 'Ngày tạo',
     cell: ({ row }) => {
-      const formattedDate = format(row.getValue('createdAt'), 'Pp', { locale: vi })
-      return <div className='font-medium'>{formattedDate}</div>
+      return <div className='font-medium'>{formatDate(row.getValue('createdAt'))}</div>
     }
   },
   {

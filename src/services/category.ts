@@ -1,5 +1,5 @@
 import { IApiResponse } from '@/interface/apiRespose'
-import { ICategory, ICategoryDataResponse } from '@/interface/category'
+import { ICategory } from '@/interface/category'
 import { AxiosResponse } from 'axios'
 import { axiosInstance } from '@/config/axios'
 
@@ -26,10 +26,10 @@ export const CategoryService = {
     }
   },
 
-  getCategoryById: async (id: string): Promise<ICategoryDataResponse> => {
+  getCategoryById: async (id: string): Promise<IApiResponse<ICategory>> => {
     try {
-      const response: ICategoryDataResponse = await axiosInstance.get(`${API_URL}/${id}`)
-      return response
+      const response: AxiosResponse<IApiResponse<ICategory>> = await axiosInstance.get(`${API_URL}/${id}`)
+      return response.data
     } catch (error) {
       console.error(`Lỗi khi lấy danh mục với ID ${id}:`, error)
       throw error
