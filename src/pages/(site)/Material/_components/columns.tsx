@@ -12,11 +12,11 @@ export const columns: ColumnDef<IMaterial>[] = [
   },
   {
     accessorKey: 'materialName',
-    header: 'Material Name'
+    header: 'Tên chất liệu'
   },
   {
     accessorKey: 'description',
-    header: 'Description'
+    header: 'Mô tả'
   },
   {
     id: 'actions',
