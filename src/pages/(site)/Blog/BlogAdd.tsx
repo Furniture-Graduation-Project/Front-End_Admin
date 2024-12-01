@@ -70,7 +70,7 @@ const BlogAdd = () => {
   return (
     <div className='bg-[#F5F6FA] dark:bg-gray-900 min-h-screen'>
       <div className='p-4 md:p-10'>
-        <h1 className='text-2xl font-bold mb-6 dark:text-white'>Thêm Blog</h1>
+        <h1 className='text-2xl font-bold mb-6 dark:text-white'>Thêm bài viết</h1>
         <div className='bg-white dark:bg-gray-800 rounded-lg p-6 shadow-md'>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-6'>
@@ -134,7 +134,7 @@ const BlogAdd = () => {
                 control={form.control}
                 render={({ field }) => (
                   <FormItem>
-                    <Label className='font-bold dark:text-white'>Tags</Label>
+                    <Label className='font-bold dark:text-white'>Nhãn</Label>
                     <FormControl>
                       <Input
                         placeholder='Nhập tags (phân cách bằng dấu phẩy)'

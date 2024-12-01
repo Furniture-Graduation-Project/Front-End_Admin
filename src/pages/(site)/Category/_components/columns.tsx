@@ -12,11 +12,11 @@ export const columns: ColumnDef<ICategory>[] = [
   },
   {
     accessorKey: 'categoryName',
-    header: 'Category Name'
+    header: 'Tên danh mục'
   },
   {
     accessorKey: 'description',
-    header: 'Description'
+    header: 'Mô tả'
   },
   {
     id: 'actions',
