@@ -9,6 +9,7 @@ import { ProductService } from '@/services/product'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { ProductItem } from '@/interface/productItem'
 import AlertAcitonDialog from '@/components/modals/AlertDialog'
+import { uploadFileCloudinary } from '@/utils/upload-cloudinary'
 
 interface AddVariantsProps {
   productId: string
@@ -46,6 +47,8 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
   const [productExists, setProductExists] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [deleteItemId, setDeleteItemId] = useState<string | null>(null)
+  const [preview, setPreview] = useState<string | null>(null)
+  const [image, setImage] = useState<string | null>('')
   const confirmDelete = (id: any) => {
     setDeleteItemId(id)
     setIsDeleteDialogOpen(true)
@@ -119,7 +122,8 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
       value: data.variants[index]?.value || ''
     }))
 
-    const payload = { ...data, productId, variants: variantInputs }
+    const payload = { ...data, productId, variants: variantInputs, image: image || data.image }
+    console.log('Payload:', payload)
 
     try {
       if (isEditMode && currentItemId) {
@@ -165,12 +169,20 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
     setValue('outStock', 0)
     setValue('stock', 0)
     setValue('price', item.price)
-    setValue('image', item.image)
+    setValue('image', image || item.image)
     setValue('SKU', item.SKU)
     setSelectedVariants(item.variants.map((v) => v.variant))
     item.variants.forEach((variant, index) => {
       setValue(`variants.${index}.value`, variant.value)
     })
+  }
+
+  const onChangeImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files
+    if (!files) return
+    const urls = await Promise.all(Array.from(files).map(uploadFileCloudinary))
+    setImage(urls[0])
+    setPreview(URL.createObjectURL(files[0]))
   }
 
   const openAddForm = () => {
@@ -292,9 +304,14 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
               {errors.price && <p className='text-red-500 py-2 text-sm'>Giá phải là số lớn hơn 0</p>}
 
               <Label className='dark:text-gray-100'>Ảnh</Label>
-              <Input {...register('image')} className='dark:bg-gray-700 dark:text-gray-100' />
+              <Input
+                {...register('image')}
+                type='file'
+                className='dark:bg-gray-700 dark:text-gray-100'
+                onChange={onChangeImage}
+              />
               {errors.image && <p className='text-red-500 py-2 text-sm'>{errors.image.message}</p>}
-
+              {preview && <img src={preview} alt='preview' className='w-20 h-20' />}
               <Label className='dark:text-gray-100'>SKU</Label>
               <Input
                 {...register('SKU', { required: 'SKU không được để trống' })}
