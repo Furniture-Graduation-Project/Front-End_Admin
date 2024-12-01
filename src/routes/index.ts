@@ -1,5 +1,3 @@
-/* eslint-disable react-hooks/rules-of-hooks */
-// routes/index.ts
 import { IRoute } from '@/interface/route'
 import AuthLayout from '@/layouts/AuthLayout'
 import MainLayout from '@/layouts/MainLayout'
@@ -22,10 +20,6 @@ import Voucher from '@/pages/(site)/Voucher/Voucher'
 import VoucherList from '@/pages/(site)/Voucher/VoucherList'
 import VoucherAdd from '@/pages/(site)/Voucher/VoucherAdd'
 import VoucherEdit from '@/pages/(site)/Voucher/VoucherEdit'
-import Promotion from '@/pages/(site)/Promotion/Promotion'
-import PromotionList from '@/pages/(site)/Promotion/PromotionList'
-import PromotionAdd from '@/pages/(site)/Promotion/PromotionAdd'
-import PromotionEdit from '@/pages/(site)/Promotion/PromotionEdit'
 import AccountPage from '@/pages/(site)/Account/AccountPage'
 import AccountDetail from '@/pages/(site)/Account/components/AccountDetail/AccountDetail'
 import AccountLayout from '@/pages/(site)/Account/AccountLayout'

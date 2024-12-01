@@ -65,31 +65,29 @@ const OrderEdit = () => {
       status: 'pending'
     }
   })
-
-  useEffect(() => {
-    const fetchOrder = async () => {
-      if (!id) {
-        console.error('ID không tồn tại')
-        return
-      }
-
-      try {
-        const response = await OrderService.getById(id)
-        setOrder(response.data.data)
-        setPaymentStatus(response.data.data.payment.paymentStatus)
-        form.reset({ status: response.data.data.status })
-      } catch (error) {
-        console.error('Lỗi khi lấy thông tin đơn hàng:', error)
-        toast({
-          title: 'Lỗi',
-          description: 'Không thể lấy thông tin đơn hàng.',
-          variant: 'destructive'
-        })
-      } finally {
-        setLoading(false)
-      }
+  const fetchOrder = async () => {
+    if (!id) {
+      console.error('ID không tồn tại')
+      return
     }
 
+    try {
+      const response = await OrderService.getById(id)
+      setOrder(response.data.data)
+      setPaymentStatus(response.data.data.payment.paymentStatus)
+      form.reset({ status: response.data.data.status })
+    } catch (error) {
+      console.error('Lỗi khi lấy thông tin đơn hàng:', error)
+      toast({
+        title: 'Lỗi',
+        description: 'Không thể lấy thông tin đơn hàng.',
+        variant: 'destructive'
+      })
+    } finally {
+      setLoading(false)
+    }
+  }
+  useEffect(() => {
     fetchOrder()
   }, [id, form])
 
@@ -153,98 +151,84 @@ const OrderEdit = () => {
     setIsModalOpen(false)
     await handlePaymentStatusUpdate()
   }
-
-  
-  // State để lưu địa điểm mới
-  const [newLocation, setNewLocation] = useState('');
+  const [newLocation, setNewLocation] = useState('')
 
   const handleAddLocation = async () => {
     if (!newLocation.trim()) {
       toast({
-        title: "Lỗi",
-        description: "Vui lòng nhập địa điểm.",
-        variant: "destructive",
-      });
-      return;
+        title: 'Lỗi',
+        description: 'Vui lòng nhập địa điểm.',
+        variant: 'destructive'
+      })
+      return
     }
-  
-    // Kiểm tra dữ liệu order và shipments
     if (!order) {
       toast({
-        title: "Lỗi",
-        description: "Dữ liệu đơn hàng không tồn tại.",
-        variant: "destructive",
-      });
-      return;
+        title: 'Lỗi',
+        description: 'Dữ liệu đơn hàng không tồn tại.',
+        variant: 'destructive'
+      })
+      return
     }
-  
+
     if (!order.shipments) {
       toast({
-        title: "Lỗi",
-        description: "Thông tin shipment không có sẵn.",
-        variant: "destructive",
-      });
-      return;
+        title: 'Lỗi',
+        description: 'Thông tin shipment không có sẵn.',
+        variant: 'destructive'
+      })
+      return
     }
-  
+
     try {
-      setLoading(true);
-  
-      const updatedLocations = [...(order.shipments.locations || []), newLocation];
-  
+      setLoading(true)
+
+      const updatedLocations = [...(order.shipments.locations || []), newLocation]
+
       await OrderService.update(id!, {
         shipments: {
           ...order.shipments,
-          locations: updatedLocations,
-        },
-      });
-  
-      // Cập nhật dữ liệu trong giao diện
+          locations: updatedLocations
+        }
+      })
       setOrder((prev) =>
         prev
           ? {
               ...prev,
               shipments: {
                 ...prev.shipments,
-                locations: updatedLocations,
-              },
+                locations: updatedLocations
+              }
             }
           : null
-      );
-  
-      toast({
-        title: "Thành công",
-        description: "Đã thêm địa điểm mới vào shipments.",
-        variant: "default",
-      });
-  
-      // Reset input
-      setNewLocation("");
-    } catch (error) {
-      console.error("Lỗi khi thêm địa điểm:", error);
-      toast({
-        title: "Lỗi",
-        description: "Không thể thêm địa điểm, vui lòng thử lại.",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+      )
 
+      toast({
+        title: 'Thành công',
+        description: 'Đã thêm địa điểm mới vào shipments.',
+        variant: 'default'
+      })
+      setNewLocation('')
+    } catch (error) {
+      console.error('Lỗi khi thêm địa điểm:', error)
+      toast({
+        title: 'Lỗi',
+        description: 'Không thể thêm địa điểm, vui lòng thử lại.',
+        variant: 'destructive'
+      })
+    } finally {
+      setLoading(false)
+    }
+  }
 
   if (loading) {
     return <div>Đang tải...</div>
   }
-
   if (!order) {
     return <div>Không tìm thấy đơn hàng với ID đã cho.</div>
   }
-
   const currentStatusIndex = orderStatuses.indexOf(order.status)
-
   return (
-
     <div className='bg-gray-50 dark:bg-gray-900 min-h-screen py-8 px-4 md:px-10'>
       <div className='bg-white dark:bg-gray-800 shadow rounded-lg p-6'>
         <Form {...form}>
@@ -277,17 +261,16 @@ const OrderEdit = () => {
                 </FormItem>
               )}
             />
-            <div className="flex justify-end">
+            <div className='flex justify-end'>
               <Button
-                type="submit"
-                variant="default"
+                type='submit'
+                variant='default'
                 disabled={loading}
-                className="bg-black hover text-white font-semibold py-2 rounded-md  dark:bg-blue-500 dark:hover:bg-blue-400"
+                className='bg-black hover text-white font-semibold py-2 rounded-md  dark:bg-blue-500 dark:hover:bg-blue-400'
               >
-                {loading ? "Đang xử lý..." : "Cập nhật trạng thái đơn hàng"}
+                {loading ? 'Đang xử lý...' : 'Cập nhật trạng thái đơn hàng'}
               </Button>
             </div>
-
           </form>
         </Form>
       </div>
@@ -304,14 +287,14 @@ const OrderEdit = () => {
             </option>
           ))}
         </select>
-        <div className="flex justify-end">
+        <div className='flex justify-end'>
           <Button
             onClick={confirmPaymentUpdate}
-            variant="default"
+            variant='default'
             disabled={loading}
-            className="bg-black hover text-white font-semibold py-2 rounded-md mt-4 dark:bg-blue-500 dark:hover:bg-blue-400"
+            className='bg-black hover text-white font-semibold py-2 rounded-md mt-4 dark:bg-blue-500 dark:hover:bg-blue-400'
           >
-            {loading ? "Đang xử lý..." : "Cập nhật trạng thái thanh toán"}
+            {loading ? 'Đang xử lý...' : 'Cập nhật trạng thái thanh toán'}
           </Button>
         </div>
       </div>
@@ -322,122 +305,117 @@ const OrderEdit = () => {
         handleAciton={handleModalConfirm}
         className='dark:bg-gray-800 dark:text-white'
       />
-      <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6 mt-8">
+      <div className='bg-white dark:bg-gray-800 shadow rounded-lg p-6 mt-8'>
         <h2 className='font-bold text-2xl mb-4 text-gray-800 dark:text-gray-100'>Thông tin khách hàng</h2>
-        <div className="space-y-4">
-          <div className="flex items-center space-x-3">
-            <span role="img" aria-label="user" className="text-gray-800 dark:text-gray-100 text-2xl">👤</span>
-            <div className="flex-1">
+        <div className='space-y-4'>
+          <div className='flex items-center space-x-3'>
+            <span role='img' aria-label='user' className='text-gray-800 dark:text-gray-100 text-2xl'>
+              👤
+            </span>
+            <div className='flex-1'>
               <input
-                id="orderName"
-                type="text"
+                id='orderName'
+                type='text'
                 value={order.orderName}
                 readOnly
-                className="w-full border border-gray-300 dark:border-gray-700 rounded-md p-2 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
+                className='w-full border border-gray-300 dark:border-gray-700 rounded-md p-2 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200'
               />
             </div>
           </div>
-          <div className="flex items-center space-x-3">
-            <span role="img" aria-label="phone" className="text-gray-800 dark:text-gray-100 text-2xl">📞</span>
-            <div className="flex-1">
+          <div className='flex items-center space-x-3'>
+            <span role='img' aria-label='phone' className='text-gray-800 dark:text-gray-100 text-2xl'>
+              📞
+            </span>
+            <div className='flex-1'>
               <input
-                id="orderPhone"
-                type="text"
+                id='orderPhone'
+                type='text'
                 value={order.orderPhone}
                 readOnly
-                className="w-full border border-gray-300 dark:border-gray-700 rounded-md p-2 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
+                className='w-full border border-gray-300 dark:border-gray-700 rounded-md p-2 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200'
               />
             </div>
           </div>
-          <div className="flex items-center space-x-3">
-            <span role="img" aria-label="address" className="text-gray-800 dark:text-gray-100 text-2xl">📍</span>
-            <div className="flex-1">
+          <div className='flex items-center space-x-3'>
+            <span role='img' aria-label='address' className='text-gray-800 dark:text-gray-100 text-2xl'>
+              📍
+            </span>
+            <div className='flex-1'>
               <input
-                id="orderAddress"
-                type="text"
+                id='orderAddress'
+                type='text'
                 value={order.orderAddress}
                 readOnly
-                className="w-full border border-gray-300 dark:border-gray-700 rounded-md p-2 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
+                className='w-full border border-gray-300 dark:border-gray-700 rounded-md p-2 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200'
               />
             </div>
           </div>
         </div>
       </div>
-      <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6 mt-8">
+      <div className='bg-white dark:bg-gray-800 shadow rounded-lg p-6 mt-8'>
         <h2 className='font-bold text-2xl mb-4 text-gray-800 dark:text-gray-100'>Danh sách sản phẩm</h2>
-        <div className="flex flex-col space-y-4 border border-gray-300 dark:border-gray-700">
-          <div className="flex font-bold text-lg text-gray-800 dark:text-gray-100 border-b border-r border-gray-300 dark:border-gray-700">
-            <div className="flex-1 p-2">STT</div>
+        <div className='flex flex-col space-y-4 border border-gray-300 dark:border-gray-700'>
+          <div className='flex font-bold text-lg text-gray-800 dark:text-gray-100 border-b border-r border-gray-300 dark:border-gray-700'>
+            <div className='flex-1 p-2'>STT</div>
             <div className='flex-1 p-2'>Ảnh</div>
-            <div className="flex-1 p-2">Tên sản phẩm</div>
+            <div className='flex-1 p-2'>Tên sản phẩm</div>
             <div className='flex-1 p-2'>Biến thể</div>
-            <div className="flex-1 p-2">Giá</div>
-            <div className="flex-1 p-2">Số lượng</div>
+            <div className='flex-1 p-2'>Giá</div>
+            <div className='flex-1 p-2'>Số lượng</div>
             <div className='flex-1 p-2'>Tổng tiền</div>
           </div>
           {order.items.map((item, index) => (
-            <div key={item._id} className="flex space-x-4 border-b border-r border-gray-300 dark:border-gray-700">
-              <div className="flex-1 p-2">{index + 1}</div>
-              <div className="flex-1 p-2">
-                <img
-                  src={item.productId.images[0]}
-                  alt={item.productId.name}
-                  className="w-20 h-20"
-                />
+            <div key={item._id} className='flex space-x-4 border-b border-r border-gray-300 dark:border-gray-700'>
+              <div className='flex-1 p-2'>{index + 1}</div>
+              <div className='flex-1 p-2'>
+                <img src={item.productId.images[0]} alt={item.productId.name} className='w-20 h-20' />
               </div>
-              <div className="flex-1 p-2">{item.productId.name}</div>
+              <div className='flex-1 p-2'>{item.productId.name}</div>
               <div className='flex-1 p-2'>
                 <span>Biến thể: {item.productOptionId}</span>
               </div>
-              <div className="flex-1 p-2">{item.unitPrice.toLocaleString()} VND</div>
-              <div className="flex-1 p-2">{item.quantity}</div>
-              <div className="flex-1 p-2">{(item.unitPrice * item.quantity).toLocaleString()} VND</div>
+              <div className='flex-1 p-2'>{item.unitPrice.toLocaleString()} VND</div>
+              <div className='flex-1 p-2'>{item.quantity}</div>
+              <div className='flex-1 p-2'>{(item.unitPrice * item.quantity).toLocaleString()} VND</div>
             </div>
           ))}
         </div>
       </div>
       {/* Section thêm địa điểm */}
-      <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6 mt-8">
-        <h2 className="font-bold text-2xl mb-4 text-gray-800 dark:text-gray-100">
-          Thêm địa điểm tại shipments
-        </h2>
-        <div className="space-y-4">
+      <div className='bg-white dark:bg-gray-800 shadow rounded-lg p-6 mt-8'>
+        <h2 className='font-bold text-2xl mb-4 text-gray-800 dark:text-gray-100'>Thêm địa điểm tại shipments</h2>
+        <div className='space-y-4'>
           <input
-            type="text"
+            type='text'
             value={newLocation}
             onChange={(e) => setNewLocation(e.target.value)}
-            placeholder="Nhập địa điểm mới"
-            className="w-full border border-gray-300 dark:border-gray-700 rounded-md p-2 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200"
+            placeholder='Nhập địa điểm mới'
+            className='w-full border border-gray-300 dark:border-gray-700 rounded-md p-2 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200'
           />
           <Button
             onClick={handleAddLocation}
-            variant="default"
+            variant='default'
             disabled={loading}
-            className="bg-black hover text-white font-semibold py-2 rounded-md mt-4 dark:bg-blue-500 dark:hover:bg-blue-400"
+            className='bg-black hover text-white font-semibold py-2 rounded-md mt-4 dark:bg-blue-500 dark:hover:bg-blue-400'
           >
-            {loading ? "Đang xử lý..." : "Thêm địa điểm"}
+            {loading ? 'Đang xử lý...' : 'Thêm địa điểm'}
           </Button>
         </div>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6 mt-8">
-        <h2 className="font-bold text-2xl mb-4 text-gray-800 dark:text-gray-100">
-          Danh sách địa điểm
-        </h2>
+      <div className='bg-white dark:bg-gray-800 shadow rounded-lg p-6 mt-8'>
+        <h2 className='font-bold text-2xl mb-4 text-gray-800 dark:text-gray-100'>Danh sách địa điểm</h2>
         {order?.shipments?.locations?.length ? (
-          <ul className="list-disc pl-6 text-gray-800 dark:text-gray-200">
+          <ul className='list-disc pl-6 text-gray-800 dark:text-gray-200'>
             {order.shipments.locations.map((location, index) => (
               <li key={index}>{location}</li>
             ))}
           </ul>
         ) : (
-          <p className="text-gray-500 dark:text-gray-400">
-            Chưa có địa điểm nào trong danh sách.
-          </p>
+          <p className='text-gray-500 dark:text-gray-400'>Chưa có địa điểm nào trong danh sách.</p>
         )}
       </div>
     </div>
   )
 }
 export default OrderEdit
-

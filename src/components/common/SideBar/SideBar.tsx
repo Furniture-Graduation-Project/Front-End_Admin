@@ -16,6 +16,7 @@ import { Link, NavLink } from 'react-router-dom'
 import navMenu from '@/assets/data/navMenu'
 import { useState } from 'react'
 import { useAuth } from '@/context/AuthContext'
+import { logo } from '@/assets'
 
 const SideBar = () => {
   const { user } = useAuth()
@@ -36,7 +37,7 @@ const SideBar = () => {
               className='data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground dark:text-white'
             >
               <div className='aspect-square size-10 text-sidebar-primary-foreground'>
-                <img src='logo.png' alt='logo' className='w-full h-full object-cover' />
+                <img src={logo} alt='logo' className='w-full h-full object-cover' />
               </div>
               <div className='grid flex-1 text-left text-sm leading-tight dark:text-slate-200'>
                 <span className='truncate font-semibold text-xl'>Nội Thất River</span>

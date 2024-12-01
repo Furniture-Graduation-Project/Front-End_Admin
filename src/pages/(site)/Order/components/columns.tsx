@@ -8,6 +8,8 @@ const getStatusBgColor = (status: string) => {
       return 'bg-yellow-200 dark:bg-yellow-700'
     case 'confirmed':
       return 'bg-blue-200 dark:bg-blue-700'
+    case 'unpaid':
+      return 'bg-blue-200 dark:bg-blue-700'
     case 'processing':
       return 'bg-orange-200 dark:bg-orange-700'
     case 'shipped':
@@ -31,6 +33,8 @@ const getStatusText = (status: string) => {
       return 'Chờ xử lý'
     case 'confirmed':
       return 'Đã xác nhận'
+    case 'unpaid':
+      return 'Chờ thanh toán'
     case 'processing':
       return 'Đang xử lý'
     case 'shipped':
