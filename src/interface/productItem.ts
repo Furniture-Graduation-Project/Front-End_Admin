@@ -11,4 +11,5 @@ export interface ProductItem {
   price: number
   image?: string
   SKU: string
+  status: 'active' | 'deleted'
 }

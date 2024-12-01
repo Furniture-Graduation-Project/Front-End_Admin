@@ -8,8 +8,8 @@ import { ProductItemService } from '@/services/productItem'
 import { ProductService } from '@/services/product'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { ProductItem } from '@/interface/productItem'
-import AlertAcitonDialog from '@/components/modals/AlertDialog'
 import { uploadFileCloudinary } from '@/utils/upload-cloudinary'
+import { Edit3 } from 'lucide-react'
 
 interface AddVariantsProps {
   productId: string
@@ -34,7 +34,8 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
       stock: 0,
       price: 0,
       image: '',
-      SKU: ''
+      SKU: '',
+      status: 'active'
     },
     mode: 'onBlur'
   })
@@ -45,37 +46,9 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
   const [isEditMode, setIsEditMode] = useState(false)
   const [currentItemId, setCurrentItemId] = useState<string | null>(null)
   const [productExists, setProductExists] = useState(false)
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
-  const [deleteItemId, setDeleteItemId] = useState<string | null>(null)
   const [preview, setPreview] = useState<string | null>(null)
   const [image, setImage] = useState<string | null>('')
-  const confirmDelete = (id: any) => {
-    setDeleteItemId(id)
-    setIsDeleteDialogOpen(true)
-  }
-  const handleDeleteConfirmed = async () => {
-    if (!deleteItemId) return
-    try {
-      await ProductItemService.delete(deleteItemId)
-      toast({
-        title: 'Thành công',
-        description: 'Xóa biến thể thành công.',
-        variant: 'success',
-        duration: 3000
-      })
-      fetchProductItems()
-    } catch {
-      toast({
-        title: 'Lỗi',
-        description: 'Không thể xóa biến thể.',
-        variant: 'destructive',
-        duration: 3000
-      })
-    } finally {
-      setIsDeleteDialogOpen(false)
-      setDeleteItemId(null)
-    }
-  }
+
   const validateProduct = async () => {
     try {
       const response = await ProductService.getById(productId)
@@ -122,7 +95,7 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
       value: data.variants[index]?.value || ''
     }))
 
-    const payload = { ...data, productId, variants: variantInputs, image: image || data.image }
+    const payload = { ...data, status: data.status, productId, variants: variantInputs, image: image || data.image }
     console.log('Payload:', payload)
 
     try {
@@ -171,6 +144,7 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
     setValue('price', item.price)
     setValue('image', image || item.image)
     setValue('SKU', item.SKU)
+    setValue('status', item.status)
     setSelectedVariants(item.variants.map((v) => v.variant))
     item.variants.forEach((variant, index) => {
       setValue(`variants.${index}.value`, variant.value)
@@ -240,10 +214,8 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
             </div>
             <div className='flex space-x-2 lg:mt-0 mt-2'>
               <Button variant='outline' onClick={() => handleEdit(item)}>
-                Sửa
-              </Button>
-              <Button variant='destructive' onClick={() => confirmDelete(item._id)}>
-                Xóa
+                <Edit3 className='mr-2 h-4 w-4' />
+                Cập nhật
               </Button>
             </div>
           </div>
@@ -318,6 +290,26 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
                 className='dark:bg-gray-700 dark:text-gray-100'
               />
               {errors.SKU && <p className='text-red-500 py-2 text-sm'>{errors.SKU.message}</p>}
+
+              {isEditMode && (
+                <>
+                  <Label className='dark:text-gray-100'>Trạng thái</Label>
+                  <Controller
+                    name='status'
+                    control={control}
+                    render={({ field }) => (
+                      <select
+                        {...field}
+                        className='dark:bg-gray-700 dark:text-gray-100 border rounded-md p-1 min-w-[150px]'
+                      >
+                        <option value='active'>Hoạt động</option>
+                        <option value='deleted'>Xóa</option>
+                      </select>
+                    )}
+                  />
+                  {errors.status && <p className='text-red-500 py-2 text-sm'>{errors.status.message}</p>}
+                </>
+              )}
             </div>
             <DialogFooter>
               <Button type='submit'>Lưu</Button>
@@ -325,14 +317,6 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
           </form>
         </DialogContent>
       </Dialog>
-      <AlertAcitonDialog
-        title='Xác nhận xóa'
-        description='Bạn có chắc chắn muốn xóa biến thể này không? Hành động này không thể hoàn tác.'
-        variant='destructive'
-        isOpen={isDeleteDialogOpen}
-        setIsOpen={setIsDeleteDialogOpen}
-        handleAciton={handleDeleteConfirmed}
-      />
     </div>
   )
 }
