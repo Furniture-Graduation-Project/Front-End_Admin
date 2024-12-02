@@ -172,7 +172,7 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
     setIsDialogOpen(true)
     setIsEditMode(true)
     setCurrentItemId(item._id || null)
-    setValue('outStock', 0)
+    setValue('outStock', item.outStock || 0)
     setValue('stock', 0)
     setValue('price', item.price)
     setValue('image', image || item.image)
@@ -203,7 +203,7 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
   }
 
   return (
-    <div className='space-y-4 pb-8 bg-[#f5f6fa] dark:bg-gray-900 container'>
+    <div className='bg-[#ffffff] dark:bg-gray-900 h-screen rounded-md px-10 py-5 mt-5'>
       <Label className='font-bold text-2xl dark:text-gray-100'>Biến thể sản phẩm</Label>
       <div className='flex flex-wrap gap-4'>
         {VariantFormSchema.fixedVariants.map((variant) => (
@@ -229,7 +229,7 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
               <div className='lg:flex lg:space-x-6 items-center'>
                 <img
                   src={item.image ? item.image : 'https://img.icons8.com/parakeet-line/48/image.png'}
-                  width={40}
+                  width={100}
                   alt=''
                 />
                 {item.variants.map((variant) => (
@@ -294,7 +294,7 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
               </div>
             )}
             <div className='space-y-2'>
-              <Label className='dark:text-gray-100'>Số lượng</Label>
+              <Label className='dark:text-gray-100'>Thêm số lượng</Label>
               <Input
                 type='number'
                 min={0}
