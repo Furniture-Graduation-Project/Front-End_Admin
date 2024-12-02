@@ -8,15 +8,16 @@ import { ProductItemService } from '@/services/productItem'
 import { ProductService } from '@/services/product'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { ProductItem } from '@/interface/productItem'
-import AlertAcitonDialog from '@/components/modals/AlertDialog'
 import { uploadFileCloudinary } from '@/utils/upload-cloudinary'
+import { Edit3, Trash2 } from 'lucide-react'
+import AlertAcitonDialog from '@/components/modals/AlertDialog'
 
 interface AddVariantsProps {
   productId: string
 }
 
 const VariantFormSchema = {
-  fixedVariants: ['Màu sắc', 'Mùi hương', 'Kích cỡ']
+  fixedVariants: ['Màu sắc', 'Mùi hương', 'Kích cỡ', 'Phong cách']
 }
 
 const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
@@ -34,9 +35,10 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
       stock: 0,
       price: 0,
       image: '',
-      SKU: ''
+      SKU: '',
+      status: 'active'
     },
-    mode: 'onBlur' // Chế độ validate sau khi mất focus
+    mode: 'onBlur'
   })
 
   const [productItems, setProductItems] = useState<ProductItem[]>([])
@@ -54,28 +56,32 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
     setIsDeleteDialogOpen(true)
   }
   const handleDeleteConfirmed = async () => {
-    if (!deleteItemId) return
-    try {
-      await ProductItemService.delete(deleteItemId)
-      toast({
-        title: 'Thành công',
-        description: 'Xóa biến thể thành công.',
-        variant: 'success',
-        duration: 3000
-      })
-      fetchProductItems()
-    } catch {
-      toast({
-        title: 'Lỗi',
-        description: 'Không thể xóa biến thể.',
-        variant: 'destructive',
-        duration: 3000
-      })
-    } finally {
-      setIsDeleteDialogOpen(false)
-      setDeleteItemId(null)
+    if (deleteItemId) {
+      try {
+        const productItem = ProductItemService.getById(deleteItemId)
+        const updatedData = { ...productItem, status: 'deleted' }
+        await ProductItemService.update(deleteItemId, updatedData)
+        toast({
+          title: 'Thành công',
+          description: 'Biến thể đã bị xóa.',
+          variant: 'success',
+          duration: 3000
+        })
+        fetchProductItems()
+      } catch (error) {
+        toast({
+          title: 'Lỗi',
+          description: 'Đã có lỗi xảy ra trong quá trình xóa.',
+          variant: 'destructive',
+          duration: 3000
+        })
+      } finally {
+        setIsDeleteDialogOpen(false)
+        setDeleteItemId(null)
+      }
     }
   }
+
   const validateProduct = async () => {
     try {
       const response = await ProductService.getById(productId)
@@ -122,7 +128,7 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
       value: data.variants[index]?.value || ''
     }))
 
-    const payload = { ...data, productId, variants: variantInputs, image: image || data.image }
+    const payload = { ...data, status: data.status, productId, variants: variantInputs, image: image || data.image }
     console.log('Payload:', payload)
 
     try {
@@ -171,6 +177,7 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
     setValue('price', item.price)
     setValue('image', image || item.image)
     setValue('SKU', item.SKU)
+    setValue('status', item.status)
     setSelectedVariants(item.variants.map((v) => v.variant))
     item.variants.forEach((variant, index) => {
       setValue(`variants.${index}.value`, variant.value)
@@ -215,39 +222,41 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
         </Button>
       </div>
       <div className='mt-4'>
-        {productItems.map((item) => (
-          <div key={item._id} className='lg:flex lg:items-center lg:justify-between  p-4 border rounded'>
-            <div className='lg:flex lg:space-x-6 items-center'>
-              <img
-                src={item.image ? item.image : 'https://img.icons8.com/parakeet-line/48/image.png'}
-                width={50}
-                alt=''
-              />
-              {item.variants.map((variant) => (
-                <p key={variant.variant}>
-                  <span className='font-bold'>{variant.variant}:</span> {variant.value}
+        {productItems
+          .filter((item) => item.status !== 'deleted')
+          .map((item) => (
+            <div key={item._id} className='lg:flex lg:items-center lg:justify-between  p-4 border rounded'>
+              <div className='lg:flex lg:space-x-6 items-center'>
+                <img
+                  src={item.image ? item.image : 'https://img.icons8.com/parakeet-line/48/image.png'}
+                  width={40}
+                  alt=''
+                />
+                {item.variants.map((variant) => (
+                  <p key={variant.variant}>
+                    <span className='font-bold'>{variant.variant}:</span> {variant.value}
+                  </p>
+                ))}
+                <p>
+                  <span className='font-bold'>SKU:</span> {item.SKU}
                 </p>
-              ))}
-              <p>
-                <span className='font-bold'>SKU:</span> {item.SKU}
-              </p>
-              <p>
-                <span className='font-bold'>Giá:</span> {item.price.toLocaleString()} VND
-              </p>
-              <p>
-                <span className='font-bold'>Số lượng:</span> {item.stock}
-              </p>
+                <p>
+                  <span className='font-bold'>Giá:</span> {item.price.toLocaleString()} VND
+                </p>
+                <p>
+                  <span className='font-bold'>Số lượng:</span> {item.stock}
+                </p>
+              </div>
+              <div className='flex space-x-2 lg:mt-0 mt-2'>
+                <Button variant='outline' onClick={() => handleEdit(item)}>
+                  <Edit3 className='h-4 w-4' />
+                </Button>
+                <Button variant='outline' onClick={() => confirmDelete(item._id)}>
+                  <Trash2 className=' h-4 w-4' />
+                </Button>
+              </div>
             </div>
-            <div className='flex space-x-2 lg:mt-0 mt-2'>
-              <Button variant='outline' onClick={() => handleEdit(item)}>
-                Sửa
-              </Button>
-              <Button variant='destructive' onClick={() => confirmDelete(item._id)}>
-                Xóa
-              </Button>
-            </div>
-          </div>
-        ))}
+          ))}
       </div>
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>
@@ -318,6 +327,26 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
                 className='dark:bg-gray-700 dark:text-gray-100'
               />
               {errors.SKU && <p className='text-red-500 py-2 text-sm'>{errors.SKU.message}</p>}
+
+              {isEditMode && (
+                <>
+                  <Label className='dark:text-gray-100'>Trạng thái</Label>
+                  <Controller
+                    name='status'
+                    control={control}
+                    render={({ field }) => (
+                      <select
+                        {...field}
+                        className='dark:bg-gray-700 dark:text-gray-100 border rounded-md p-1 min-w-[150px]'
+                      >
+                        <option value='active'>Hoạt động</option>
+                        <option value='deleted'>Xóa</option>
+                      </select>
+                    )}
+                  />
+                  {errors.status && <p className='text-red-500 py-2 text-sm'>{errors.status.message}</p>}
+                </>
+              )}
             </div>
             <DialogFooter>
               <Button type='submit'>Lưu</Button>
@@ -327,7 +356,7 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
       </Dialog>
       <AlertAcitonDialog
         title='Xác nhận xóa'
-        description='Bạn có chắc chắn muốn xóa biến thể này không? Hành động này không thể hoàn tác.'
+        description='Bạn có chắc chắn muốn xóa biến thể này không?'
         variant='destructive'
         isOpen={isDeleteDialogOpen}
         setIsOpen={setIsDeleteDialogOpen}
