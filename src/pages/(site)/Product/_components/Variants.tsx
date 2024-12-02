@@ -9,7 +9,8 @@ import { ProductService } from '@/services/product'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { ProductItem } from '@/interface/productItem'
 import { uploadFileCloudinary } from '@/utils/upload-cloudinary'
-import { Edit3 } from 'lucide-react'
+import { Edit3, Trash2 } from 'lucide-react'
+import AlertAcitonDialog from '@/components/modals/AlertDialog'
 
 interface AddVariantsProps {
   productId: string
@@ -46,8 +47,40 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
   const [isEditMode, setIsEditMode] = useState(false)
   const [currentItemId, setCurrentItemId] = useState<string | null>(null)
   const [productExists, setProductExists] = useState(false)
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  const [deleteItemId, setDeleteItemId] = useState<string | null>(null)
   const [preview, setPreview] = useState<string | null>(null)
   const [image, setImage] = useState<string | null>('')
+  const confirmDelete = (id: any) => {
+    setDeleteItemId(id)
+    setIsDeleteDialogOpen(true)
+  }
+  const handleDeleteConfirmed = async () => {
+    if (deleteItemId) {
+      try {
+        const productItem = ProductItemService.getById(deleteItemId)
+        const updatedData = { ...productItem, status: 'deleted' }
+        await ProductItemService.update(deleteItemId, updatedData)
+        toast({
+          title: 'Thành công',
+          description: 'Biến thể đã bị xóa.',
+          variant: 'success',
+          duration: 3000
+        })
+        fetchProductItems()
+      } catch (error) {
+        toast({
+          title: 'Lỗi',
+          description: 'Đã có lỗi xảy ra trong quá trình xóa.',
+          variant: 'destructive',
+          duration: 3000
+        })
+      } finally {
+        setIsDeleteDialogOpen(false)
+        setDeleteItemId(null)
+      }
+    }
+  }
 
   const validateProduct = async () => {
     try {
@@ -189,37 +222,41 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
         </Button>
       </div>
       <div className='mt-4'>
-        {productItems.map((item) => (
-          <div key={item._id} className='lg:flex lg:items-center lg:justify-between  p-4 border rounded'>
-            <div className='lg:flex lg:space-x-6 items-center'>
-              <img
-                src={item.image ? item.image : 'https://img.icons8.com/parakeet-line/48/image.png'}
-                width={50}
-                alt=''
-              />
-              {item.variants.map((variant) => (
-                <p key={variant.variant}>
-                  <span className='font-bold'>{variant.variant}:</span> {variant.value}
+        {productItems
+          .filter((item) => item.status !== 'deleted')
+          .map((item) => (
+            <div key={item._id} className='lg:flex lg:items-center lg:justify-between  p-4 border rounded'>
+              <div className='lg:flex lg:space-x-6 items-center'>
+                <img
+                  src={item.image ? item.image : 'https://img.icons8.com/parakeet-line/48/image.png'}
+                  width={40}
+                  alt=''
+                />
+                {item.variants.map((variant) => (
+                  <p key={variant.variant}>
+                    <span className='font-bold'>{variant.variant}:</span> {variant.value}
+                  </p>
+                ))}
+                <p>
+                  <span className='font-bold'>SKU:</span> {item.SKU}
                 </p>
-              ))}
-              <p>
-                <span className='font-bold'>SKU:</span> {item.SKU}
-              </p>
-              <p>
-                <span className='font-bold'>Giá:</span> {item.price.toLocaleString()} VND
-              </p>
-              <p>
-                <span className='font-bold'>Số lượng:</span> {item.stock}
-              </p>
+                <p>
+                  <span className='font-bold'>Giá:</span> {item.price.toLocaleString()} VND
+                </p>
+                <p>
+                  <span className='font-bold'>Số lượng:</span> {item.stock}
+                </p>
+              </div>
+              <div className='flex space-x-2 lg:mt-0 mt-2'>
+                <Button variant='outline' onClick={() => handleEdit(item)}>
+                  <Edit3 className='h-4 w-4' />
+                </Button>
+                <Button variant='outline' onClick={() => confirmDelete(item._id)}>
+                  <Trash2 className=' h-4 w-4' />
+                </Button>
+              </div>
             </div>
-            <div className='flex space-x-2 lg:mt-0 mt-2'>
-              <Button variant='outline' onClick={() => handleEdit(item)}>
-                <Edit3 className='mr-2 h-4 w-4' />
-                Cập nhật
-              </Button>
-            </div>
-          </div>
-        ))}
+          ))}
       </div>
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>
@@ -317,6 +354,14 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
           </form>
         </DialogContent>
       </Dialog>
+      <AlertAcitonDialog
+        title='Xác nhận xóa'
+        description='Bạn có chắc chắn muốn xóa biến thể này không?'
+        variant='destructive'
+        isOpen={isDeleteDialogOpen}
+        setIsOpen={setIsDeleteDialogOpen}
+        handleAciton={handleDeleteConfirmed}
+      />
     </div>
   )
 }
