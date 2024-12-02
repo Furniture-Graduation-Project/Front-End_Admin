@@ -1,16 +1,16 @@
-import { EmployeeService } from '@/services/employee'
-import { useAuth } from '@/context/AuthContext'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { useState, useEffect, useRef } from 'react'
-import { useDebouncedCallback } from '@/hooks/useDebounceCallBack'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { useAuth } from '@/context/AuthContext'
 import { toast } from '@/hooks/use-toast'
+import { EmployeeService } from '@/services/employee'
+import { uploadFileCloudinary } from '@/utils/upload-cloudinary'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
 
 const settingsSchema = z.object({
   avatar: z.string().default(''),
@@ -23,9 +23,6 @@ const settingsSchema = z.object({
 const SettingAccount = () => {
   const auth = useAuth()
   const [avatar, setAvatar] = useState('')
-  const inputFileRef = useRef(null)
-  const [isProcessing, setIsProcessing] = useState(false)
-  const debouncedHandleChange = useDebouncedCallback(() => setIsProcessing(false))
 
   const settingsForm = useForm<z.infer<typeof settingsSchema>>({
     resolver: zodResolver(settingsSchema),
@@ -49,6 +46,14 @@ const SettingAccount = () => {
       })
     }
   }, [auth, settingsForm])
+
+  const onChangeImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files
+    if (!files) return
+    const urls = await Promise.all(Array.from(files).map(uploadFileCloudinary))
+    setAvatar(urls[0])
+    settingsForm.setValue('avatar', urls[0])
+  }
 
   const handleSettingsSubmit = async (data: z.infer<typeof settingsSchema>) => {
     try {
@@ -83,27 +88,6 @@ const SettingAccount = () => {
     }
   }
 
-  const handleUploadClick = () => {
-    if (inputFileRef.current) {
-      ;(inputFileRef.current as any).click()
-    }
-  }
-
-  const handleFileChange = (event: any) => {
-    const file = event.target.files[0]
-    if (file) {
-      const reader = new FileReader()
-      setIsProcessing(true)
-      reader.onload = () => {
-        if (reader.result) {
-          setAvatar(reader.result as string)
-          debouncedHandleChange()
-        }
-      }
-      reader.readAsDataURL(file)
-    }
-  }
-
   return (
     <Form {...settingsForm}>
       <form onSubmit={settingsForm.handleSubmit(handleSettingsSubmit)} className='space-y-6'>
@@ -113,25 +97,13 @@ const SettingAccount = () => {
             <FormItem className='flex flex-col items-center'>
               <Avatar className='w-16 h-16'>
                 <AvatarImage src={avatar || field.value} alt='avatar' />
-                <AvatarFallback>Ảnh</AvatarFallback>
+                <AvatarFallback>Avatar</AvatarFallback>
               </Avatar>
-              <input type='file' ref={inputFileRef} onChange={handleFileChange} className='hidden' />
-              <Button
-                variant='ghost'
-                type='button'
-                className='mt-3 text-sm font-semibold'
-                onClick={handleUploadClick}
-                disabled={isProcessing}
-              >
-                {isProcessing ? (
-                  <div hidden={!inputFileRef} className='flex items-center'>
-                    <span>Chờ xử lý...</span>
-                    <div className='animate-spin h-5 w-5 ml-2 rounded-full border-2 border-gray-400 border-t-white'></div>
-                  </div>
-                ) : (
-                  <span>Tải lên ảnh đại diện</span>
-                )}
-              </Button>
+
+              <input id='avatarUpload' type='file' className='hidden' onChange={onChangeImage} />
+              <label htmlFor='avatarUpload' className='cursor-pointer text-sm border p-2 rounded-md border-zinc-400'>
+                Tải ảnh đại diện
+              </label>
             </FormItem>
           )}
         />
