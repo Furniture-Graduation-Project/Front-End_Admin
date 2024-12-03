@@ -42,8 +42,22 @@ export const columns: ColumnDef<IProduct>[] = [
     accessorKey: 'status',
     header: 'Trạng thái',
     cell: ({ row }) => {
-      const status = row.getValue<string>('status')
-      return <p>{status.charAt(0).toUpperCase() + status.slice(1)}</p>
+      const status = row.getValue<string>('status').toLowerCase()
+      let displayStatus = ''
+      switch (status) {
+        case 'creating':
+          displayStatus = 'Đang tạo'
+          break
+        case 'available':
+          displayStatus = 'Còn hàng'
+          break
+        case 'disable':
+          displayStatus = 'Khóa'
+          break
+        default:
+          displayStatus = 'Không xác định'
+      }
+      return <p>{displayStatus}</p>
     }
   },
   {
