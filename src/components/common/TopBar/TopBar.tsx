@@ -13,8 +13,9 @@ import { SidebarTrigger } from '@/components/ui/sidebar'
 import { Button } from '@/components/ui/button'
 import { DarkMode } from '@/components/modals/DarkMode'
 import useFullScreen from '@/hooks/useFullScreen'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
+import useEmployeeMutation from '@/hooks/mutations/useEmployeeMutation'
 
 const TopBar = () => {
   const roleMap: Record<string, string> = {
@@ -23,17 +24,9 @@ const TopBar = () => {
     order: 'Nhân viên bán hàng',
     support: 'Nhân viên hỗ trợ'
   }
-  const auth = useAuth()
-
+  const { user } = useAuth()
+  const { mutate } = useEmployeeMutation({ action: 'LOGOUT' })
   const { isFullScreen, toggleFullScreen } = useFullScreen()
-  const navigate = useNavigate()
-
-  const handleLogout = () => {
-    auth.logout()
-    navigate(`/`)
-  }
-
-  const user = auth.user
 
   return (
     <header className='fixed md:sticky w-full top-0 left-0 right-0 z-20 flex h-16 items-center gap-2 bg-white dark:bg-slate-950 border-b border-b-slate-200 dark:border-b-slate-800'>
@@ -112,11 +105,11 @@ const TopBar = () => {
                     <Settings className='shrink-0' />
                     <Link to='/setting' className='flex-1'>
                       Tài khoản
-                    </Link>
+                    </Link> 
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className='text-sm text-red-600' onClick={handleLogout}>
+                <DropdownMenuItem className='text-sm text-red-600' onClick={() => mutate(undefined)}>
                   <LogOut size={14} className='mr-2' />
                   Đăng xuất
                 </DropdownMenuItem>
