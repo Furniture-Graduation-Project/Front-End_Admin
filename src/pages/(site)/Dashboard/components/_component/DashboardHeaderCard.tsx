@@ -15,8 +15,6 @@ const DashboardHeaderCard = ({ data, period, type }: { data: any; period: string
         return 'Ngày hôm'
     }
   }
-  console.log(type)
-
   return (
     <div className='bg-slate-100 rounded-lg p-4 flex flex-col justify-between h-[161px]'>
       <div className='flex items-center'>

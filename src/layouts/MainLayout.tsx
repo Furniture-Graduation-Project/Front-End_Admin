@@ -6,9 +6,11 @@ import ErrorPage from '@/pages/(site)/404/404'
 import {  Loader2 } from 'lucide-react'
 import useListenOrder from '@/hooks/useListenOrder'
 import { Toaster } from 'sonner'
+import { useAuthToken } from '@/hooks/useAuthToken'
 
 function MainLayout({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth()
+  useAuthToken()
   useListenOrder()
   return isLoading ? (
     <div className='flex items-center justify-center h-screen'>
