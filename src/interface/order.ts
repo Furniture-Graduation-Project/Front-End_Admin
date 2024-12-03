@@ -12,5 +12,29 @@ export interface IOrder {
   items: IOrderItem[]
   payment: IPayment
   shipments: IShipment
-  status: 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'returned' | 'refunded'
+  status:
+    | 'unpaid'
+    | 'pending'
+    | 'confirmed'
+    | 'processing'
+    | 'shipped'
+    | 'delivered'
+    | 'received'
+    | 'cancelled'
+    | 'returned'
+    | 'refunded'
+  statusHistory: {
+    status:
+      | 'unpaid'
+      | 'pending'
+      | 'confirmed'
+      | 'processing'
+      | 'shipped'
+      | 'delivered'
+      | 'received'
+      | 'cancelled'
+      | 'returned'
+      | 'refunded'
+    date?: Date
+  }[]
 }
