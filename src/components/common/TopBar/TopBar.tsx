@@ -16,6 +16,8 @@ import useFullScreen from '@/hooks/useFullScreen'
 import { Link } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import useEmployeeMutation from '@/hooks/mutations/useEmployeeMutation'
+import AlertAcitonDialog from '@/components/modals/AlertDialog'
+import { useState } from 'react'
 
 const TopBar = () => {
   const roleMap: Record<string, string> = {
@@ -27,6 +29,7 @@ const TopBar = () => {
   const { user } = useAuth()
   const { mutate } = useEmployeeMutation({ action: 'LOGOUT' })
   const { isFullScreen, toggleFullScreen } = useFullScreen()
+  const [open, setOpen] = useState<boolean>(false)
 
   return (
     <header className='fixed md:sticky w-full top-0 left-0 right-0 z-20 flex h-16 items-center gap-2 bg-white dark:bg-slate-950 border-b border-b-slate-200 dark:border-b-slate-800'>
@@ -105,11 +108,11 @@ const TopBar = () => {
                     <Settings className='shrink-0' />
                     <Link to='/setting' className='flex-1'>
                       Tài khoản
-                    </Link> 
+                    </Link>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className='text-sm text-red-600' onClick={() => mutate(undefined)}>
+                <DropdownMenuItem className='text-sm text-red-600' onClick={() => setOpen(true)}>
                   <LogOut size={14} className='mr-2' />
                   Đăng xuất
                 </DropdownMenuItem>
@@ -118,6 +121,14 @@ const TopBar = () => {
           </div>
         </div>
       </div>
+      <AlertAcitonDialog
+        title='Bạn chắc chắn muốn đăng xuất?'
+        description='Bạn sẽ bị đăng xuất khỏi tài khoản của mình. Bạn có muốn tiếp tục?'
+        variant={'default'}
+        isOpen={open}
+        setIsOpen={setOpen}
+        handleAciton={() => mutate(undefined)}
+      />
     </header>
   )
 }
