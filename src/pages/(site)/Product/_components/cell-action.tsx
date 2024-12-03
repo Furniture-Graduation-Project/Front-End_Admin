@@ -21,12 +21,12 @@ export const CellAction = ({ data }: ProductCellActionProps) => {
     <DropdownMenu open={isDropdown} onOpenChange={setIsDropdown}>
       <DropdownMenuTrigger asChild>
         <Button variant={'ghost'} className='h-8 w-8 p-0'>
-          <span className='sr-only'>Open menu</span>
+          <span className='sr-only'>Mở menu</span>
           <MoreHorizontal className='h-4 w-4' />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align='end'>
-        <DropdownMenuLabel className='font-bold'>Actions</DropdownMenuLabel>
+        <DropdownMenuLabel className='font-bold'>Hành dộng</DropdownMenuLabel>
         {/* Edit */}
         <DropdownMenuItem>
           <Link to={`/product/edit/${data._id}`} className='flex items-center'>

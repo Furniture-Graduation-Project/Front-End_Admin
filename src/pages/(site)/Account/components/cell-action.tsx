@@ -64,21 +64,21 @@ export const CellAction = ({ data }: CellActionProps) => {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant={'ghost'} className='h-8 w-8 p-0'>
-            <span className='sr-only'>Open menu</span>
+            <span className='sr-only'>Mở menu</span>
             <MoreHorizontal className='h-4 w-4' />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align='end'>
-          <DropdownMenuLabel className='font-bold'>Actions</DropdownMenuLabel>
+          <DropdownMenuLabel className='font-bold'>Hành đông</DropdownMenuLabel>
           <DropdownMenuItem>
             <Link to={`/account/${data._id}`} className='flex items-center'>
               <UserSearch className='mr-2 h-4 w-4' />
-              Info
+              Thông tin
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setOpen(true)}>
             <Trash2 className='mr-2 h-4 w-4 text-red-500' />
-            Delete
+            Xóa
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

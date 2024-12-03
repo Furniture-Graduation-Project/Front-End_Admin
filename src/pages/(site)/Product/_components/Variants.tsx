@@ -9,7 +9,7 @@ import { ProductService } from '@/services/product'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { ProductItem } from '@/interface/productItem'
 import { uploadFileCloudinary } from '@/utils/upload-cloudinary'
-import { Edit3, Trash2 } from 'lucide-react'
+import { Edit3, Eye, RefreshCw, Trash2 } from 'lucide-react'
 import AlertAcitonDialog from '@/components/modals/AlertDialog'
 
 interface AddVariantsProps {
@@ -51,6 +51,49 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
   const [deleteItemId, setDeleteItemId] = useState<string | null>(null)
   const [preview, setPreview] = useState<string | null>(null)
   const [image, setImage] = useState<string | null>('')
+  const [statusFilter] = useState<string>('all')
+  const [showDeleted, setShowDeleted] = useState(false)
+  const [restoreItemId, setRestoreItemId] = useState<string | null>(null)
+  const [isRestoreDialogOpen, setIsRestoreDialogOpen] = useState(false)
+
+  const toggleShowDeleted = () => {
+    setShowDeleted((prev) => !prev)
+  }
+
+  const handleRestoreConfirm = (id: string) => {
+    setRestoreItemId(id)
+    setIsRestoreDialogOpen(true)
+  }
+
+  const handleRestoreConfirmed = async () => {
+    if (restoreItemId) {
+      try {
+        const productItem = ProductItemService.getById(restoreItemId)
+        const updatedData = { ...productItem, status: 'active' }
+
+        await ProductItemService.update(restoreItemId, updatedData)
+        toast({
+          title: 'Thành công',
+          description: 'Biến thể đã được khôi phục.',
+          variant: 'success',
+          duration: 3000
+        })
+
+        fetchProductItems()
+      } catch (error) {
+        toast({
+          title: 'Lỗi',
+          description: 'Đã có lỗi xảy ra trong quá trình khôi phục.',
+          variant: 'destructive',
+          duration: 3000
+        })
+      } finally {
+        setIsRestoreDialogOpen(false)
+        setRestoreItemId(null)
+      }
+    }
+  }
+
   const confirmDelete = (id: any) => {
     setDeleteItemId(id)
     setIsDeleteDialogOpen(true)
@@ -117,6 +160,8 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
       fetchProductItems()
     }
   }, [productId])
+
+  const filteredProducts = productItems.filter((item) => (statusFilter === 'all' ? true : item.status === statusFilter))
 
   const handleVariantChange = useCallback((variant: string) => {
     setSelectedVariants((prev) => (prev.includes(variant) ? prev.filter((v) => v !== variant) : [...prev, variant]))
@@ -205,32 +250,41 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
   return (
     <div className='bg-[#ffffff] dark:bg-gray-900 h-screen rounded-md px-10 py-5 mt-5'>
       <Label className='font-bold text-2xl dark:text-gray-100'>Biến thể sản phẩm</Label>
-      <div className='flex flex-wrap gap-4'>
-        {VariantFormSchema.fixedVariants.map((variant) => (
-          <div key={variant} className='flex items-center space-x-2'>
-            <input
-              type='checkbox'
-              checked={selectedVariants.includes(variant)}
-              onChange={() => handleVariantChange(variant)}
-              id={variant}
-            />
-            <Label htmlFor={variant}>{variant}</Label>
-          </div>
-        ))}
-        <Button variant='outline' className='dark:bg-gray-700 dark:text-gray-100' onClick={openAddForm}>
-          Thêm biến thể
-        </Button>
+      <div className='flex items-center justify-between gap-4 w-full'>
+        <div className='flex flex-wrap gap-4'>
+          {VariantFormSchema.fixedVariants.map((variant) => (
+            <div key={variant} className='flex items-center space-x-2'>
+              <input
+                type='checkbox'
+                checked={selectedVariants.includes(variant)}
+                onChange={() => handleVariantChange(variant)}
+                id={variant}
+              />
+              <Label htmlFor={variant}>{variant}</Label>
+            </div>
+          ))}
+          <Button variant='outline' className='dark:bg-gray-700 dark:text-gray-100' onClick={openAddForm}>
+            Thêm biến thể
+          </Button>
+        </div>
+        <div className='flex flex-col items-end mt-4'>
+          <Button variant='outline' onClick={toggleShowDeleted} className='flex items-center space-x-2'>
+            {showDeleted ? <Eye className='h-4 w-4' /> : <Trash2 className='h-4 w-4' />}
+            <span>{showDeleted ? 'Hiển thị hoạt động' : 'Hiển thị đã xóa'}</span>
+          </Button>
+        </div>
       </div>
+
       <div className='mt-4'>
-        {productItems
-          .filter((item) => item.status !== 'deleted')
+        {filteredProducts
+          .filter((item) => (showDeleted ? item.status === 'deleted' : item.status !== 'deleted'))
           .map((item) => (
-            <div key={item._id} className='lg:flex lg:items-center lg:justify-between  p-4 border rounded'>
+            <div key={item._id} className='lg:flex lg:items-center lg:justify-between p-4 border rounded'>
               <div className='lg:flex lg:space-x-6 items-center'>
                 <img
-                  src={item.image ? item.image : 'https://img.icons8.com/parakeet-line/48/image.png'}
+                  src={item.image || 'https://img.icons8.com/parakeet-line/48/image.png'}
                   width={100}
-                  alt=''
+                  alt={item.SKU || 'Hình ảnh sản phẩm'}
                 />
                 {item.variants.map((variant) => (
                   <p key={variant.variant}>
@@ -251,13 +305,43 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
                 <Button variant='outline' onClick={() => handleEdit(item)}>
                   <Edit3 className='h-4 w-4' />
                 </Button>
-                <Button variant='outline' onClick={() => confirmDelete(item._id)}>
-                  <Trash2 className=' h-4 w-4' />
-                </Button>
+                {item.status === 'deleted' ? (
+                  <Button
+                    variant='outline'
+                    onClick={() => {
+                      if (item._id) {
+                        handleRestoreConfirm(item._id)
+                      }
+                    }}
+                  >
+                    <RefreshCw className='h-4 w-4' />
+                  </Button>
+                ) : (
+                  <Button
+                    variant='outline'
+                    onClick={() => {
+                      if (item._id) {
+                        confirmDelete(item._id)
+                      }
+                    }}
+                  >
+                    <Trash2 className='h-4 w-4' />
+                  </Button>
+                )}
               </div>
             </div>
           ))}
       </div>
+
+      <AlertAcitonDialog
+        title='Xác nhận khôi phục'
+        description='Bạn có chắc chắn muốn khôi phục biến thể này không?'
+        variant='destructive'
+        isOpen={isRestoreDialogOpen}
+        setIsOpen={setIsRestoreDialogOpen}
+        handleAciton={handleRestoreConfirmed}
+      />
+
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>
           <DialogHeader>
@@ -327,26 +411,6 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
                 className='dark:bg-gray-700 dark:text-gray-100'
               />
               {errors.SKU && <p className='text-red-500 py-2 text-sm'>{errors.SKU.message}</p>}
-
-              {isEditMode && (
-                <>
-                  <Label className='dark:text-gray-100'>Trạng thái</Label>
-                  <Controller
-                    name='status'
-                    control={control}
-                    render={({ field }) => (
-                      <select
-                        {...field}
-                        className='dark:bg-gray-700 dark:text-gray-100 border rounded-md p-1 min-w-[150px]'
-                      >
-                        <option value='active'>Hoạt động</option>
-                        <option value='deleted'>Xóa</option>
-                      </select>
-                    )}
-                  />
-                  {errors.status && <p className='text-red-500 py-2 text-sm'>{errors.status.message}</p>}
-                </>
-              )}
             </div>
             <DialogFooter>
               <Button type='submit'>Lưu</Button>
