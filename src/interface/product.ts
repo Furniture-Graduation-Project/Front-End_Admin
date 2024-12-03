@@ -1,5 +1,6 @@
 import { ICategory } from './category'
 import { IMaterial } from './material'
+import { ProductItem } from './productItem'
 export interface IProduct {
   _id?: string
   name: string
@@ -9,6 +10,7 @@ export interface IProduct {
   material: IMaterial
   materialDetail: string
   status: 'creating' | 'available' | 'disable'
+  items?: ProductItem[]
 }
 
 export interface ProductFormData {

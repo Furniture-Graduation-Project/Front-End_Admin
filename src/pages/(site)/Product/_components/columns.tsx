@@ -61,6 +61,41 @@ export const columns: ColumnDef<IProduct>[] = [
     }
   },
   {
+    header: 'Giá (min/max)',
+    cell: ({ row }) => {
+      const items = row.original.items || []
+      const prices = items.map((item) => item.price)
+      const minPrice = Math.min(...prices)
+      const maxPrice = Math.max(...prices)
+
+      const formatPrice = (price: number) => {
+        return price.toLocaleString('vi-VN')
+      }
+      return (
+        <div className='flex flex-col items-end'>
+          <p className='whitespace-nowrap'>{formatPrice(minPrice)} Đ</p>
+          <p className='whitespace-nowrap'>{formatPrice(maxPrice)} Đ</p>
+        </div>
+      )
+    }
+  },
+  {
+    header: 'Tổng số sản phẩm',
+    cell: ({ row }) => {
+      const items = row.original.items || []
+      const totalStock = items.reduce((total, item) => total + (item.stock || 0), 0)
+      return <p>{totalStock}</p>
+    }
+  },
+  {
+    header: 'Số lượng đã bán',
+    cell: ({ row }) => {
+      const items = row.original.items || []
+      const totalOutStock = items.reduce((total, item) => total + (item.outStock || 0), 0)
+      return <p>{totalOutStock}</p>
+    }
+  },
+  {
     id: 'Chức năng',
     cell: ({ row }) => <CellAction data={row.original} />
   }
