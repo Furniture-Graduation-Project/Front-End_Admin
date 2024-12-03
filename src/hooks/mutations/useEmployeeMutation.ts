@@ -8,11 +8,11 @@ import { SubmitHandler } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 
 type MutationQueryProps = {
-  action: 'CREATE' | 'UPDATE' | 'DELETE' | 'SIGN_IN' | 'UPDATE_PASSWORD'
+  action: 'CREATE' | 'UPDATE' | 'DELETE' | 'SIGN_IN' | 'UPDATE_PASSWORD' | 'LOGOUT'
 }
 
 const useEmployeeMutation = ({ action }: MutationQueryProps) => {
-  const { login } = useAuth()
+  const { login, logout } = useAuth()
   const { toast } = useToast()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
@@ -41,13 +41,20 @@ const useEmployeeMutation = ({ action }: MutationQueryProps) => {
           title: 'Xóa tài khoản nhân viên thành công!'
         })
         break
+      case 'LOGOUT':
+        logout()
+        navigate('/')
+        toast({
+          title: 'Đăng xuất thành công!'
+        })
+
+        break
       case 'SIGN_IN':
         login(data.data.token)
         navigate('/dashboard')
         toast({
           title: 'Đăng nhập thành công!'
         })
-
         break
     }
   }
@@ -62,7 +69,7 @@ const useEmployeeMutation = ({ action }: MutationQueryProps) => {
     console.log('[EMPLOYEE]', error)
   }
 
-  const mutationFn = async (data: IEmployee | { username: string; password: string } | IChangePassword) => {
+  const mutationFn = async (data: IEmployee | { username: string; password: string } | IChangePassword | undefined) => {
     switch (action) {
       case 'CREATE':
         return EmployeeService.create(data as IEmployee)
@@ -70,6 +77,8 @@ const useEmployeeMutation = ({ action }: MutationQueryProps) => {
         return EmployeeService.update((data as IEmployee)._id as string, data as IEmployee)
       case 'DELETE':
         return EmployeeService.delete((data as IEmployee)._id as string)
+      case 'LOGOUT':
+        return EmployeeService.logout()
       case 'SIGN_IN': {
         const { username, password } = data as { username: string; password: string }
         return EmployeeService.signIn(username, password)

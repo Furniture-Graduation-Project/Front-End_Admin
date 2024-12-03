@@ -17,9 +17,9 @@ export const ProductService = {
     }
   },
 
-  getById: async (id: string): Promise<AxiosResponse<IApiResponse<ProductFormData>>> => {
+  getById: async (id: string): Promise<AxiosResponse<IApiResponse<IProduct>>> => {
     try {
-      const response: AxiosResponse<IApiResponse<ProductFormData>> = await axiosInstance.get(`${API_URL}/${id}`)
+      const response: AxiosResponse<IApiResponse<IProduct>> = await axiosInstance.get(`${API_URL}/${id}`)
       return response
     } catch (error) {
       console.error(`Lỗi khi lấy sản phẩm với ID ${id}:`, error)

@@ -1,6 +1,8 @@
 import { ColumnDef } from '@tanstack/react-table'
 import { IOrder } from '@/interface/order'
 import { CellAction } from './cell-action'
+import { formatCurrency } from '@/utils/formatCurrency'
+import { getStatusText } from '@/utils/getOrderStatus'
 
 const getStatusBgColor = (status: string) => {
   switch (status) {
@@ -16,6 +18,8 @@ const getStatusBgColor = (status: string) => {
       return 'bg-green-200 dark:bg-green-700'
     case 'delivered':
       return 'bg-teal-200 dark:bg-teal-700'
+    case 'received':
+      return 'bg-green-200 dark:bg-green-700'
     case 'cancelled':
       return 'bg-red-200 dark:bg-red-700'
     case 'returned':
@@ -27,30 +31,6 @@ const getStatusBgColor = (status: string) => {
   }
 }
 
-const getStatusText = (status: string) => {
-  switch (status) {
-    case 'pending':
-      return 'Chờ xử lý'
-    case 'confirmed':
-      return 'Đã xác nhận'
-    case 'unpaid':
-      return 'Chờ thanh toán'
-    case 'processing':
-      return 'Đang xử lý'
-    case 'shipped':
-      return 'Đã gửi hàng'
-    case 'delivered':
-      return 'Đã giao hàng'
-    case 'cancelled':
-      return 'Đã hủy'
-    case 'returned':
-      return 'Đã hoàn trả'
-    case 'refunded':
-      return 'Đã hoàn tiền'
-    default:
-      return ''
-  }
-}
 
 const getPaymentStatusBgColor = (paymentStatus: string) => {
   switch (paymentStatus) {
@@ -81,14 +61,18 @@ export const columns: ColumnDef<IOrder>[] = [
   },
   {
     accessorKey: 'orderAddress',
-    header: 'Địa Chỉ'
+    header: 'Địa Chỉ',
+    cell: ({ row }) => {
+      const orderAddress = row.getValue<number>('orderAddress')
+      return <p className='line-clamp-1'>{orderAddress}</p>
+    }
   },
   {
     accessorKey: 'totalPrice',
     header: 'Tổng Giá Trị',
     cell: ({ row }) => {
       const price = row.getValue<number>('totalPrice')
-      return <div>{`$${price.toFixed(2)}`}</div>
+      return <div>{formatCurrency(price)}</div>
     }
   },
   {

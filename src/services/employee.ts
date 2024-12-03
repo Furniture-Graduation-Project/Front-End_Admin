@@ -45,16 +45,6 @@ export const EmployeeService = {
       throw error
     }
   },
-  // updateUserId: async (userId: string, data: Partial<IEmployee>): Promise<AxiosResponse<IApiResponse<IEmployee>>> => {
-  //   try {
-  //     const response: AxiosResponse<IApiResponse<IEmployee>> = await axiosInstance.put(`${API}/${userId}`, data)
-  //     return response
-  //   } catch (error) {
-  //     console.error(`Lỗi khi cập nhật thông tin người dùng với ID ${userId}:`, error)
-  //     throw error
-  //   }
-  // },
-
   delete: async (id: string): Promise<AxiosResponse<IApiResponse<void>>> => {
     try {
       const response: AxiosResponse<IApiResponse<void>> = await axiosInstance.delete(`${API}/${id}`)
@@ -102,6 +92,25 @@ export const EmployeeService = {
     } catch (error) {
       console.error(`Lỗi khi tìm kiếm nhân viên theo tên:`, error)
       throw error
+    }
+  },
+  refreshToken: async (): Promise<string | null> => {
+    try {
+      const response = await axiosInstance.post(`${API}/refreshToken`)
+      if (!response) {
+        throw new Error('Không thể làm mới access token')
+      }
+      const data = response.data
+      return data.token
+    } catch (error) {
+      return null
+    }
+  },
+  logout: async () => {
+    try {
+      await axiosInstance.post(`${API}/logout`)
+    } catch (error) {
+      return error
     }
   }
 }

@@ -1,6 +1,6 @@
 import { useToast } from '@/hooks/use-toast'
 import { IOrder } from '@/interface/order'
-import { OrderService } from '@/services/order' // Giả sử bạn đã có dịch vụ cho đơn hàng
+import { OrderService } from '@/services/order'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { SubmitHandler } from 'react-hook-form'
 
@@ -14,7 +14,7 @@ const useOrderMutation = ({ action }: MutationQueryProps) => {
 
   const handleSuccess = () => {
     queryClient.invalidateQueries({
-      queryKey: ['ORDER'] // Giả sử bạn có khóa query cho đơn hàng
+      queryKey: ['ORDER']
     })
     switch (action) {
       case 'CREATE':
@@ -45,7 +45,7 @@ const useOrderMutation = ({ action }: MutationQueryProps) => {
     console.log('[ORDER]', error)
   }
 
-  const mutationFn = async (data: IOrder) => {
+  const mutationFn = async (data: any) => {
     switch (action) {
       case 'CREATE':
         return OrderService.create(data)
