@@ -2,6 +2,8 @@ import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Skeleton } from '@/components/ui/skeleton'
+import { useAuth } from '@/context/AuthContext'
 import { toast } from '@/hooks/use-toast'
 import { ICreateBlog } from '@/interface/blog'
 import { BlogService } from '@/services/blog'
@@ -9,6 +11,7 @@ import { uploadFileCloudinary } from '@/utils/upload-cloudinary'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { useNavigate } from 'react-router-dom'
 import { z } from 'zod'
 
 const FormSchema = z.object({
@@ -22,17 +25,18 @@ const FormSchema = z.object({
   image: z.string().optional()
 })
 
-const FIXED_EMPLOYEE_ID = '671b8d1a76b33359e327cce7'
-
 const BlogAdd = () => {
   const [preview, setPreview] = useState<string | null>(null)
   const [image, setImage] = useState<string | null>('')
   const [loading, setLoading] = useState(false)
+  const [imageLoading, setImageLoading] = useState(false)
+  const { user } = useAuth()
+  const navigate = useNavigate()
 
   const form = useForm<ICreateBlog>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      employeeId: FIXED_EMPLOYEE_ID,
+      employeeId: user?._id,
       title: '',
       content: '',
       tags: [],
@@ -43,9 +47,11 @@ const BlogAdd = () => {
   const onChangeImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
     if (!files) return
+    setImageLoading(true)
     const urls = await Promise.all(Array.from(files).map(uploadFileCloudinary))
     setImage(urls[0])
     setPreview(URL.createObjectURL(files[0]))
+    setImageLoading(false)
   }
 
   const handleSubmit = async (data: ICreateBlog) => {
@@ -54,7 +60,7 @@ const BlogAdd = () => {
       await BlogService.create({ ...data, image: image || '' })
       form.reset({
         ...form.getValues(),
-        employeeId: FIXED_EMPLOYEE_ID,
+        employeeId: user?._id,
         content: '',
         tags: [],
         image: ''
@@ -65,6 +71,8 @@ const BlogAdd = () => {
         description: `Blog "${data.title}" đã được thêm thành công.`,
         variant: 'default'
       })
+
+      navigate('/blog')
     } catch (error) {
       toast({
         title: 'Lỗi thêm blog',
@@ -93,11 +101,15 @@ const BlogAdd = () => {
                     <FormControl>
                       <Input
                         {...field}
-                        disabled
-                        value={FIXED_EMPLOYEE_ID}
-                        className='bg-gray-100 dark:bg-gray-700 dark:text-gray-400'
+                        value={user?._id}
+                        className='bg-gray-100 dark:bg-gray-700 dark:text-gray-400 hidden'
                       />
                     </FormControl>
+                    <Input
+                      value={user?.fullName}
+                      disabled
+                      className='bg-gray-100 dark:bg-gray-700 dark:text-gray-400 '
+                    />
                     <FormMessage />
                   </FormItem>
                 )}
@@ -164,23 +176,28 @@ const BlogAdd = () => {
                   <FormItem>
                     <Label className='font-bold dark:text-white'>Hình ảnh</Label>
                     <FormControl>
-                      <Input type='file' className='dark:bg-gray-700 dark:text-gray-100' onChange={onChangeImage} />
+                      <Input
+                        disabled={imageLoading}
+                        type='file'
+                        className='dark:bg-gray-700 dark:text-gray-100'
+                        onChange={onChangeImage}
+                      />
                     </FormControl>
-                    {preview && (
-                      <div className='mt-2'>
-                        <img src={preview} alt='preview' className='w-60 h-60 object-cover rounded-lg' />
-                      </div>
+                    {imageLoading ? (
+                      <Skeleton className='w-full h-80 rounded-lg mt-2' />
+                    ) : (
+                      preview && (
+                        <div className='mt-2'>
+                          <img src={preview} alt='preview' className='w-full h-80 object-cover rounded-lg' />
+                        </div>
+                      )
                     )}
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              <Button
-                type='submit'
-                disabled={loading}
-                className='w-full bg-black text-white hover:bg-blue-700 dark:bg-white dark:hover:bg-slate-300 '
-              >
+              <Button type='submit' disabled={loading} className='w-full'>
                 {loading ? 'Đang xử lý...' : 'Thêm Blog'}
               </Button>
             </form>
