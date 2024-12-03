@@ -15,7 +15,7 @@ export interface ProductFormData {
   name: string
   category: string
   description?: string
-  images: string[]
+  images: string[] | File[] | undefined
   material: string
   materialDetail: string
   status: 'creating' | 'available' | 'disable'
