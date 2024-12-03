@@ -8,6 +8,7 @@ import { useSingleOrderQuery } from '@/hooks/querys/useOrderQuery'
 import useOrderMutation from '@/hooks/mutations/useOrderMutation'
 import { getStatusText } from '@/utils/getOrderStatus'
 import { useToast } from '@/hooks/use-toast'
+import { Separator } from '@/components/ui/separator'
 
 const OrderEdit = () => {
   const { id } = useParams<{ id: string }>()
@@ -24,7 +25,6 @@ const OrderEdit = () => {
     'delivered'
   ])
   const [orderStatus, setOrderStatus] = useState<string>()
-  const [currentStatusIndex, setCurrentStatusIndex] = useState(0)
 
   const paymentStatuses = ['paid', 'unpaid']
 
@@ -125,17 +125,13 @@ const OrderEdit = () => {
     }
   }
   useEffect(() => {
-    if (orderData?.data?.data.status) {
-      setCurrentStatusIndex(orderStatuses.indexOf(orderData?.data?.data.status))
-    }
-  }, [orderData?.data?.data.status])
-  useEffect(() => {
     if (orderData) {
       if (orderData?.data?.data.payment?.paymentMethod == 'cash_on_delivery') {
-        setOrderStatuses(['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'received', 'cancelled'])
+        const cashOnDeliverys = ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'received', 'cancelled']
+        setOrderStatuses(cashOnDeliverys)
       }
       if (orderData?.data?.data.payment?.paymentMethod == 'credit_card') {
-        setOrderStatuses([
+        const creditCard = [
           'unpaid',
           'pending',
           'confirmed',
@@ -144,29 +140,29 @@ const OrderEdit = () => {
           'delivered',
           'received',
           'cancelled'
-        ])
+        ]
+        setOrderStatuses(creditCard)
       }
       setOrderStatus(orderData?.data?.data.status)
       setPaymentStatus(orderData?.data?.data.payment?.paymentStatus)
     }
   }, [orderData])
-
   return (
     <>
       <h1 className='text-3xl font-bold mb-6 dark:text-gray-100'>Thông tin đơn hàng</h1>
       <div className='p-5 bg-white dark:bg-gray-800'>
-        <h2 className='font-bold text-2xl mb-4 text-gray-800 dark:text-gray-100'>Trạng thái đơn hàng</h2>
-        <div>
-          <div className='flex items-center mb-4'>
-            <span className='mr-2 font-bold text-gray-800 dark:text-gray-100'>Trạng thái đơn hàng :</span>
+        <h2 className='font-bold text-2xl mb-6 text-gray-800 dark:text-gray-100 border-b pb-4'>Trạng thái đơn hàng</h2>
+        <div className='space-y-4 mb-4'>
+          <div className='flex items-center'>
+            <span className='mr-3 font-bold text-gray-800 dark:text-gray-100'>Trạng thái đơn hàng:</span>
             <span className='text-gray-600 dark:text-gray-400'>
               {orderData?.data?.data.status && getStatusText(orderData?.data?.data.status)}
             </span>
           </div>
-          <div className='flex items-center mb-4'>
-            <span className='mr-2 font-bold text-gray-800 dark:text-gray-100'> Trạng thái thanh toán :</span>
+          <div className='flex items-center'>
+            <span className='mr-3 font-bold text-gray-800 dark:text-gray-100'>Trạng thái thanh toán:</span>
             <span className='text-gray-600 dark:text-gray-400'>
-              {orderData?.data?.data.payment.paymentStatus == 'paid' ? 'Đã thanh toán' : 'Chưa thanh toán'}
+              {orderData?.data?.data.payment.paymentStatus === 'paid' ? 'Đã thanh toán' : 'Chưa thanh toán'}
             </span>
           </div>
         </div>
@@ -179,7 +175,15 @@ const OrderEdit = () => {
               className='w-full border border-gray-300 dark:border-gray-700 rounded-md p-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-200'
             >
               {orderStatuses.map((status, index) => {
-                const isDisabled = index <= currentStatusIndex || index > currentStatusIndex + 1
+                console.log(index)
+
+                const isDisabled =
+                  index <= orderStatuses.indexOf(orderData?.data?.data.status as string) ||
+                  index > orderStatuses.indexOf(orderData?.data?.data.status as string) + 1
+                const isPaid =
+                  orderData?.data?.data.payment?.paymentMethod == 'credit_card'
+                    ? orderData?.data?.data.payment?.paymentStatus == 'paid'
+                    : true
                 console.log(isDisabled + status)
 
                 return (
@@ -187,12 +191,7 @@ const OrderEdit = () => {
                     selected={status === orderStatus}
                     key={status}
                     value={status}
-                    disabled={
-                      isDisabled ||
-                      status == 'cancelled' ||
-                      status == 'received' ||
-                      orderData?.data?.data.payment?.paymentStatus == 'unpaid'
-                    }
+                    disabled={isDisabled || status == 'cancelled' || status == 'received' || !isPaid}
                   >
                     {getStatusText(status)}
                   </option>
@@ -236,7 +235,7 @@ const OrderEdit = () => {
         </div>
       </div>
       <div className='bg-white dark:bg-gray-800 shadow rounded-lg p-6 mt-8'>
-        <h2 className='font-bold text-2xl mb-4 text-gray-800 dark:text-gray-100'>Thông tin khách hàng</h2>
+        <h2 className='font-bold text-2xl mb-4 text-gray-800 dark:text-gray-100 border-b pb-4'>Thông tin khách hàng</h2>
         <div className='space-y-4'>
           <div className='flex items-center space-x-3'>
             <span role='img' aria-label='user' className='text-gray-800 dark:text-gray-100 text-2xl'>
@@ -280,7 +279,7 @@ const OrderEdit = () => {
         </div>
       </div>
       <div className='bg-white dark:bg-gray-800 shadow rounded-lg p-6 mt-8'>
-        <h2 className='font-bold text-2xl mb-4 text-gray-800 dark:text-gray-100'>Thông tin sản phẩm</h2>
+        <h2 className='font-bold text-2xl mb-4 text-gray-800 dark:text-gray-100 border-b pb-4'>Thông tin sản phẩm</h2>
         <Table>
           <TableHeader>
             <TableRow>
@@ -329,7 +328,8 @@ const OrderEdit = () => {
             ))}
           </TableBody>
         </Table>
-        <div className='flex flex-col items-end space-y-2'>
+        <Separator className='my-4' />
+        <div className='flex flex-col items-end space-y-2 bg-orange-50 dark:bg-gray-950 p-4 rounded-md'>
           <h2 className='text-xl font-bold'>
             Tổng tiền cần thanh toán :{' '}
             {orderData?.data?.data?.totalPrice && formatCurrency(orderData?.data?.data?.totalPrice)}
