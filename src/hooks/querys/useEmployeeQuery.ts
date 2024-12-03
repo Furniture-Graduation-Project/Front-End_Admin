@@ -10,7 +10,8 @@ export const useSingleEmployeeQuery = (id: string) => {
     queryFn: async (): Promise<IApiResponse<IEmployee>> => {
       const response = await EmployeeService.getById(id)
       return response.data
-    }
+    },
+    enabled: !!id
   })
   return { data, ...rest }
 }

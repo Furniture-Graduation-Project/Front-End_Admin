@@ -10,6 +10,8 @@ interface AuthContextType {
   logout: () => void
   updateUser: (updatedUserData: Partial<IEmployee>) => void
   isLoading: boolean
+  token: string | null
+  setToken: (token: string) => void
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -53,7 +55,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const userId = getUserIdFromToken(token)
       setId(userId)
     }
-  }, [])
+  }, [token])
 
   useEffect(() => {
     if (data) {
@@ -65,7 +67,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [data, isError])
 
-  return <AuthContext.Provider value={{ user, isLoading, login, logout, updateUser }}>{children}</AuthContext.Provider>
+  return (
+    <AuthContext.Provider value={{ user, isLoading, login, logout, updateUser, token, setToken }}>
+      {children}
+    </AuthContext.Provider>
+  )
 }
 
 export const useAuth = () => {

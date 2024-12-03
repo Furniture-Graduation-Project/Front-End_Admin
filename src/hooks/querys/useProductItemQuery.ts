@@ -6,7 +6,7 @@ export const useProductItemQuery = (id?: string, isProduct?: boolean) => {
     queryKey: id ? ['ProductItem', id] : ['ProductItem'],
     queryFn: async () => {
       if (id && isProduct) {
-        return await ProductItemService.getProductById(id)
+        return await ProductItemService.getByProductId(id)
       } else if (id) {
         return await ProductItemService.getById(id)
       } else {
