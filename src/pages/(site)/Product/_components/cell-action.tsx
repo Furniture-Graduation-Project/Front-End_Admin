@@ -12,7 +12,6 @@ import { useState } from 'react'
 import { toast } from '@/hooks/use-toast'
 import AlertAcitonDialog from '@/components/modals/AlertDialog'
 import { ProductService } from '@/services/product'
-import { useQueryClient } from '@tanstack/react-query'
 import { IProduct } from '@/interface/product'
 
 interface ProductCellActionProps {
@@ -22,7 +21,7 @@ interface ProductCellActionProps {
 export const CellAction = ({ data }: ProductCellActionProps) => {
   const [isDropdown, setIsDropdown] = useState(false)
   const [open, setOpen] = useState(false)
-  const [loading, setLoading] = useState(false)
+  const [, setLoading] = useState(false)
 
   const handleDiable = async () => {
     if (!data._id) {

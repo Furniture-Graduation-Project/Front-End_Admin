@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input'
 import { CategoryService } from '@/services/category'
 import { ProductService } from '@/services/product'
 import { useState, useEffect } from 'react'
-import { ProductFormData } from '@/interface/product'
+import { IProduct, ProductFormData } from '@/interface/product'
 import { ICategory } from '@/interface/category'
 import { toast } from '@/hooks/use-toast'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -35,7 +35,7 @@ const FormSchema = z.object({
 const EditProductForm = () => {
   const [categories, setCategories] = useState<ICategory[]>([])
   const [materials, setMaterials] = useState<IMaterial[]>([])
-  const [product, setProduct] = useState<ProductFormData | null>(null)
+  const [product, setProduct] = useState<IProduct | null>(null)
   const [files, setFiles] = useState<File[] | null>(null)
   const [galleryPreview, setGalleryPreview] = useState<string[]>([])
   const [loading, setLoading] = useState(false)
@@ -82,8 +82,16 @@ const EditProductForm = () => {
       if (id) {
         try {
           const res = await ProductService.getById(id)
-          setProduct(res.data.data as any)
-          form.reset(res.data.data as any)
+          setProduct(res.data.data)
+          const product = res.data.data
+          const material = product.material?._id
+          const category = product.category?._id
+          const formData = {
+            ...product,
+            material,
+            category
+          }
+          form.reset(formData)
         } catch (error) {
           console.error('Lỗi khi lấy sản phẩm:', error)
         }
@@ -159,8 +167,8 @@ const EditProductForm = () => {
   }
 
   return (
-    <div className='bg-[#F5F6FA] p-5'>
-      <div className='bg-[#ffffff] dark:bg-gray-900 rounded-md '>
+    <div className='bg-[#F5F6FA] dark:bg-[#0f172a]'>
+      <div className='bg-[#ffffff] dark:bg-[#1f2937] rounded-md '>
         <Form {...form}>
           <div className='font-bold text-2xl space-y-4 px-4 md:px-10 p-5 dark:text-gray-100'>Cập nhật sản phẩm</div>
           <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-4 px-4 md:px-10'>

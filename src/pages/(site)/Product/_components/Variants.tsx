@@ -261,7 +261,7 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
   }
 
   return (
-    <div className='bg-[#ffffff] dark:bg-gray-900 rounded-md px-10 py-5 mt-5'>
+    <div className='bg-[#ffffff] dark:bg-[#1f2937] rounded-md px-10 py-5 mt-5'>
       <Label className='font-bold text-2xl dark:text-gray-100'>Biến thể sản phẩm</Label>
       <div className='flex items-center justify-between gap-4 w-full'>
         <div className='flex flex-wrap gap-4'>
@@ -308,7 +308,7 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
                   <span className='font-bold'>SKU:</span> {item.SKU}
                 </p>
                 <p>
-                  <span className='font-bold'>Giá:</span> {item.price.toLocaleString()} VND
+                  <span className='font-bold'>Giá:</span> {item.price.toLocaleString()} VNĐ
                 </p>
                 <p>
                   <span className='font-bold'>Số lượng:</span> {item.stock}
