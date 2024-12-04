@@ -248,7 +248,7 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
   }
 
   return (
-    <div className='bg-[#ffffff] dark:bg-gray-900 h-screen rounded-md px-10 py-5 mt-5'>
+    <div className='bg-[#ffffff] dark:bg-gray-900 rounded-md px-10 py-5 mt-5'>
       <Label className='font-bold text-2xl dark:text-gray-100'>Biến thể sản phẩm</Label>
       <div className='flex items-center justify-between gap-4 w-full'>
         <div className='flex flex-wrap gap-4'>

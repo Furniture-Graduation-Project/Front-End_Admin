@@ -83,7 +83,7 @@ export const ProductService = {
   ): Promise<AxiosResponse<IApiResponse<IProduct[]>>> => {
     try {
       const response: AxiosResponse<IApiResponse<IProduct[]>> = await axiosInstance.get(
-        `${API_URL}/limited-items?page=${pagination.pageIndex}&limit=${pagination.pageSize}&status=${status}&categoryId=${categoryId}`
+        `${API_URL}/limited?page=${pagination.pageIndex}&limit=${pagination.pageSize}&status=${status}&categoryId=${categoryId}`
       )
       return response
     } catch (error) {

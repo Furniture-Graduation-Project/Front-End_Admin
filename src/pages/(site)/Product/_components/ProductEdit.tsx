@@ -66,8 +66,8 @@ const EditProductForm = () => {
       if (id) {
         try {
           const res = await ProductService.getById(id)
-          setProduct(res.data.data)
-          form.reset(res.data.data)
+          setProduct(res.data.data as any)
+          form.reset(res.data.data as any)
         } catch (error) {
           console.error('Lỗi khi lấy sản phẩm:', error)
         }
@@ -108,7 +108,7 @@ const EditProductForm = () => {
 
   return (
     <div className='bg-[#F5F6FA] p-5 rounded-md '>
-      <div className='bg-[#ffffff] dark:bg-gray-900 h-screen rounded-md '>
+      <div className='bg-[#ffffff] dark:bg-gray-900 rounded-md '>
         <Form {...form}>
           <div className='font-bold text-2xl space-y-4 px-4 md:px-10 p-5 dark:text-gray-100'>Cập nhật sản phẩm</div>
           <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-4 px-4 md:px-10'>

@@ -14,6 +14,7 @@ export interface IProduct {
 }
 
 export interface ProductFormData {
+  _id?: string
   name: string
   category: string
   description?: string
