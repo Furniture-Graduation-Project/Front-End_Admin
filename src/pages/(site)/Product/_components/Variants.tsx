@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
@@ -9,6 +10,7 @@ import { ProductService } from '@/services/product'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { ProductItem } from '@/interface/productItem'
 import { uploadFileCloudinary } from '@/utils/upload-cloudinary'
+import { Skeleton } from '@/components/ui/skeleton'
 import { Edit3, Eye, RefreshCw, Trash2 } from 'lucide-react'
 import AlertAcitonDialog from '@/components/modals/AlertDialog'
 
@@ -51,6 +53,8 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
   const [deleteItemId, setDeleteItemId] = useState<string | null>(null)
   const [preview, setPreview] = useState<string | null>(null)
   const [image, setImage] = useState<string | null>('')
+  const [loading, setLoading] = useState(false)
+  const [editImage, setEditImage] = useState<string | null>('')
   const [statusFilter] = useState<string>('all')
   const [showDeleted, setShowDeleted] = useState(false)
   const [restoreItemId, setRestoreItemId] = useState<string | null>(null)
@@ -175,6 +179,8 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
 
     const payload = { ...data, status: data.status, productId, variants: variantInputs, image: image || data.image }
     console.log('Payload:', payload)
+    setImage('')
+    setPreview('')
 
     try {
       if (isEditMode && currentItemId) {
@@ -222,6 +228,8 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
     setValue('price', item.price)
     setValue('image', image || item.image)
     setValue('SKU', item.SKU)
+    setEditImage(item.image || '')
+    setPreview('')
     setValue('status', item.status)
     setSelectedVariants(item.variants.map((v) => v.variant))
     item.variants.forEach((variant, index) => {
@@ -232,13 +240,18 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
   const onChangeImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
     if (!files) return
+    setLoading(true)
+    setEditImage('')
     const urls = await Promise.all(Array.from(files).map(uploadFileCloudinary))
     setImage(urls[0])
     setPreview(URL.createObjectURL(files[0]))
+    setLoading(false)
   }
 
   const openAddForm = () => {
     setIsDialogOpen(true)
+    setPreview('')
+    setImage('')
     setIsEditMode(false)
     reset()
   }
@@ -404,7 +417,20 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
                 onChange={onChangeImage}
               />
               {errors.image && <p className='text-red-500 py-2 text-sm'>{errors.image.message}</p>}
-              {preview && <img src={preview} alt='preview' className='w-20 h-20' />}
+              {loading ? (
+                <Skeleton className='w-20 h-20 rounded-lg mt-2' />
+              ) : (
+                preview && (
+                  <div className='mt-2'>
+                    <img src={preview} alt='preview' className='w-20 h-20 object-cover rounded-lg' />
+                  </div>
+                )
+              )}
+              {editImage && (
+                <div className='mt-2'>
+                  <img src={editImage} alt='preview' className='w-20 h-20 object-cover rounded-lg' />
+                </div>
+              )}
               <Label className='dark:text-gray-100'>SKU</Label>
               <Input
                 {...register('SKU', { required: 'SKU không được để trống' })}

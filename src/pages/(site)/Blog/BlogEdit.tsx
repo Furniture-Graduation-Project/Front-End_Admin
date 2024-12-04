@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Skeleton } from '@/components/ui/skeleton'
 import { toast } from '@/hooks/use-toast'
 import { IBlog, ICreateBlog } from '@/interface/blog'
 import { BlogService } from '@/services/blog'
@@ -28,6 +29,7 @@ const BlogEdit = () => {
   const [preview, setPreview] = useState<string | null>(null)
   const [image, setImage] = useState<string | null>('')
   const [blog, setBlog] = useState<IBlog | null>(null)
+  const [imageLoading, setImageLoading] = useState(false)
   const navigate = useNavigate()
 
   const form = useForm<ICreateBlog>({
@@ -54,7 +56,7 @@ const BlogEdit = () => {
 
         setBlog(blogData)
         form.reset({
-          employeeId: blogData.employeeId,
+          employeeId: blogData.employeeId._id,
           title: blogData.title,
           content: blogData.content,
           tags: blogData.tags,
@@ -76,13 +78,14 @@ const BlogEdit = () => {
   const onChangeImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
     if (!files) return
+    setImageLoading(true)
     const urls = await Promise.all(Array.from(files).map(uploadFileCloudinary))
     setImage(urls[0])
     setPreview(URL.createObjectURL(files[0]))
+    setImageLoading(false)
   }
 
   const onSubmit = async (data: ICreateBlog) => {
-    console.log('Submitting form data:', data) // Kiểm tra dữ liệu
     const finalImage = image ? image : blog?.image
 
     try {
@@ -103,6 +106,8 @@ const BlogEdit = () => {
     }
   }
 
+  const isLoading = form.formState.isSubmitting
+
   if (!blog) {
     return <div>Không tìm thấy blog với ID đã cho.</div>
   }
@@ -121,8 +126,17 @@ const BlogEdit = () => {
                   <FormItem>
                     <Label className='font-bold dark:text-white'>Người viết</Label>
                     <FormControl>
-                      <Input {...field} disabled className='bg-gray-100 dark:bg-gray-700 dark:text-gray-400' />
+                      <Input
+                        {...field}
+                        value={blog.employeeId._id}
+                        className='bg-gray-100 dark:bg-gray-700 dark:text-gray-400 hidden'
+                      />
                     </FormControl>
+                    <Input
+                      disabled
+                      value={blog.employeeId.fullName}
+                      className='bg-gray-100 dark:bg-gray-700 dark:text-gray-400 '
+                    />
                     <FormMessage />
                   </FormItem>
                 )}
@@ -134,7 +148,12 @@ const BlogEdit = () => {
                   <FormItem>
                     <Label className='font-bold dark:text-white'>Tiêu đề</Label>
                     <FormControl>
-                      <Input placeholder='Nhập tiêu đề blog' {...field} className='dark:bg-gray-700 dark:text-white' />
+                      <Input
+                        disabled={isLoading}
+                        placeholder='Nhập tiêu đề blog'
+                        {...field}
+                        className='dark:bg-gray-700 dark:text-white'
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -151,6 +170,7 @@ const BlogEdit = () => {
                     </Label>
                     <FormControl>
                       <Input
+                        disabled={isLoading}
                         id='content'
                         placeholder='Nội dung'
                         {...field}
@@ -171,6 +191,7 @@ const BlogEdit = () => {
                     <Label className='font-bold dark:text-white'>Tags</Label>
                     <FormControl>
                       <Input
+                        disabled={isLoading}
                         placeholder='Nhập tags (phân cách bằng dấu phẩy)'
                         {...field}
                         className='dark:bg-gray-700 dark:text-white'
@@ -188,16 +209,23 @@ const BlogEdit = () => {
                   <FormItem>
                     <Label className='font-bold dark:text-white'>Hình ảnh</Label>
                     <FormControl>
-                      <Input type='file' className='dark:bg-gray-700 dark:text-gray-100' onChange={onChangeImage} />
+                      <Input
+                        disabled={imageLoading}
+                        type='file'
+                        className='dark:bg-gray-700 dark:text-gray-100'
+                        onChange={onChangeImage}
+                      />
                     </FormControl>
-                    {preview ? (
+                    {imageLoading ? (
+                      <Skeleton className='w-full h-80 rounded-lg mt-2' />
+                    ) : preview ? (
                       <div className='mt-2'>
-                        <img src={preview} alt='preview' className='w-60 h-60 object-cover rounded-lg' />
+                        <img src={preview} alt='preview' className='w-full h-80 object-cover rounded-lg' />
                       </div>
                     ) : (
                       blog?.image && (
                         <div className='mt-2'>
-                          <img src={blog.image} alt='preview' className='w-60 h-60 object-cover rounded-lg' />
+                          <img src={blog.image} alt='preview' className='w-full h-80 object-cover rounded-lg' />
                         </div>
                       )
                     )}
@@ -215,7 +243,9 @@ const BlogEdit = () => {
                 >
                   Hủy
                 </Button>
-                <Button type='submit'>Cập nhật</Button>
+                <Button disabled={isLoading || imageLoading} type='submit'>
+                  Cập nhật
+                </Button>
               </div>
             </form>
           </Form>
