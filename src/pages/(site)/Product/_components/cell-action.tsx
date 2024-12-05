@@ -6,7 +6,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import { MoreHorizontal, Edit2, LucideBan } from 'lucide-react'
+import { MoreHorizontal, Edit2, LucideBan, Eye } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useState } from 'react'
 import { toast } from '@/hooks/use-toast'
@@ -78,16 +78,18 @@ export const CellAction = ({ data }: ProductCellActionProps) => {
         </DropdownMenuTrigger>
         <DropdownMenuContent align='end'>
           <DropdownMenuLabel className='font-bold'>Hành Động</DropdownMenuLabel>
-
-          {/* Edit */}
+          <DropdownMenuItem>
+            <Link to={`/product/info/${data._id}`} className='flex items-center'>
+              <Eye className='mr-2 h-4 w-4' />
+              Chi tiết
+            </Link>
+          </DropdownMenuItem>
           <DropdownMenuItem>
             <Link to={`/product/edit/${data._id}`} className='flex items-center'>
               <Edit2 className='mr-2 h-4 w-4' />
               Chỉnh sửa
             </Link>
           </DropdownMenuItem>
-
-          {/* Delete */}
           {data.status !== 'disable' && (
             <DropdownMenuItem onClick={() => setOpen(true)} className='cursor-pointer'>
               <LucideBan className='mr-2 h-4 w-4' />
