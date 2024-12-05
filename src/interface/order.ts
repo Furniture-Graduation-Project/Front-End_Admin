@@ -37,4 +37,17 @@ export interface IOrder {
       | 'refunded'
     date?: Date
   }[]
+  returnInfo?: {
+    reason: string
+    items: IItemReturnOrder[]
+    dateRequested: Date
+    dateResolved: Date
+  }
+}
+export interface IItemReturnOrder {
+  productId: string
+  productOptionId: string
+  quantity: number
+  unitPrice: number
+  status: string
 }
