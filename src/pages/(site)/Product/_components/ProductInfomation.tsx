@@ -71,14 +71,13 @@ const ProductInfo = () => {
           <p className='text-gray-700 dark:text-gray-300'>{data?.data.data.description || 'Không có mô tả'}</p>
         </div>
         <div className='mb-4'>
-          <h3 className='text-lg font-semibold text-gray-800 dark:text-gray-100'>Hình ảnh:</h3>
           <div className='flex flex-wrap gap-6'>
             {data?.data.data.images?.map((image, index) => (
               <img
                 key={index}
                 src={image}
                 alt={`Hình ảnh sản phẩm ${index + 1}`}
-                className='w-36 h-36 object-cover rounded-lg border shadow-md'
+                className='w-96 h-96 object-cover rounded-lg border shadow-md'
               />
             ))}
           </div>
