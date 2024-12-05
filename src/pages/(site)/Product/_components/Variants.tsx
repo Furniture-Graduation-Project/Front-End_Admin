@@ -72,9 +72,31 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
   const handleRestoreConfirmed = async () => {
     if (restoreItemId) {
       try {
-        const productItem = ProductItemService.getById(restoreItemId)
+        const response = await ProductItemService.getById(restoreItemId)
+        const productItem = response.data
+        const isAnyVariantActive = productItems.some((item) => item.variants.length > 0 && item.status === 'active')
+        const isAnyBasicProductActive = productItems.some(
+          (item) => item.variants.length === 0 && item.status === 'active'
+        )
+        if (productItem.variants.length === 0 && isAnyVariantActive) {
+          toast({
+            title: 'Lỗi',
+            description: 'Không thể khôi phục sản phẩm không có biến thể khi đã có sản phẩm biến thể.',
+            variant: 'destructive',
+            duration: 3000
+          })
+          return
+        }
+        if (productItem.variants.length > 0 && isAnyBasicProductActive) {
+          toast({
+            title: 'Lỗi',
+            description: 'Không thể khôi phục sản phẩm biến thể khi đã có sản phẩm không có biến thể.',
+            variant: 'destructive',
+            duration: 3000
+          })
+          return
+        }
         const updatedData = { ...productItem, status: 'active' }
-
         await ProductItemService.update(restoreItemId, updatedData)
         toast({
           title: 'Thành công',
