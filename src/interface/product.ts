@@ -9,9 +9,13 @@ export interface IProduct {
   material: IMaterial
   materialDetail: string
   status: 'creating' | 'available' | 'disable'
+  prices?: number[]
+  stock?: number
+  outStock?: number
 }
 
 export interface ProductFormData {
+  _id?: string
   name: string
   category: string
   description?: string
