@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { CardHeader } from '@/components/ui/card'
 import {
@@ -46,7 +46,7 @@ const ProductListHeader = ({
 
   return (
     <CardHeader className='grid grid-cols-1 sm:grid-cols-4 gap-4 p-3 place-items-center'>
-      <Input placeholder='Tìm kiếm sản phẩm...' value={searchTerm} onChange={handleSearchChange} />
+      <Input placeholder='Tìm kiếm sản phẩm...' value={searchTerm} onChange={handleSearchChange} className='mt-[5px]' />
 
       <Select
         value={selectedCategory}
