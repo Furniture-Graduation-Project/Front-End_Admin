@@ -172,16 +172,63 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
   }, [])
 
   const handleAddOrUpdate = async (data: ProductItem) => {
+    const isBasicProduct = selectedVariants.length === 0
     const variantInputs = selectedVariants.map((variant, index) => ({
       variant,
       value: data.variants[index]?.value || ''
     }))
-
-    const payload = { ...data, status: data.status, productId, variants: variantInputs, image: image || data.image }
-    console.log('Payload:', payload)
+    const payload = {
+      ...data,
+      status: data.status,
+      productId,
+      variants: variantInputs,
+      image: image || data.image
+    }
     setImage('')
     setPreview('')
-
+    const isAnyBasicProductExists = productItems.some((item) => item.variants.length === 0 && item.status !== 'deleted')
+    if (isAnyBasicProductExists && !isBasicProduct) {
+      toast({
+        title: 'Lỗi',
+        description: 'Không thể thêm sản phẩm biến thể khi đã có sản phẩm không có biến thể.',
+        variant: 'destructive',
+        duration: 3000
+      })
+      return
+    }
+    const isAnyVariantProductExists = productItems.some((item) => item.variants.length > 0 && item.status !== 'deleted')
+    if (isAnyVariantProductExists && isBasicProduct) {
+      toast({
+        title: 'Lỗi',
+        description: 'Không thể thêm sản phẩm không có biến thể khi đã có sản phẩm biến thể.',
+        variant: 'destructive',
+        duration: 3000
+      })
+      return
+    }
+    const isExactDuplicate = productItems.some((item) => {
+      const sortedExistingVariants = [...item.variants].sort((a, b) => a.variant.localeCompare(b.variant))
+      const sortedInputVariants = [...variantInputs].sort((a, b) => a.variant.localeCompare(b.variant))
+      return (
+        sortedExistingVariants.length === sortedInputVariants.length &&
+        sortedExistingVariants.every(
+          (existingVariant, idx) =>
+            sortedInputVariants[idx] &&
+            existingVariant.variant === sortedInputVariants[idx].variant &&
+            existingVariant.value === sortedInputVariants[idx].value
+        ) &&
+        item.productId === productId
+      )
+    })
+    if (isExactDuplicate) {
+      toast({
+        title: 'Lỗi',
+        description: 'Sản phẩm biến thể đã tồn tại.',
+        variant: 'destructive',
+        duration: 3000
+      })
+      return
+    }
     try {
       if (isEditMode && currentItemId) {
         const currentItem = productItems.find((item) => item._id === currentItemId)
@@ -199,7 +246,7 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
         await ProductItemService.create(payload)
         toast({
           title: 'Thành công',
-          description: 'Biến thể mới đã được thêm.',
+          description: isBasicProduct ? 'Sản phẩm không có biến thể đã được thêm.' : 'Biến thể mới đã được thêm.',
           variant: 'success',
           duration: 3000
         })
