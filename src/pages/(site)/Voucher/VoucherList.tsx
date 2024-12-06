@@ -159,7 +159,7 @@ const VoucherList: React.FC = () => {
   }
 
   return (
-    <div className='container mx-auto p-7 bg-[#f5f6fa]'>
+    <div className=' bg-[#f5f6fa]'>
       {successMessage && (
         <div className='bg-green-500 text-white p-2 rounded-lg mb-4'>
           {successMessage}
@@ -171,7 +171,7 @@ const VoucherList: React.FC = () => {
       </div>
       <div className='w-full flex justify-between pb-7'>
         <Link to='add'>
-          <Button variant='outline' className='mt-4 bg-blue-500 text-white hover:bg-blue-600'>
+          <Button variant='outline' className='space-x-2 bg-[#F5F6FA] dark:bg-gray-800 text-black dark:text-gray-100'>
             <Plus size={18} />
             <span>Add Voucher</span>
           </Button>
