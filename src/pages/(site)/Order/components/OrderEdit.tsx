@@ -9,6 +9,7 @@ import useOrderMutation from '@/hooks/mutations/useOrderMutation'
 import { getStatusText } from '@/utils/getOrderStatus'
 import { useToast } from '@/hooks/use-toast'
 import { Separator } from '@/components/ui/separator'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 const OrderEdit = () => {
   const { id } = useParams<{ id: string }>()
@@ -151,7 +152,24 @@ const OrderEdit = () => {
     <>
       <h1 className='text-3xl font-bold mb-6 dark:text-gray-100'>Thông tin đơn hàng</h1>
       <div className='p-5 bg-white dark:bg-gray-800'>
-        <h2 className='font-bold text-2xl mb-6 text-gray-800 dark:text-gray-100 border-b pb-4'>Trạng thái đơn hàng</h2>
+        <div className='flex justify-between items-center py-1'>
+          <h2 className='font-bold text-2xl text-gray-800 dark:text-gray-100'>Trạng thái đơn hàng</h2>
+          <Link
+            className={`items-center gap-2 whitespace-nowrap relative ${orderData?.data.data.returnInfo?.items && orderData?.data.data.returnInfo?.items.length > 0 ? 'flex' : 'hidden'}`}
+            to={`/order/return/${orderData?.data?.data._id}`}
+          >
+            <Button variant={'outline'} className='relative'>
+              Xem yêu cầu trả hàng
+            </Button>
+            <div className='absolute top-[-1.5px] right-[-1.5px]'>
+              <span className='relative flex h-3 w-3'>
+                <span className='animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75'></span>
+                <span className='relative inline-flex rounded-full h-3 w-3 bg-sky-500'></span>
+              </span>
+            </div>
+          </Link>
+        </div>
+        <Separator className='my-4' />
         <div className='space-y-4 mb-4'>
           <div className='flex items-center'>
             <span className='mr-3 font-bold text-gray-800 dark:text-gray-100'>Trạng thái đơn hàng:</span>
@@ -169,35 +187,32 @@ const OrderEdit = () => {
         <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
           <div className='bg-slate-50 dark:bg-gray-700 shadow rounded-lg p-6'>
             <h3 className='font-bold text-2xl mb-4 text-gray-800 dark:text-gray-100'>Cập nhập trạng thái đơn hàng</h3>
-            <select
-              onChange={(e) => setOrderStatus(e.target.value as string)}
-              id='status'
-              className='w-full border border-gray-300 dark:border-gray-700 rounded-md p-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-200'
-            >
-              {orderStatuses.map((status, index) => {
-                console.log(index)
+            <Select onValueChange={(value) => setOrderStatus(value)} value={orderStatus}>
+              <SelectTrigger className='w-full border border-gray-300 dark:border-gray-900 rounded-md p-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-200'>
+                <SelectValue placeholder='Choose status' />
+              </SelectTrigger>
+              <SelectContent>
+                {orderStatuses.map((status, index) => {
+                  const isDisabled =
+                    index <= orderStatuses.indexOf(orderData?.data?.data.status as string) ||
+                    index > orderStatuses.indexOf(orderData?.data?.data.status as string) + 1
+                  const isPaid =
+                    orderData?.data?.data.payment?.paymentMethod === 'credit_card'
+                      ? orderData?.data?.data.payment?.paymentStatus === 'paid'
+                      : true
 
-                const isDisabled =
-                  index <= orderStatuses.indexOf(orderData?.data?.data.status as string) ||
-                  index > orderStatuses.indexOf(orderData?.data?.data.status as string) + 1
-                const isPaid =
-                  orderData?.data?.data.payment?.paymentMethod == 'credit_card'
-                    ? orderData?.data?.data.payment?.paymentStatus == 'paid'
-                    : true
-                console.log(isDisabled + status)
-
-                return (
-                  <option
-                    selected={status === orderStatus}
-                    key={status}
-                    value={status}
-                    disabled={isDisabled || status == 'cancelled' || status == 'received' || !isPaid}
-                  >
-                    {getStatusText(status)}
-                  </option>
-                )
-              })}
-            </select>
+                  return (
+                    <SelectItem
+                      key={status}
+                      value={status}
+                      disabled={isDisabled || status === 'cancelled' || status === 'received' || !isPaid}
+                    >
+                      {getStatusText(status)}
+                    </SelectItem>
+                  )
+                })}
+              </SelectContent>
+            </Select>
             <div className='flex justify-end'>
               <Button
                 type='submit'
@@ -211,17 +226,19 @@ const OrderEdit = () => {
           </div>
           <div className='bg-slate-50 dark:bg-gray-700 shadow rounded-lg p-6'>
             <h2 className='font-bold text-2xl mb-4 text-gray-800 dark:text-gray-100'>Cập nhật trạng thái thanh toán</h2>
-            <select
-              className='w-full border border-gray-300 dark:border-gray-700 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-green-500 dark:bg-gray-700 dark:text-gray-200'
-              value={paymentStatus}
-              onChange={(e) => setPaymentStatus(e.target.value as 'paid' | 'unpaid')}
-            >
-              {paymentStatuses.map((status) => (
-                <option selected={status === orderData?.data?.data.payment.paymentStatus} key={status} value={status}>
-                  {status === 'paid' ? 'Đã thanh toán' : 'Chưa thanh toán'}
-                </option>
-              ))}
-            </select>
+            <Select value={paymentStatus} onValueChange={(value) => setPaymentStatus(value as 'paid' | 'unpaid')}>
+              <SelectTrigger className='w-full border border-gray-300 dark:border-gray-900 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-green-500 dark:bg-gray-700 dark:text-gray-200'>
+                <SelectValue placeholder='Chọn trạng thái thanh toán' />
+              </SelectTrigger>
+              <SelectContent>
+                {paymentStatuses.map((status) => (
+                  <SelectItem key={status} value={status}>
+                    {status === 'paid' ? 'Đã thanh toán' : 'Chưa thanh toán'}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
             <div className='flex justify-end'>
               <Button
                 onClick={() => setIsModalOpen(true)}
