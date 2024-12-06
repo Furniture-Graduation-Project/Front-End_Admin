@@ -38,12 +38,11 @@ const ProductInfomationVariant = ({ productId }: { productId?: string }) => {
       <div className='mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
         {data?.data.data.map((item: any) => (
           <div key={item._id} className='p-4 border rounded-lg shadow-md bg-white dark:bg-gray-800'>
-            <div className='flex items-center space-x-4'>
+            <div className='flex items-center space-x-4 flex-wrap'>
               <img
                 src={item.image ? item.image : 'https://img.icons8.com/parakeet-line/48/image.png'}
-                width={100}
                 alt=''
-                className='rounded-md'
+                className='rounded-md w-60 h-60'
               />
               <div className='flex-1 space-y-2'>
                 {item.variants.map((variant: any) => (

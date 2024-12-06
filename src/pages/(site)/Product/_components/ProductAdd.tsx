@@ -81,7 +81,7 @@ const AddProductForm = () => {
 
   const handleSubmit = async (data: any) => {
     try {
-      await ProductService.create({ ...data, images: files || [] })
+      const product = await ProductService.create({ ...data, images: files || [] })
       toast({
         title: 'Thêm thành công',
         description: `Sản phẩm ${data.name} đã được thêm thành công.`,
@@ -89,7 +89,9 @@ const AddProductForm = () => {
         duration: 3000
       })
       form.reset()
-      navigate('/product')
+      setTimeout(() => {
+        navigate(`/product/edit/${product.data.data._id}`)
+      }, 2000)
     } catch (error: any) {
       if (error.response && error.response.status === 400 && error.response.data.message === 'SKU đã tồn tại.') {
         toast({
