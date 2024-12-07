@@ -24,25 +24,24 @@ const useOrderMutation = ({ action }: MutationQueryProps) => {
         break
       case 'UPDATE':
         toast({
-          title: 'Cập nhật đơn hàng thành công!'
-        })
-        break
-      case 'DELETE':
-        toast({
-          title: 'Xóa đơn hàng thành công!'
+          title: 'Thành công!',
+          description: `Đơn hàng đã được cập nhật thành công.`,
+          variant: 'default'
         })
         break
     }
   }
 
   const handleError = (error: any) => {
-    const message = error?.response?.data?.message || 'Có lỗi xảy ra!'
+    const message = error?.response?.data?.message || 'Có lỗi xảy ra khi cập nhật đơn hàng !'
     toast({
       title: 'Có lỗi xảy ra!',
       description: message,
       variant: 'destructive'
     })
-    console.log('[ORDER]', error)
+    queryClient.invalidateQueries({
+      queryKey: ['ORDER']
+    })
   }
 
   const mutationFn = async (data: any) => {
