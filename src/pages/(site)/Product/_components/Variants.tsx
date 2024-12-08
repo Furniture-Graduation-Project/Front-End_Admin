@@ -74,23 +74,26 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
       try {
         const response = await ProductItemService.getById(restoreItemId)
         const productItem = response.data
-        const isAnyVariantActive = productItems.some((item) => item.variants.length > 0 && item.status === 'active')
-        const isAnyBasicProductActive = productItems.some(
-          (item) => item.variants.length === 0 && item.status === 'active'
-        )
-        if (productItem.variants.length === 0 && isAnyVariantActive) {
+        const isExactDuplicate = productItems.some((item) => {
+          const sortedExistingVariants = [...item.variants].sort((a, b) => a.variant.localeCompare(b.variant))
+          const sortedInputVariants = [...productItem.variants].sort((a, b) => a.variant.localeCompare(b.variant))
+          return (
+            sortedExistingVariants.length === sortedInputVariants.length &&
+            sortedExistingVariants.every(
+              (existingVariant, idx) =>
+                sortedInputVariants[idx] &&
+                existingVariant.variant === sortedInputVariants[idx].variant &&
+                existingVariant.value === sortedInputVariants[idx].value
+            ) &&
+            item.productId === productItem.productId &&
+            item.status === 'active'
+          )
+        })
+
+        if (isExactDuplicate) {
           toast({
             title: 'Lỗi',
-            description: 'Không thể khôi phục sản phẩm không có biến thể khi đã có sản phẩm biến thể.',
-            variant: 'destructive',
-            duration: 3000
-          })
-          return
-        }
-        if (productItem.variants.length > 0 && isAnyBasicProductActive) {
-          toast({
-            title: 'Lỗi',
-            description: 'Không thể khôi phục sản phẩm biến thể khi đã có sản phẩm không có biến thể.',
+            description: 'Không thể khôi phục sản phẩm vì đã có sản phẩm trùng lặp.',
             variant: 'destructive',
             duration: 3000
           })
@@ -100,11 +103,10 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
         await ProductItemService.update(restoreItemId, updatedData)
         toast({
           title: 'Thành công',
-          description: 'Biến thể đã được khôi phục.',
+          description: 'Sản phẩm đã được khôi phục.',
           variant: 'success',
           duration: 3000
         })
-
         fetchProductItems()
       } catch (error) {
         toast({
