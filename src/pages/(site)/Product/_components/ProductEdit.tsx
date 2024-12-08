@@ -101,7 +101,6 @@ const EditProductForm = () => {
     fetchCategories()
     fetchProduct()
   }, [id, form])
-
   const handleSubmit = async (data: ProductFormData) => {
     const finalImages = files && files.length > 0 ? files : product?.images
     try {
@@ -264,9 +263,9 @@ const EditProductForm = () => {
                         {...field}
                         className='dark:bg-gray-700 dark:text-gray-100 border rounded-md p-1 min-w-[150px]'
                       >
-                        <option value='creating'>Đang tạo</option>
-                        <option value='available'>Còn hàng</option>
-                        <option value='disable'>Khoá</option>
+                        <option value='creating'>Chưa bán</option>
+                        <option value='available'>Đang bán</option>
+                        <option value='disable'>Đã ngừng bán</option>
                       </select>
                     </FormControl>
                     <FormMessage />
