@@ -16,13 +16,14 @@ import AlertAcitonDialog from '@/components/modals/AlertDialog'
 
 interface AddVariantsProps {
   productId: string
+  setVariantChange: (emit: any) => void
 }
 
 const VariantFormSchema = {
   fixedVariants: ['Màu sắc', 'Mùi hương', 'Kích cỡ', 'Phong cách']
 }
 
-const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
+const AddVariants: FC<AddVariantsProps> = ({ productId, setVariantChange }) => {
   const {
     register,
     handleSubmit,
@@ -141,18 +142,18 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
         await fetchProductItems()
         const productItemsRes = await ProductItemService.getByProductId(productId)
         const productItems = productItemsRes.data.data
-        const allDisabled = productItems.every((item: ProductItem) => item.status === "deleted");
-        if(allDisabled){
+        const allDisabled = productItems.every((item: ProductItem) => item.status === 'deleted')
+        if (allDisabled) {
           const product = ProductService.getById(productId)
-      const updatedData = { ...product, status: 'creating' }
-      await ProductService.update(productId, updatedData as any)
-      toast({
-        title: 'Chuyển trạng thái thành công',
-        description: `Sản phẩm đã được chuyển sang danh sách chưa bán".`,
-        variant: 'success',
-        duration: 3000
-      })
-      window.location.reload();
+          const updatedData = { ...product, status: 'creating' }
+          await ProductService.update(productId, updatedData as any)
+          toast({
+            title: 'Chuyển trạng thái thành công',
+            description: `Sản phẩm đã được chuyển sang danh sách chưa bán".`,
+            variant: 'success',
+            duration: 3000
+          })
+          setVariantChange(null)
         }
       } catch (error) {
         toast({

@@ -39,8 +39,8 @@ const EditProductForm = () => {
   const [files, setFiles] = useState<File[] | null>(null)
   const [galleryPreview, setGalleryPreview] = useState<string[]>([])
   const [loading, setLoading] = useState(false)
-  const navigate = useNavigate()
   const { id } = useParams<{ id: string }>()
+  const [variantChange, setVariantChange] = useState('')
 
   const dropZoneConfig = {
     maxFiles: 5,
@@ -100,7 +100,7 @@ const EditProductForm = () => {
     fetchMaterials()
     fetchCategories()
     fetchProduct()
-  }, [id, form])
+  }, [id, form, variantChange])
   const handleSubmit = async (data: ProductFormData) => {
     const finalImages = files && files.length > 0 ? files : product?.images
     try {
@@ -112,7 +112,6 @@ const EditProductForm = () => {
           variant: 'success',
           duration: 3000
         })
-        navigate('/product')
       }
     } catch (error: any) {
       toast({
@@ -399,7 +398,7 @@ const EditProductForm = () => {
           </form>
         </Form>
       </div>
-      {id && <AddVariants productId={id} />}
+      {id && <AddVariants setVariantChange={setVariantChange} productId={id} />}
     </div>
   )
 }
