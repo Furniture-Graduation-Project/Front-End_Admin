@@ -127,7 +127,7 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
   const handleDeleteConfirmed = async () => {
     if (deleteItemId) {
       try {
-        const productItem = ProductItemService.getById(deleteItemId)
+        const productItem = await ProductItemService.getById(deleteItemId)
         const updatedData = { ...productItem, status: 'deleted' }
         await ProductItemService.update(deleteItemId, updatedData)
         toast({
@@ -136,7 +136,22 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
           variant: 'success',
           duration: 3000
         })
-        fetchProductItems()
+        await fetchProductItems()
+        const productItemsRes = await ProductItemService.getByProductId(productId)
+        const productItems = productItemsRes.data.data
+        const allDisabled = productItems.every((item: ProductItem) => item.status === "deleted");
+        if(allDisabled){
+          const product = ProductService.getById(productId)
+      const updatedData = { ...product, status: 'creating' }
+      await ProductService.update(productId, updatedData as any)
+      toast({
+        title: 'Chuyển trạng thái thành công',
+        description: `Sản phẩm đã được chuyển sang danh sách chưa bán".`,
+        variant: 'success',
+        duration: 3000
+      })
+      window.location.reload();
+        }
       } catch (error) {
         toast({
           title: 'Lỗi',
