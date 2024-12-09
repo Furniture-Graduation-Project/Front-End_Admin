@@ -43,6 +43,8 @@ import Material from '@/pages/(site)/Material/Material'
 import AddMaterialForm from '@/pages/(site)/Material/_components/MaterialAdd'
 import MaterialEdit from '@/pages/(site)/Material/_components/MaterialEdit'
 import MaterialList from '@/pages/(site)/Material/_components/MaterialList'
+import ProductInfo from '@/pages/(site)/Product/_components/ProductInfomation'
+import OrderReturn from '@/pages/(site)/Order/components/OrderReturn'
 
 const routes: IRoute[] = [
   { path: '/', component: Signin, layout: AuthLayout },
@@ -100,6 +102,11 @@ const routes: IRoute[] = [
         path: 'edit/:id',
         component: ProductEdit,
         guard: () => useCheckPermissions(['product', 'admin'])
+      },
+      {
+        path: 'info/:id',
+        component: ProductInfo,
+        guard: () => useCheckPermissions(['product', 'admin', 'support', 'order'])
       }
     ]
   },
@@ -143,6 +150,11 @@ const routes: IRoute[] = [
       {
         path: 'edit/:id',
         component: OrderEdit,
+        guard: () => useCheckPermissions(['order', 'admin'])
+      },
+      {
+        path: 'return/:id',
+        component: OrderReturn,
         guard: () => useCheckPermissions(['order', 'admin'])
       }
     ]

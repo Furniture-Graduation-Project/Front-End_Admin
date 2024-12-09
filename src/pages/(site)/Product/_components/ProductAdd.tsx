@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from '@/components/ui/button'
 import { FileInput, FileUploader } from '@/components/ui/file-upload'
 import { Form, FormControl, FormDescription, FormField, FormItem, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Skeleton } from '@/components/ui/skeleton'
 import { toast } from '@/hooks/use-toast'
 import { ICategory } from '@/interface/category'
 import { IMaterial } from '@/interface/material'
@@ -33,6 +35,7 @@ const AddProductForm = () => {
   const [materials, setMaterials] = useState<IMaterial[]>([])
   const [files, setFiles] = useState<File[] | null>(null)
   const [galleryPreview, setGalleryPreview] = useState<string[]>([])
+  const [loading, setLoading] = useState(false)
 
   const dropZoneConfig = {
     maxFiles: 5,
@@ -78,7 +81,7 @@ const AddProductForm = () => {
 
   const handleSubmit = async (data: any) => {
     try {
-      await ProductService.create({ ...data, images: files || [] })
+      const product = await ProductService.create({ ...data, images: files || ['http://res.cloudinary.com/dfykg7wtt/image/upload/v1733647723/test/ldlnhcdhjd1z82run81q.png'] })
       toast({
         title: 'Thêm thành công',
         description: `Sản phẩm ${data.name} đã được thêm thành công.`,
@@ -86,7 +89,9 @@ const AddProductForm = () => {
         duration: 3000
       })
       form.reset()
-      navigate('/product')
+      setTimeout(() => {
+        navigate(`/product/edit/${product.data.data._id}`)
+      }, 2000)
     } catch (error: any) {
       if (error.response && error.response.status === 400 && error.response.data.message === 'SKU đã tồn tại.') {
         toast({
@@ -118,9 +123,17 @@ const AddProductForm = () => {
       return
     }
     if (!images) return
-    const urls = await Promise.all(Array.from(images).map(uploadFileCloudinary))
-    setFiles(urls)
-    setGalleryPreview(Array.from(images).map((file) => URL.createObjectURL(file)))
+
+    setLoading(true)
+    try {
+      const urls = await Promise.all(Array.from(images).map(uploadFileCloudinary))
+      setFiles(urls)
+      setGalleryPreview(Array.from(images).map((file) => URL.createObjectURL(file)))
+    } catch (error) {
+      console.error('Lỗi upload ảnh:', error)
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleRemoveImage = (index: number) => {
@@ -132,6 +145,8 @@ const AddProductForm = () => {
     const updatedFiles = files.filter((_, i) => i !== index)
     setFiles(updatedFiles)
   }
+
+  const isLoading = form.formState.isSubmitting
 
   return (
     <div className='bg-[#F5F6FA] dark:bg-gray-900 h-screen'>
@@ -152,6 +167,7 @@ const AddProductForm = () => {
                     id='name'
                     placeholder='Tên sản phẩm'
                     {...field}
+                    disabled={isLoading}
                     aria-required='true'
                     className='dark:bg-gray-700 dark:text-gray-100'
                   />
@@ -232,7 +248,7 @@ const AddProductForm = () => {
                       className='dark:bg-gray-700 dark:text-gray-100 border rounded-md p-1 min-w-[150px]'
                       disabled
                     >
-                      <option value='creating'>Đang tạo</option>
+                      <option value='creating'>Chưa bán</option>
                     </select>
                   </FormControl>
                   <FormMessage />
@@ -252,6 +268,7 @@ const AddProductForm = () => {
                 </Label>
                 <FormControl>
                   <Input
+                    disabled={isLoading}
                     id='description'
                     placeholder='Mô tả sản phẩm'
                     {...field}
@@ -283,6 +300,7 @@ const AddProductForm = () => {
                       id='fileInput'
                       className='outline-dashed outline-1 outline-slate-500'
                       onChange={onChangeImage}
+                      disabled={loading}
                     >
                       <div className='flex items-center justify-center flex-col p-8 w-full '>
                         <CloudUpload className='text-gray-500 w-10 h-10' />
@@ -300,22 +318,29 @@ const AddProductForm = () => {
             )}
           />
           <div className='flex gap-x-6 mt-4'>
-            {galleryPreview &&
-              galleryPreview.length > 0 &&
-              galleryPreview.map((url, index) => (
-                <div className='relative' key={index}>
-                  <img
-                    src={url}
-                    alt={`product-${index}`}
-                    className='h-40 object-contain border border-gray-200 rounded-2xl outline outline-offset-2 outline-gray-200'
+            {loading
+              ? Array.from({ length: 3 }).map((_, index) => (
+                  <Skeleton
+                    key={index}
+                    className='h-40 w-40 bg-gray-200 animate-pulse border border-gray-300 rounded-2xl'
                   />
-                  <X
-                    onClick={() => handleRemoveImage(index)}
-                    className='absolute -top-1 -right-1 bg-white border rounded-full w-4 h-4 cursor-pointer'
-                  />
-                </div>
-              ))}
+                ))
+              : galleryPreview &&
+                galleryPreview.map((url, index) => (
+                  <div className='relative' key={index}>
+                    <img
+                      src={url}
+                      alt={`product-${index}`}
+                      className='h-40 object-contain border border-gray-200 rounded-2xl outline outline-offset-2 outline-gray-200'
+                    />
+                    <X
+                      onClick={() => handleRemoveImage(index)}
+                      className='absolute -top-1 -right-1 bg-white border rounded-full w-4 h-4 cursor-pointer'
+                    />
+                  </div>
+                ))}
           </div>
+
           {/* Chi tiết chất liệu */}
           <FormField
             name='materialDetail'
@@ -327,6 +352,7 @@ const AddProductForm = () => {
                 </Label>
                 <FormControl>
                   <Input
+                    disabled={isLoading}
                     id='materialDetail'
                     placeholder='Chi tiết chất liệu'
                     {...field}
@@ -338,7 +364,9 @@ const AddProductForm = () => {
             )}
           />
           <div className='flex justify-end mt-6 space-x-3 pb-8'>
-            <Button type='submit'>Thêm sản phẩm</Button>
+            <Button disabled={isLoading || loading} type='submit'>
+              Thêm sản phẩm
+            </Button>
           </div>
         </form>
       </Form>

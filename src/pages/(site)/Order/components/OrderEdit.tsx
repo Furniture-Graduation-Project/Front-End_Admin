@@ -1,325 +1,270 @@
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
-import { IOrder } from '@/interface/order'
+import { Link, useParams } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
-import { toast } from '@/hooks/use-toast'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
-import { OrderService } from '@/services/order'
-import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
-import { Label } from '@/components/ui/label'
 import AlertAcitonDialog from '@/components/modals/AlertDialog'
-// import React from 'react'
-
-const orderStatuses = [
-  'pending',
-  'confirmed',
-  'processing',
-  'shipped',
-  'delivered',
-  'cancelled',
-  'returned',
-  'refunded'
-] as const
-
-const paymentStatuses = ['paid', 'unpaid']
-
-const getStatusText = (status: string) => {
-  switch (status) {
-    case 'pending':
-      return 'Chờ xử lý'
-    case 'confirmed':
-      return 'Đã xác nhận'
-    case 'processing':
-      return 'Đang xử lý'
-    case 'shipped':
-      return 'Đã gửi hàng'
-    case 'delivered':
-      return 'Đã giao hàng'
-    case 'cancelled':
-      return 'Đã hủy'
-    case 'returned':
-      return 'Đã hoàn trả'
-    case 'refunded':
-      return 'Đã hoàn tiền'
-    default:
-      return ''
-  }
-}
-
-const FormSchema = z.object({
-  status: z.enum(orderStatuses)
-})
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { formatCurrency } from '@/utils/formatCurrency'
+import { useSingleOrderQuery } from '@/hooks/querys/useOrderQuery'
+import useOrderMutation from '@/hooks/mutations/useOrderMutation'
+import { getStatusText } from '@/utils/getOrderStatus'
+import { useToast } from '@/hooks/use-toast'
+import { Separator } from '@/components/ui/separator'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 const OrderEdit = () => {
   const { id } = useParams<{ id: string }>()
-  const [order, setOrder] = useState<IOrder | null>(null)
-  const [loading, setLoading] = useState(true)
+  const { toast } = useToast()
   const [paymentStatus, setPaymentStatus] = useState<'paid' | 'unpaid'>('unpaid')
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const { data: orderData } = useSingleOrderQuery(id || '')
+  const { mutate } = useOrderMutation({ action: 'UPDATE' })
+  const [orderStatuses, setOrderStatuses] = useState<string[]>([
+    'pending',
+    'confirmed',
+    'processing',
+    'shipped',
+    'delivered'
+  ])
+  const [orderStatus, setOrderStatus] = useState<string>()
 
-  const form = useForm<IOrder>({
-    resolver: zodResolver(FormSchema),
-    defaultValues: {
-      status: 'pending'
-    }
-  })
-  const fetchOrder = async () => {
-    if (!id) {
-      console.error('ID không tồn tại')
-      return
-    }
+  const paymentStatuses = ['paid', 'unpaid']
 
-    try {
-      const response = await OrderService.getById(id)
-      setOrder(response.data.data)
-      setPaymentStatus(response.data.data.payment.paymentStatus)
-      form.reset({ status: response.data.data.status })
-    } catch (error) {
-      console.error('Lỗi khi lấy thông tin đơn hàng:', error)
+  const handleSubmit = async (data: { status: any }) => {
+    if (orderData?.data?.data._id && orderData?.data?.data.status !== 'received') {
+      if (data.status == 'received') {
+        const deliveredItem = orderData?.data?.data?.statusHistory?.find((item: any) => item.status == 'delivered')
+        if (deliveredItem?.date) {
+          const delivered = new Date(deliveredItem.date)
+          const sevenDaysLater = new Date(delivered)
+          sevenDaysLater.setDate(sevenDaysLater.getDate() + 7)
+          const today = new Date()
+          if (today >= sevenDaysLater) {
+            const newStatus = {
+              _id: orderData?.data?.data._id,
+              status: data.status,
+              statusHistory: [
+                ...orderData?.data?.data.statusHistory,
+                {
+                  status: data.status
+                }
+              ]
+            }
+            mutate(newStatus)
+            return
+          } else {
+            toast({
+              title: 'Cập nhật thất bại',
+              description: 'Đơn hàng sẽ được cập nhật tự động hoặc thủ công sau 7 ngày kể từ ngày giao',
+              variant: 'destructive'
+            })
+            return
+          }
+        } else {
+          toast({
+            title: 'Lỗi',
+            description: 'Không tìm thấy ngày giao trong lịch sử trạng thái',
+            variant: 'destructive'
+          })
+          return
+        }
+      }
+      const newStatus = {
+        _id: orderData?.data?.data._id,
+        status: data.status,
+        statusHistory: [
+          ...orderData?.data?.data.statusHistory,
+          {
+            status: data.status
+          }
+        ]
+      }
+      mutate(newStatus)
+    } else {
       toast({
-        title: 'Lỗi',
-        description: 'Không thể lấy thông tin đơn hàng.',
+        title: 'Cập nhật thất bại',
+        description: 'Không thể thay đổi trạng thái đơn hàng đã hoàn thành !',
         variant: 'destructive'
       })
-    } finally {
-      setLoading(false)
+    }
+  }
+  const hanleChangePayment = async () => {
+    if (orderData?.data?.data._id && orderData?.data?.data.status !== 'received') {
+      if (
+        orderData?.data?.data.status == 'unpaid' &&
+        paymentStatus == 'paid' &&
+        orderData?.data?.data.payment?.paymentStatus == 'unpaid'
+      ) {
+        const newStatus = {
+          _id: orderData?.data?.data._id,
+          status: 'pending',
+          payment: {
+            ...orderData?.data?.data.payment,
+            paymentStatus: 'paid'
+          }
+        }
+        mutate(newStatus)
+        setIsModalOpen(false)
+        return
+      } else {
+        const newStatus = {
+          _id: orderData?.data?.data._id,
+          payment: {
+            ...orderData?.data?.data.payment,
+            paymentStatus: paymentStatus
+          }
+        }
+        mutate(newStatus)
+        setIsModalOpen(false)
+      }
+    } else {
+      setIsModalOpen(false)
+      toast({
+        title: 'Cập nhật thất bại',
+        description: 'Không thể thay đổi trạng thái thanh toán đơn hàng đã hoàn thành !',
+        variant: 'destructive'
+      })
     }
   }
   useEffect(() => {
-    fetchOrder()
-  }, [id, form])
-
-  const handleSubmit = async (data: IOrder) => {
-    setLoading(true)
-    try {
-      await OrderService.update(id!, { status: data.status })
-      toast({
-        title: 'Cập nhật thành công',
-        description: `Đơn hàng đã được cập nhật trạng thái thành ${getStatusText(data.status)}.`,
-        variant: 'default'
-      })
-    } catch (error) {
-      console.error('Lỗi khi cập nhật đơn hàng:', error)
-      toast({
-        title: 'Lỗi cập nhật',
-        description: 'Đã xảy ra lỗi khi cập nhật đơn hàng.',
-        variant: 'destructive'
-      })
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handlePaymentStatusUpdate = async () => {
-    if (!order) {
-      console.error('Không có đơn hàng để cập nhật trạng thái thanh toán')
-      return
-    }
-
-    setLoading(true)
-    try {
-      const updatedPayment = {
-        ...order.payment,
-        paymentStatus
+    if (orderData) {
+      if (orderData?.data?.data.payment?.paymentMethod == 'cash_on_delivery') {
+        const cashOnDeliverys = ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'received', 'cancelled']
+        setOrderStatuses(cashOnDeliverys)
       }
-      await OrderService.update(id!, { payment: updatedPayment })
-
-      toast({
-        title: 'Cập nhật thành công',
-        description: `Trạng thái thanh toán đã được cập nhật thành ${paymentStatus === 'paid' ? 'Đã thanh toán' : 'Chưa thanh toán'}.`,
-        variant: 'default'
-      })
-    } catch (error) {
-      console.error('Lỗi khi cập nhật trạng thái thanh toán:', error)
-      toast({
-        title: 'Lỗi cập nhật',
-        description: 'Đã xảy ra lỗi khi cập nhật trạng thái thanh toán.',
-        variant: 'destructive'
-      })
-    } finally {
-      setLoading(false)
+      if (orderData?.data?.data.payment?.paymentMethod == 'credit_card') {
+        const creditCard = [
+          'unpaid',
+          'pending',
+          'confirmed',
+          'processing',
+          'shipped',
+          'delivered',
+          'received',
+          'cancelled'
+        ]
+        setOrderStatuses(creditCard)
+      }
+      setOrderStatus(orderData?.data?.data.status)
+      setPaymentStatus(orderData?.data?.data.payment?.paymentStatus)
     }
-  }
-
-  const confirmPaymentUpdate = () => {
-    setIsModalOpen(true)
-  }
-
-  const handleModalConfirm = async () => {
-    setIsModalOpen(false)
-    await handlePaymentStatusUpdate()
-  }
-  const [newLocation, setNewLocation] = useState('')
-
-  const handleAddLocation = async () => {
-    if (!newLocation.trim()) {
-      toast({
-        title: 'Lỗi',
-        description: 'Vui lòng nhập địa điểm.',
-        variant: 'destructive'
-      })
-      return
-    }
-    if (!order) {
-      toast({
-        title: 'Lỗi',
-        description: 'Dữ liệu đơn hàng không tồn tại.',
-        variant: 'destructive'
-      })
-      return
-    }
-
-    if (!order.shipments) {
-      toast({
-        title: 'Lỗi',
-        description: 'Thông tin shipment không có sẵn.',
-        variant: 'destructive'
-      })
-      return
-    }
-
-    try {
-      setLoading(true)
-
-      const updatedLocations = [...(order.shipments.locations || []), newLocation]
-
-      await OrderService.update(id!, {
-        shipments: {
-          ...order.shipments,
-          locations: updatedLocations
-        }
-      })
-      setOrder((prev) =>
-        prev
-          ? {
-              ...prev,
-              shipments: {
-                ...prev.shipments,
-                locations: updatedLocations
-              }
-            }
-          : null
-      )
-
-      toast({
-        title: 'Thành công',
-        description: 'Đã thêm địa điểm mới vào shipments.',
-        variant: 'default'
-      })
-      setNewLocation('')
-    } catch (error) {
-      console.error('Lỗi khi thêm địa điểm:', error)
-      toast({
-        title: 'Lỗi',
-        description: 'Không thể thêm địa điểm, vui lòng thử lại.',
-        variant: 'destructive'
-      })
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  if (loading) {
-    return <div>Đang tải...</div>
-  }
-  if (!order) {
-    return <div>Không tìm thấy đơn hàng với ID đã cho.</div>
-  }
-  const currentStatusIndex = orderStatuses.indexOf(order.status)
+  }, [orderData])
   return (
-    <div className='bg-gray-50 dark:bg-gray-900 min-h-screen py-8 px-4 md:px-10'>
-      <div className='bg-white dark:bg-gray-800 shadow rounded-lg p-6'>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-6'>
-            <FormField
-              name='status'
-              control={form.control}
-              render={({ field }) => (
-                <FormItem>
-                  <Label htmlFor='status' className='font-bold text-2xl mb-4 text-gray-800 dark:text-gray-100'>
-                    Cập nhập trạng thái đơn hàng
-                  </Label>
-                  <FormControl>
-                    <select
-                      id='status'
-                      {...field}
-                      className='w-full border border-gray-300 dark:border-gray-700 rounded-md p-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-200'
+    <>
+      <h1 className='text-3xl font-bold mb-6 dark:text-gray-100'>Thông tin đơn hàng</h1>
+      <div className='p-5 bg-white dark:bg-gray-800'>
+        <div className='flex justify-between items-center py-1'>
+          <h2 className='font-bold text-2xl text-gray-800 dark:text-gray-100'>Trạng thái đơn hàng</h2>
+          <Link
+            className={`items-center gap-2 whitespace-nowrap relative ${orderData?.data.data.returnInfo?.items && orderData?.data.data.returnInfo?.items.length > 0 ? 'flex' : 'hidden'}`}
+            to={`/order/return/${orderData?.data?.data._id}`}
+          >
+            <Button variant={'outline'} className='relative'>
+              Xem yêu cầu trả hàng
+            </Button>
+            <div className='absolute top-[-1.5px] right-[-1.5px]'>
+              <span className='relative flex h-3 w-3'>
+                <span className='animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75'></span>
+                <span className='relative inline-flex rounded-full h-3 w-3 bg-sky-500'></span>
+              </span>
+            </div>
+          </Link>
+        </div>
+        <Separator className='my-4' />
+        <div className='space-y-4 mb-4'>
+          <div className='flex items-center'>
+            <span className='mr-3 font-bold text-gray-800 dark:text-gray-100'>Trạng thái đơn hàng:</span>
+            <span className='text-gray-600 dark:text-gray-400'>
+              {orderData?.data?.data.status && getStatusText(orderData?.data?.data.status)}
+            </span>
+          </div>
+          <div className='flex items-center'>
+            <span className='mr-3 font-bold text-gray-800 dark:text-gray-100'>Trạng thái thanh toán:</span>
+            <span className='text-gray-600 dark:text-gray-400'>
+              {orderData?.data?.data.payment.paymentStatus === 'paid' ? 'Đã thanh toán' : 'Chưa thanh toán'}
+            </span>
+          </div>
+        </div>
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+          <div className='bg-slate-50 dark:bg-gray-700 shadow rounded-lg p-6'>
+            <h3 className='font-bold text-2xl mb-4 text-gray-800 dark:text-gray-100'>Cập nhập trạng thái đơn hàng</h3>
+            <Select onValueChange={(value) => setOrderStatus(value)} value={orderStatus}>
+              <SelectTrigger className='w-full border border-gray-300 dark:border-gray-900 rounded-md p-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-200'>
+                <SelectValue placeholder='Choose status' />
+              </SelectTrigger>
+              <SelectContent>
+                {orderStatuses.map((status, index) => {
+                  const isDisabled =
+                    index <= orderStatuses.indexOf(orderData?.data?.data.status as string) ||
+                    index > orderStatuses.indexOf(orderData?.data?.data.status as string) + 1
+                  const isPaid =
+                    orderData?.data?.data.payment?.paymentMethod === 'credit_card'
+                      ? orderData?.data?.data.payment?.paymentStatus === 'paid'
+                      : true
+
+                  return (
+                    <SelectItem
+                      key={status}
+                      value={status}
+                      disabled={isDisabled || status === 'cancelled' || status === 'received' || !isPaid}
                     >
-                      {orderStatuses.map((status, index) => {
-                        const isDisabled = index < currentStatusIndex || index > currentStatusIndex + 1
-                        return (
-                          <option key={status} value={status} disabled={isDisabled}>
-                            {getStatusText(status)}
-                          </option>
-                        )
-                      })}
-                    </select>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                      {getStatusText(status)}
+                    </SelectItem>
+                  )
+                })}
+              </SelectContent>
+            </Select>
             <div className='flex justify-end'>
               <Button
                 type='submit'
                 variant='default'
-                disabled={loading}
-                className='bg-black hover text-white font-semibold py-2 rounded-md  dark:bg-blue-500 dark:hover:bg-blue-400'
+                onClick={() => handleSubmit({ status: orderStatus })}
+                className='bg-black hover text-white font-semibold py-2 rounded-md mt-4 dark:bg-blue-500 dark:hover:bg-blue-400'
               >
-                {loading ? 'Đang xử lý...' : 'Cập nhật trạng thái đơn hàng'}
+                {'Cập nhật trạng thái đơn hàng'}
               </Button>
             </div>
-          </form>
-        </Form>
-      </div>
-      <div className='bg-white dark:bg-gray-800 shadow rounded-lg p-6 mt-8'>
-        <h2 className='font-bold text-2xl mb-4 text-gray-800 dark:text-gray-100'>Cập nhật trạng thái thanh toán</h2>
-        <select
-          className='w-full border border-gray-300 dark:border-gray-700 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-green-500 dark:bg-gray-700 dark:text-gray-200'
-          value={paymentStatus}
-          onChange={(e) => setPaymentStatus(e.target.value as 'paid' | 'unpaid')}
-        >
-          {paymentStatuses.map((status) => (
-            <option key={status} value={status}>
-              {status === 'paid' ? 'Đã thanh toán' : 'Chưa thanh toán'}
-            </option>
-          ))}
-        </select>
-        <div className='flex justify-end'>
-          <Button
-            onClick={confirmPaymentUpdate}
-            variant='default'
-            disabled={loading}
-            className='bg-black hover text-white font-semibold py-2 rounded-md mt-4 dark:bg-blue-500 dark:hover:bg-blue-400'
-          >
-            {loading ? 'Đang xử lý...' : 'Cập nhật trạng thái thanh toán'}
-          </Button>
+          </div>
+          <div className='bg-slate-50 dark:bg-gray-700 shadow rounded-lg p-6'>
+            <h2 className='font-bold text-2xl mb-4 text-gray-800 dark:text-gray-100'>Cập nhật trạng thái thanh toán</h2>
+            <Select value={paymentStatus} onValueChange={(value) => setPaymentStatus(value as 'paid' | 'unpaid')}>
+              <SelectTrigger className='w-full border border-gray-300 dark:border-gray-900 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-green-500 dark:bg-gray-700 dark:text-gray-200'>
+                <SelectValue placeholder='Chọn trạng thái thanh toán' />
+              </SelectTrigger>
+              <SelectContent>
+                {paymentStatuses.map((status) => (
+                  <SelectItem key={status} value={status}>
+                    {status === 'paid' ? 'Đã thanh toán' : 'Chưa thanh toán'}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <div className='flex justify-end'>
+              <Button
+                onClick={() => setIsModalOpen(true)}
+                variant='default'
+                className='bg-black hover text-white font-semibold py-2 rounded-md mt-4 dark:bg-blue-500 dark:hover:bg-blue-400'
+              >
+                {'Cập nhật trạng thái thanh toán'}
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
-      <AlertAcitonDialog
-        title='Bạn chắc chắn muốn thay đổi trạng thái thanh toán hay không?'
-        isOpen={isModalOpen}
-        setIsOpen={setIsModalOpen}
-        handleAciton={handleModalConfirm}
-        className='dark:bg-gray-800 dark:text-white'
-      />
       <div className='bg-white dark:bg-gray-800 shadow rounded-lg p-6 mt-8'>
-        <h2 className='font-bold text-2xl mb-4 text-gray-800 dark:text-gray-100'>Thông tin khách hàng</h2>
+        <h2 className='font-bold text-2xl mb-4 text-gray-800 dark:text-gray-100 border-b pb-4'>Thông tin khách hàng</h2>
         <div className='space-y-4'>
           <div className='flex items-center space-x-3'>
             <span role='img' aria-label='user' className='text-gray-800 dark:text-gray-100 text-2xl'>
               👤
             </span>
             <div className='flex-1'>
-              <input
+              <div
                 id='orderName'
-                type='text'
-                value={order.orderName}
-                readOnly
                 className='w-full border border-gray-300 dark:border-gray-700 rounded-md p-2 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200'
-              />
+              >
+                {orderData?.data?.data?.orderName}
+              </div>
             </div>
           </div>
           <div className='flex items-center space-x-3'>
@@ -327,13 +272,12 @@ const OrderEdit = () => {
               📞
             </span>
             <div className='flex-1'>
-              <input
+              <div
                 id='orderPhone'
-                type='text'
-                value={order.orderPhone}
-                readOnly
                 className='w-full border border-gray-300 dark:border-gray-700 rounded-md p-2 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200'
-              />
+              >
+                {orderData?.data?.data?.orderPhone}
+              </div>
             </div>
           </div>
           <div className='flex items-center space-x-3'>
@@ -341,81 +285,86 @@ const OrderEdit = () => {
               📍
             </span>
             <div className='flex-1'>
-              <input
+              <div
                 id='orderAddress'
-                type='text'
-                value={order.orderAddress}
-                readOnly
                 className='w-full border border-gray-300 dark:border-gray-700 rounded-md p-2 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200'
-              />
+              >
+                {orderData?.data?.data?.orderAddress}
+              </div>
             </div>
           </div>
         </div>
       </div>
       <div className='bg-white dark:bg-gray-800 shadow rounded-lg p-6 mt-8'>
-        <h2 className='font-bold text-2xl mb-4 text-gray-800 dark:text-gray-100'>Danh sách sản phẩm</h2>
-        <div className='flex flex-col space-y-4 border border-gray-300 dark:border-gray-700'>
-          <div className='flex font-bold text-lg text-gray-800 dark:text-gray-100 border-b border-r border-gray-300 dark:border-gray-700'>
-            <div className='flex-1 p-2'>STT</div>
-            <div className='flex-1 p-2'>Ảnh</div>
-            <div className='flex-1 p-2'>Tên sản phẩm</div>
-            <div className='flex-1 p-2'>Biến thể</div>
-            <div className='flex-1 p-2'>Giá</div>
-            <div className='flex-1 p-2'>Số lượng</div>
-            <div className='flex-1 p-2'>Tổng tiền</div>
-          </div>
-          {order.items.map((item, index) => (
-            <div key={item._id} className='flex space-x-4 border-b border-r border-gray-300 dark:border-gray-700'>
-              <div className='flex-1 p-2'>{index + 1}</div>
-              <div className='flex-1 p-2'>
-                <img src={item.productId.images[0]} alt={item.productId.name} className='w-20 h-20' />
-              </div>
-              <div className='flex-1 p-2'>{item.productId.name}</div>
-              <div className='flex-1 p-2'>
-                <span>Biến thể: {item.productOptionId}</span>
-              </div>
-              <div className='flex-1 p-2'>{item.unitPrice.toLocaleString()} VND</div>
-              <div className='flex-1 p-2'>{item.quantity}</div>
-              <div className='flex-1 p-2'>{(item.unitPrice * item.quantity).toLocaleString()} VND</div>
-            </div>
-          ))}
-        </div>
-      </div>
-      {/* Section thêm địa điểm */}
-      <div className='bg-white dark:bg-gray-800 shadow rounded-lg p-6 mt-8'>
-        <h2 className='font-bold text-2xl mb-4 text-gray-800 dark:text-gray-100'>Thêm địa điểm tại shipments</h2>
-        <div className='space-y-4'>
-          <input
-            type='text'
-            value={newLocation}
-            onChange={(e) => setNewLocation(e.target.value)}
-            placeholder='Nhập địa điểm mới'
-            className='w-full border border-gray-300 dark:border-gray-700 rounded-md p-2 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200'
-          />
-          <Button
-            onClick={handleAddLocation}
-            variant='default'
-            disabled={loading}
-            className='bg-black hover text-white font-semibold py-2 rounded-md mt-4 dark:bg-blue-500 dark:hover:bg-blue-400'
-          >
-            {loading ? 'Đang xử lý...' : 'Thêm địa điểm'}
-          </Button>
+        <h2 className='font-bold text-2xl mb-4 text-gray-800 dark:text-gray-100 border-b pb-4'>Thông tin sản phẩm</h2>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>STT</TableHead>
+              <TableHead>Ảnh</TableHead>
+              <TableHead>Tên sản phẩm</TableHead>
+              <TableHead>Biến thể</TableHead>
+              <TableHead>Giá</TableHead>
+              <TableHead>Số lượng</TableHead>
+              <TableHead>Tổng tiền</TableHead>
+              <TableHead></TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {orderData?.data?.data?.items.map((item: any, index) => (
+              <TableRow key={item._id}>
+                <TableCell>{index + 1}</TableCell>
+                <TableCell className='w-40 h-40 min-w-[10rem]'>
+                  <div className='w-full h-full overflow-hidden rounded-md'>
+                    <img
+                      src={item.productId.images[0]}
+                      alt={item.productId.name}
+                      className='w-full h-full object-contain'
+                    />
+                  </div>
+                </TableCell>
+
+                <TableCell className=' whitespace-nowrap'>{item.productId.name}</TableCell>
+                <TableCell className='whitespace-nowrap'>
+                  {item.productOptionId?.variants &&
+                    item.productOptionId.variants.map((variant: any, id: number) => (
+                      <div key={id} className='text-sm text-gray-500 dark:text-gray-400'>
+                        {variant.variant}: {variant.value}
+                      </div>
+                    ))}
+                </TableCell>
+                <TableCell>{formatCurrency(item.unitPrice)}</TableCell>
+                <TableCell>{item.quantity}</TableCell>
+                <TableCell>{formatCurrency(item.unitPrice * item.quantity)}</TableCell>
+                <TableCell>
+                  <Link className='text-blue-500 font-medium' to={`/product/info/${item.productId._id}`}>
+                    Chi tiết
+                  </Link>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+        <Separator className='my-4' />
+        <div className='flex flex-col items-end space-y-2 bg-orange-50 dark:bg-gray-950 p-4 rounded-md'>
+          <h2 className='text-xl font-bold'>
+            Tổng tiền cần thanh toán :{' '}
+            {orderData?.data?.data?.totalPrice && formatCurrency(orderData?.data?.data?.totalPrice)}
+          </h2>
+          <h3 className='text-lg uppercase' id='idOrder'>
+            Mã đơn hàng: <span>{orderData?.data?.data?._id}</span>
+          </h3>
         </div>
       </div>
 
-      <div className='bg-white dark:bg-gray-800 shadow rounded-lg p-6 mt-8'>
-        <h2 className='font-bold text-2xl mb-4 text-gray-800 dark:text-gray-100'>Danh sách địa điểm</h2>
-        {order?.shipments?.locations?.length ? (
-          <ul className='list-disc pl-6 text-gray-800 dark:text-gray-200'>
-            {order.shipments.locations.map((location, index) => (
-              <li key={index}>{location}</li>
-            ))}
-          </ul>
-        ) : (
-          <p className='text-gray-500 dark:text-gray-400'>Chưa có địa điểm nào trong danh sách.</p>
-        )}
-      </div>
-    </div>
+      <AlertAcitonDialog
+        title='Bạn chắc chắn muốn thay đổi trạng thái thanh toán hay không?'
+        isOpen={isModalOpen}
+        setIsOpen={setIsModalOpen}
+        handleAciton={hanleChangePayment}
+        className='dark:bg-gray-800 dark:text-white'
+      />
+    </>
   )
 }
 export default OrderEdit

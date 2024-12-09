@@ -12,7 +12,17 @@ export const columns: ColumnDef<IProduct>[] = [
   },
   {
     accessorKey: 'name',
-    header: 'Tên sản phẩm'
+    header: 'Tên sản phẩm',
+    cell: ({ row }) => {
+      return <p className='w-32'>{row.original.name}</p>
+    }
+  },
+  {
+    header: 'Ảnh',
+    accessorKey: 'images',
+    cell: ({ row }) => {
+      return <img src={row.original.images[0]} alt={row.original.name} className='w-32 h-32 object-cover rounded-lg' />
+    }
   },
   {
     header: 'Danh mục',
@@ -23,27 +33,65 @@ export const columns: ColumnDef<IProduct>[] = [
     }
   },
   {
-    accessorKey: 'description',
-    header: 'Mô tả',
-    cell: ({ row }) => {
-      return <p>{row.getValue<string>('description') || 'N/A'}</p>
-    }
-  },
-  {
     header: 'Chất liệu',
-    cell: ({ row }) => <p>{row.original.material?.materialName || 'N/A'}</p>
+    cell: ({ row }) => <p className='w-16'>{row.original.material?.materialName || 'N/A'}</p>
   },
   {
     accessorKey: 'materialDetail',
-    header: 'Chi tiết Chất liệu',
-    cell: ({ row }) => <p>{row.getValue<string>('materialDetail') || 'N/A'}</p>
+    header: 'Chi tiết chất liệu',
+    cell: ({ row }) => <p className='w-36'>{row.getValue<string>('materialDetail') || 'N/A'}</p>
   },
   {
     accessorKey: 'status',
     header: 'Trạng thái',
     cell: ({ row }) => {
-      const status = row.getValue<string>('status')
-      return <p>{status.charAt(0).toUpperCase() + status.slice(1)}</p>
+      const status = row.getValue<string>('status').toLowerCase()
+      let displayStatus = ''
+      switch (status) {
+        case 'creating':
+          displayStatus = 'Chưa bán'
+          break
+        case 'available':
+          displayStatus = 'Đang bán'
+          break
+        case 'disable':
+          displayStatus = 'Đã ngừng bán'
+          break
+        default:
+          displayStatus = 'Không xác định'
+      }
+      return <p>{displayStatus}</p>
+    }
+  },
+  {
+    header: 'Giá (min/max)',
+    cell: ({ row }) => {
+      const prices = row.original.prices || []
+      const minPrice = prices.length ? Math.min(...prices) : 0
+      const maxPrice = prices.length ? Math.max(...prices) : 0
+      const formatPrice = (price: number) => price.toLocaleString('vi-VN')
+      return (
+        <div className='flex justify-start'>
+          <div className='flex flex-col items-end'>
+            <p className='whitespace-nowrap'>{formatPrice(minPrice)} Đ</p>
+            <p className='whitespace-nowrap'>{formatPrice(maxPrice)} Đ</p>
+          </div>
+        </div>
+      )
+    }
+  },
+  {
+    header: 'Tổng số sản phẩm',
+    cell: ({ row }) => {
+      const stock = row.original.stock || 0
+      return <p>{stock}</p>
+    }
+  },
+  {
+    header: 'Số lượng đã bán',
+    cell: ({ row }) => {
+      const outStock = row.original.outStock || 0
+      return <p>{outStock}</p>
     }
   },
   {

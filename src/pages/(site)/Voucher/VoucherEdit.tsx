@@ -1,58 +1,70 @@
 import { Button } from '@/components/ui/button'
 import { useVoucherMutation } from '@/hooks/mutations/useVoucherMutation'
 import { useVoucherQuery } from '@/hooks/querys/useVoucherQuery'
-import { useForm, SubmitHandler } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { useNavigate, useParams } from 'react-router-dom'
-import React from 'react'
+import { useEffect } from 'react'
 import { toast } from 'sonner'
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form'
+import { format } from 'date-fns'
 
-interface Voucher {
-  code: string
-  description: string
-  type: 'Percent' | 'Fixed'
-  value: number
-  startDate: string
-  endDate: string
-  usageLimit: number
-  status: 'active' | 'inactive'
-}
+// Zod schema for validation
+const voucherSchema = z.object({
+  code: z.string().nonempty('Voucher code is required'),
+  description: z.string().nonempty('Description is required'),
+  type: z.enum(['Percent', 'Fixed']),
+  value: z.number().min(1, 'Value must be greater than 0'),
+  startDate: z.string().nonempty('Start date is required'),
+  endDate: z.string().nonempty('End date is required'),
+  usageLimit: z.number().min(1, 'Usage limit must be greater than 0'),
+  status: z.enum(['active', 'inactive'])
+})
+
+type Voucher = z.infer<typeof voucherSchema>
 
 const VoucherEdit: React.FC = () => {
   const { id } = useParams<{ id: string }>()
   const { data, isLoading, isError } = useVoucherQuery(id)
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    setValue
-  } = useForm<Voucher>()
   const navigate = useNavigate()
   const { mutate } = useVoucherMutation('UPDATE')
 
-  React.useEffect(() => {
-    if (data) {
-      setValue('code', data.code)
-      setValue('description', data.description)
-      setValue('type', data.type)
-      setValue('value', data.value)
-      setValue('startDate', data.startDate)
-      setValue('endDate', data.endDate)
-      setValue('usageLimit', data.usageLimit)
-      setValue('status', data.status)
+  const form = useForm<Voucher>({
+    resolver: zodResolver(voucherSchema),
+    defaultValues: {
+      code: '',
+      description: '',
+      type: 'Percent',
+      value: 0,
+      startDate: '',
+      endDate: '',
+      usageLimit: 1,
+      status: 'active'
     }
-  }, [data, setValue])
+  })
 
-  const onSubmit: SubmitHandler<Voucher> = (formData) => {
+  useEffect(() => {
+    if (data) {
+      form.reset({
+        ...data,
+        startDate: format(new Date(data.startDate), 'yyyy-MM-dd'),
+        endDate: format(new Date(data.endDate), 'yyyy-MM-dd')
+      })
+    }
+  }, [data, form])
+
+  const onSubmit = (formData: Voucher) => {
     if (id) {
       mutate(
         { id, data: formData },
         {
           onSuccess: () => {
-            alert('Đã sửa thành công')
+            toast.success('Voucher updated successfully')
             navigate('/voucher')
           },
           onError: () => {
-            toast.error('Lỗi sửa Voucher')
+            toast.error('Failed to update voucher')
           }
         }
       )
@@ -65,95 +77,129 @@ const VoucherEdit: React.FC = () => {
   return (
     <div className='container mx-auto p-7 bg-[#f5f6fa]'>
       <div className='text-2xl font-semibold mb-7'>Edit Voucher</div>
-      <form onSubmit={handleSubmit(onSubmit)} className='space-y-6 bg-white p-6 rounded-md shadow-lg'>
-        <div>
-          <label className='block font-medium'>Voucher Code</label>
-          <input
-            type='text'
-            {...register('code', { required: 'Voucher code is required' })}
-            className='border rounded-md w-full py-2 px-3 mt-2'
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6 bg-white p-6 rounded-md shadow-lg'>
+          <FormField
+            name='code'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Voucher Code</FormLabel>
+                <FormControl>
+                  <input type='text' {...field} className='border rounded-md w-full py-2 px-3 mt-2' />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-          {errors.code && <p className='text-red-500'>{errors.code.message}</p>}
-        </div>
 
-        <div>
-          <label className='block font-medium'>Description</label>
-          <textarea
-            {...register('description', { required: 'Description is required' })}
-            className='border rounded-md w-full h-32 py-2 px-3 mt-2'
+          <FormField
+            name='description'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Description</FormLabel>
+                <FormControl>
+                  <textarea {...field} className='border rounded-md w-full h-32 py-2 px-3 mt-2' />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-          {errors.description && <p className='text-red-500'>{errors.description.message}</p>}
-        </div>
 
-        {/* Type and Value in the same row */}
-        <div className='flex space-x-4'>
-          <div className='w-1/3'>
-            <label className='block font-medium'>Type</label>
-            <select {...register('type')} className='border rounded-md w-full py-2 px-3 mt-2'>
-              <option value='Percent'>Percent</option>
-              <option value='Fixed'>Fixed</option>
-            </select>
-          </div>
-
-          <div className='w-1/3'>
-            <label className='block font-medium'>Value</label>
-            <input
-              type='number'
-              {...register('value', { required: 'Value is required', min: 1 })}
-              className='border rounded-md w-full py-2 px-3 mt-2'
+          <div className='flex space-x-4'>
+            <FormField
+              name='type'
+              render={({ field }) => (
+                <FormItem className='w-1/3'>
+                  <FormLabel>Type</FormLabel>
+                  <FormControl>
+                    <select {...field} className='border rounded-md w-full py-2 px-3 mt-2'>
+                      <option value='Percent'>Percent</option>
+                      <option value='Fixed'>Fixed</option>
+                    </select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-            {errors.value && <p className='text-red-500'>{errors.value.message}</p>}
-          </div>
-        </div>
 
-        {/* Start Date and End Date in the same row */}
-        <div className='flex space-x-4'>
-          <div className='w-1/2'>
-            <label className='block font-medium'>Start Date</label>
-            <input
-              type='date'
-              {...register('startDate', { required: 'Start date is required' })}
-              className='border rounded-md w-full py-2 px-3 mt-2'
+            <FormField
+              name='value'
+              render={({ field }) => (
+                <FormItem className='w-1/3'>
+                  <FormLabel>Value</FormLabel>
+                  <FormControl>
+                    <input type='number' {...field} className='border rounded-md w-full py-2 px-3 mt-2' />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-            {errors.startDate && <p className='text-red-500'>{errors.startDate.message}</p>}
           </div>
 
-          <div className='w-1/2'>
-            <label className='block font-medium'>End Date</label>
-            <input
-              type='date'
-              {...register('endDate', { required: 'End date is required' })}
-              className='border rounded-md w-full py-2 px-3 mt-2'
+          <div className='flex space-x-4'>
+            <FormField
+              name='startDate'
+              render={({ field }) => (
+                <FormItem className='w-1/2'>
+                  <FormLabel>Start Date</FormLabel>
+                  <FormControl>
+                    <input type='date' {...field} className='border rounded-md w-full py-2 px-3 mt-2' />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-            {errors.endDate && <p className='text-red-500'>{errors.endDate.message}</p>}
-          </div>
-        </div>
 
-        {/* Usage Limit and Status in the same row */}
-        <div className='flex space-x-4'>
-          <div className='w-1/3'>
-            <label className='block font-medium'>Usage Limit</label>
-            <input
-              type='number'
-              {...register('usageLimit', { required: 'Usage limit is required', min: 1 })}
-              className='border rounded-md w-full py-2 px-3 mt-2'
+            <FormField
+              name='endDate'
+              render={({ field }) => (
+                <FormItem className='w-1/2'>
+                  <FormLabel>End Date</FormLabel>
+                  <FormControl>
+                    <input type='date' {...field} className='border rounded-md w-full py-2 px-3 mt-2' />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-            {errors.usageLimit && <p className='text-red-500'>{errors.usageLimit.message}</p>}
           </div>
 
-          <div className='w-2/3'>
-            <label className='block font-medium'>Status</label>
-            <select {...register('status')} className='border rounded-md py-2 px-3 mt-2'>
-              <option value='active'>Active</option>
-              <option value='inactive'>Inactive</option>
-            </select>
-          </div>
-        </div>
+          <div className='flex space-x-4'>
+            <FormField
+              name='usageLimit'
+              render={({ field }) => (
+                <FormItem className='w-1/3'>
+                  <FormLabel>Usage Limit</FormLabel>
+                  <FormControl>
+                    <input type='number' {...field} className='border rounded-md w-full py-2 px-3 mt-2' />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-        <Button type='submit' variant='default' className='mt-4 bg-blue-500 text-white hover:bg-blue-600'>
-          Update Voucher
-        </Button>
-      </form>
+            <FormField
+              name='status'
+              render={({ field }) => (
+                <FormItem className='w-2/3'>
+                  <FormLabel>Status</FormLabel>
+                  <FormControl>
+                    <select {...field} className='border rounded-md py-2 px-3 mt-2'>
+                      <option value='active'>Active</option>
+                      <option value='inactive'>Inactive</option>
+                    </select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <Button type='submit' variant='default'>
+            Update Voucher
+          </Button>
+        </form>
+      </Form>
     </div>
   )
 }

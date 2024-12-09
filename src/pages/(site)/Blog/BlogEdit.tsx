@@ -1,16 +1,17 @@
-import React, { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
-import { IBlog, ICreateBlog } from '@/interface/blog'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { toast } from '@/hooks/use-toast'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
-import { BlogService } from '@/services/blog'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
+import { Skeleton } from '@/components/ui/skeleton'
+import { toast } from '@/hooks/use-toast'
+import { IBlog, ICreateBlog } from '@/interface/blog'
+import { BlogService } from '@/services/blog'
+import { uploadFileCloudinary } from '@/utils/upload-cloudinary'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { useNavigate, useParams } from 'react-router-dom'
+import { z } from 'zod'
 
 const FormSchema = z.object({
   employeeId: z.string().min(1, { message: 'Người viết không được để trống.' }),
@@ -25,8 +26,10 @@ const FormSchema = z.object({
 
 const BlogEdit = () => {
   const { id } = useParams<{ id: string }>()
+  const [preview, setPreview] = useState<string | null>(null)
+  const [image, setImage] = useState<string | null>('')
   const [blog, setBlog] = useState<IBlog | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [imageLoading, setImageLoading] = useState(false)
   const navigate = useNavigate()
 
   const form = useForm<ICreateBlog>({
@@ -50,6 +53,7 @@ const BlogEdit = () => {
       try {
         const response = await BlogService.getById(id)
         const blogData = response.data.data
+
         setBlog(blogData)
         form.reset({
           employeeId: blogData.employeeId._id,
@@ -65,18 +69,27 @@ const BlogEdit = () => {
           description: 'Không thể lấy thông tin blog.',
           variant: 'destructive'
         })
-      } finally {
-        setLoading(false)
       }
     }
 
     fetchBlog()
-  }, [id, form])
+  }, [id])
 
-  const handleSubmit = async (data: ICreateBlog) => {
-    setLoading(true)
+  const onChangeImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files
+    if (!files) return
+    setImageLoading(true)
+    const urls = await Promise.all(Array.from(files).map(uploadFileCloudinary))
+    setImage(urls[0])
+    setPreview(URL.createObjectURL(files[0]))
+    setImageLoading(false)
+  }
+
+  const onSubmit = async (data: ICreateBlog) => {
+    const finalImage = image ? image : blog?.image
+
     try {
-      await BlogService.update(id!, data)
+      await BlogService.update(id!, { ...data, image: finalImage })
       toast({
         title: 'Cập nhật thành công',
         description: `Blog "${data.title}" đã được cập nhật thành công.`,
@@ -90,14 +103,10 @@ const BlogEdit = () => {
         description: 'Đã xảy ra lỗi khi cập nhật blog.',
         variant: 'destructive'
       })
-    } finally {
-      setLoading(false)
     }
   }
 
-  if (loading) {
-    return <div>Đang tải...</div>
-  }
+  const isLoading = form.formState.isSubmitting
 
   if (!blog) {
     return <div>Không tìm thấy blog với ID đã cho.</div>
@@ -109,7 +118,29 @@ const BlogEdit = () => {
         <h1 className='text-2xl font-bold mb-6 dark:text-white'>Chỉnh sửa Blog</h1>
         <div className='bg-white dark:bg-gray-800 rounded-lg p-6 shadow-md'>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-6'>
+            <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
+              <FormField
+                name='employeeId'
+                control={form.control}
+                render={({ field }) => (
+                  <FormItem>
+                    <Label className='font-bold dark:text-white'>Người viết</Label>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        value={blog.employeeId._id}
+                        className='bg-gray-100 dark:bg-gray-700 dark:text-gray-400 hidden'
+                      />
+                    </FormControl>
+                    <Input
+                      disabled
+                      value={blog.employeeId.fullName}
+                      className='bg-gray-100 dark:bg-gray-700 dark:text-gray-400 '
+                    />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <FormField
                 name='title'
                 control={form.control}
@@ -117,7 +148,12 @@ const BlogEdit = () => {
                   <FormItem>
                     <Label className='font-bold dark:text-white'>Tiêu đề</Label>
                     <FormControl>
-                      <Input placeholder='Nhập tiêu đề blog' {...field} className='dark:bg-gray-700 dark:text-white' />
+                      <Input
+                        disabled={isLoading}
+                        placeholder='Nhập tiêu đề blog'
+                        {...field}
+                        className='dark:bg-gray-700 dark:text-white'
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -134,6 +170,7 @@ const BlogEdit = () => {
                     </Label>
                     <FormControl>
                       <Input
+                        disabled={isLoading}
                         id='content'
                         placeholder='Nội dung'
                         {...field}
@@ -154,6 +191,7 @@ const BlogEdit = () => {
                     <Label className='font-bold dark:text-white'>Tags</Label>
                     <FormControl>
                       <Input
+                        disabled={isLoading}
                         placeholder='Nhập tags (phân cách bằng dấu phẩy)'
                         {...field}
                         className='dark:bg-gray-700 dark:text-white'
@@ -167,12 +205,30 @@ const BlogEdit = () => {
               <FormField
                 name='image'
                 control={form.control}
-                render={({ field }) => (
+                render={() => (
                   <FormItem>
-                    <Label className='font-bold dark:text-white'>Hình ảnh URL</Label>
+                    <Label className='font-bold dark:text-white'>Hình ảnh</Label>
                     <FormControl>
-                      <Input placeholder='Nhập URL hình ảnh' {...field} className='dark:bg-gray-700 dark:text-white' />
+                      <Input
+                        disabled={imageLoading}
+                        type='file'
+                        className='dark:bg-gray-700 dark:text-gray-100'
+                        onChange={onChangeImage}
+                      />
                     </FormControl>
+                    {imageLoading ? (
+                      <Skeleton className='w-full h-80 rounded-lg mt-2' />
+                    ) : preview ? (
+                      <div className='mt-2'>
+                        <img src={preview} alt='preview' className='w-full h-80 object-cover rounded-lg' />
+                      </div>
+                    ) : (
+                      blog?.image && (
+                        <div className='mt-2'>
+                          <img src={blog.image} alt='preview' className='w-full h-80 object-cover rounded-lg' />
+                        </div>
+                      )
+                    )}
                     <FormMessage />
                   </FormItem>
                 )}
@@ -187,8 +243,8 @@ const BlogEdit = () => {
                 >
                   Hủy
                 </Button>
-                <Button type='submit' disabled={loading} className=''>
-                  {loading ? 'Đang cập nhật...' : 'Cập nhật Blog'}
+                <Button disabled={isLoading || imageLoading} type='submit'>
+                  Cập nhật
                 </Button>
               </div>
             </form>
