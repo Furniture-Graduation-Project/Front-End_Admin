@@ -47,9 +47,9 @@ const RevenueChart = () => {
   }, []);
 
   return (
-    <Card>
+    <Card className='dark:bg-'>
       <CardHeader>
-        <CardTitle>Biểu đồ diện tích thống kê danh mục </CardTitle>
+        <CardTitle className='text-black'>Biểu đồ diện tích thống kê danh mục </CardTitle>
         <CardDescription>Hiển thị tổng số lượt truy cập trong 6 tháng qua</CardDescription>
       </CardHeader>
       <CardContent>
@@ -87,9 +87,9 @@ const RevenueChart = () => {
         </ChartContainer>
       </CardContent>
       <CardFooter>
-        <div className="flex w-full items-start gap-2 text-sm">
+        <div className="flex w-full items-start gap-2 text-sm ">
           <div className="grid gap-2">
-            <div className="flex items-center gap-2 font-medium leading-none">
+            <div className="flex items-center gap-2 font-medium leading-none ">
             </div>
             <div className="flex items-center gap-2 leading-none text-muted-foreground">
               Tháng 7 - Tháng 1 Năm 2025

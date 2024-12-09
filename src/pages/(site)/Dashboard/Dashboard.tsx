@@ -72,10 +72,7 @@ const Dashboard = () => {
                       <TableCell>{order?.orderAddress || 'Không xác định'}</TableCell>
                       <TableCell>
                         {order?.createdAt
-                          ? `${new Date(order.createdAt).toLocaleDateString()} ${new Date(
-                              orders.createdAt
-                            ).toLocaleTimeString()}`
-                          : 'Không xác định'}
+                          ? `${new Date(order.createdAt).toLocaleDateString()}`: 'Không xác định'}
                       </TableCell>
                       <TableCell>{order?.totalPrice}</TableCell>
                       <TableCell>
