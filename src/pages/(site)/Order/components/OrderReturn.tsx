@@ -61,13 +61,11 @@ const OrderReturn = () => {
         })
         return
       }
-      const itemsResolved = data?.data.data.returnInfo.items.map((item: any) => {
-        return {
-          ...item,
-          productId: item.productId._id,
-          productOptionId: item.productOptionId._id
-        }
-      })
+      const itemsResolved = data?.data?.data?.returnInfo?.items.map((item: any) => ({
+        ...item,
+        productId: item.productId._id,
+        productOptionId: item.productOptionId._id
+      }))
 
       if (status == 'resolved') {
         const newStatus = {
@@ -99,7 +97,7 @@ const OrderReturn = () => {
         const resolvedItem = itemsResolved.find(
           (resolved: any) => resolved.productOptionId === orderItem.productOptionId._id
         )
-        if (resolvedItem) {
+        if (resolvedItem && resolvedItem.status != 'rejected') {
           const updatedQuantity = orderItem.quantity - resolvedItem.quantity
           return {
             ...orderItem,
@@ -114,8 +112,12 @@ const OrderReturn = () => {
           productOptionId: orderItem.productOptionId._id
         }
       })
-      const resolvedPrice = itemsResolved.reduce((total, item) => total + item.quantity * item.unitPrice, 0)
+      const resolvedPrice = itemsResolved
+        .filter((item) => item.status === 'approved')
+        .reduce((total, item) => total + item.quantity * item.unitPrice, 0)
 
+      const totalPrice = data.data.data.totalPrice - resolvedPrice
+      if (totalPrice < 0) return
       const newStatus = {
         _id: data?.data.data._id,
         items: updatedItemsOrder,
@@ -123,14 +125,13 @@ const OrderReturn = () => {
           ...data?.data.data.returnInfo,
           items: itemsResolved,
           status
-        },
-        totalPrice: data.data.data.totalPrice - resolvedPrice
+        }
       }
       finish(newStatus)
     }
   }
   const updateOrderReturn = (status: string, id: string) => {
-    if (data?.data.data.returnInfo?.dateResolved) {
+    if (data?.data.data.returnInfo?.status != 'processing' && data?.data.data.returnInfo?.status != 'pending') {
       toast({
         title: 'Cập nhật thất bại',
         description: 'Không thể cập nhật yêu cầu trả hàng sau khi đánh dấu hoàn thành !',
@@ -274,27 +275,28 @@ const OrderReturn = () => {
           </Table>
           <div className='justify-end flex mt-5'>
             <Button
-              disabled={!!data?.data.data.returnInfo?.dateResolved}
+              disabled={data?.data.data.returnInfo?.status != 'processing'}
               onClick={() => setIsModalOpen(true)}
-              className={` gap-2 ${data?.data.data.returnInfo?.status == 'processing' ? 'flex' : 'hidden'}`}
+              className={` gap-2 ${data?.data.data.returnInfo?.status == 'processing' || data?.data.data.returnInfo?.status == 'pending' ? 'flex' : 'hidden'}`}
             >
               <Check /> Hoàn thành yêu cầu
             </Button>
             <Button
               onClick={() => handleChangeStatus('returned')}
-              className={` gap-2 ${data?.data.data.returnInfo?.status == 'resolved' ? 'flex' : 'hidden'}`}
+              className={`gap-2 ${data?.data?.data?.returnInfo?.status === 'resolved' && data?.data?.data?.returnInfo?.items.some((item) => item.status === 'approved') ? 'flex' : 'hidden'}`}
             >
               <FileCheck2 /> Khách đã trả hàng
             </Button>
             <Button
               onClick={() => handleChangeStatus('refunded')}
-              className={` gap-2 ${data?.data.data.returnInfo?.status == 'returned' ? 'flex' : 'hidden'}`}
+              className={`gap-2 ${data?.data?.data?.returnInfo?.status === 'returned' && data?.data?.data?.returnInfo?.items.some((item) => item.status === 'approved') ? 'flex' : 'hidden'}`}
             >
               <FileCheck2 /> Đã hoàn tiền
             </Button>
+
             <Button
               onClick={() => handleChangeStatus('finished')}
-              className={` gap-2 ${data?.data.data.returnInfo?.status == 'refunded' ? 'flex' : 'hidden'}`}
+              className={` gap-2 ${data?.data.data.returnInfo?.status == 'refunded' || (data?.data?.data?.returnInfo?.items.some((item) => item.status !== 'approved') && data?.data.data.returnInfo?.status == 'resolved') ? 'flex' : 'hidden'}`}
             >
               <FileCheck2 /> Đóng yêu cầu
             </Button>
