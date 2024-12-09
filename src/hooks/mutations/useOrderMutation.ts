@@ -5,7 +5,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { SubmitHandler } from 'react-hook-form'
 
 type MutationQueryProps = {
-  action: 'CREATE' | 'UPDATE' | 'DELETE'
+  action: 'CREATE' | 'UPDATE' | 'DELETE' | 'FINISH_REQUEST'
 }
 
 const useOrderMutation = ({ action }: MutationQueryProps) => {
@@ -52,6 +52,8 @@ const useOrderMutation = ({ action }: MutationQueryProps) => {
         return OrderService.update(data._id, data)
       case 'DELETE':
         return OrderService.delete(data._id)
+      case 'FINISH_REQUEST':
+        return OrderService.finishRequest(data._id, data)
       default:
         return Promise.reject(new Error('Invalid action'))
     }

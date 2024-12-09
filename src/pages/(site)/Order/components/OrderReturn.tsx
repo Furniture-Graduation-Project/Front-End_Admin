@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { useSingleOrderQuery } from '@/hooks/querys/useOrderQuery'
 import { formatDate } from '@/utils/formatDate'
-import { ArrowLeft, Check, MoreHorizontal } from 'lucide-react'
+import { ArrowLeft, Check, FileCheck2, MoreHorizontal } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
 import { Table, TableBody, TableCell, TableHeader, TableRow } from '@/components/ui/table'
 import { formatCurrency } from '@/utils/formatCurrency'
@@ -23,13 +23,32 @@ const OrderReturn = () => {
   const { toast } = useToast()
   const { data } = useSingleOrderQuery(id || '')
   const { mutate } = useOrderMutation({ action: 'UPDATE' })
+  const { mutate: finish } = useOrderMutation({ action: 'FINISH_REQUEST' })
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const getStatus = (status: string) => {
     return status == 'pending' ? 'Chờ xử lý' : status == 'approved' ? 'Đã chấp nhận' : 'Đã từ chối'
   }
-  const handleFinish = () => {
-    if (data?.data.data.returnInfo && !data?.data.data.returnInfo.dateResolved) {
+  const statusText = (status: string) => {
+    switch (status) {
+      case 'pending':
+        return 'Đang chờ xử lý'
+      case 'processing':
+        return 'Đang xử lý'
+      case 'resolved':
+        return 'Đã giải quyết'
+      case 'returned':
+        return 'Đã trả lại'
+      case 'refunded':
+        return 'Đã hoàn tiền'
+      case 'finished':
+        return 'Hoàn tất'
+      default:
+        return 'Trạng thái không xác định'
+    }
+  }
+  const handleChangeStatus = (status: 'resolved' | 'finished' | 'returned' | 'refunded') => {
+    if (data?.data.data.returnInfo) {
       const pending = data?.data.data.returnInfo.items.some((item: any) => {
         return item.status == 'pending'
       })
@@ -49,27 +68,53 @@ const OrderReturn = () => {
           productOptionId: item.productOptionId._id
         }
       })
-      const updatedItemsOrder = data.data.data.items
-        .map((orderItem: any) => {
-          const resolvedItem = itemsResolved.find(
-            (resolved: any) =>
-              resolved.productId === orderItem.productId && resolved.productOptionId === orderItem.productOptionId
-          )
-          if (resolvedItem) {
-            const updatedQuantity = orderItem.quantity - resolvedItem.quantity
-            return {
-              ...orderItem,
-              quantity: updatedQuantity
-            }
+
+      if (status == 'resolved') {
+        const newStatus = {
+          _id: data?.data.data._id,
+          returnInfo: {
+            ...data?.data.data.returnInfo,
+            items: itemsResolved,
+            status,
+            dateResolved: new Date()
           }
+        }
+        mutate(newStatus)
+        setIsModalOpen(false)
+        return
+      }
+      if (status != 'finished') {
+        const newStatus = {
+          _id: data?.data.data._id,
+          returnInfo: {
+            ...data?.data.data.returnInfo,
+            items: itemsResolved,
+            status
+          }
+        }
+        mutate(newStatus)
+        return
+      }
+      const updatedItemsOrder = data.data.data.items.map((orderItem: any) => {
+        const resolvedItem = itemsResolved.find(
+          (resolved: any) => resolved.productOptionId === orderItem.productOptionId._id
+        )
+        if (resolvedItem) {
+          const updatedQuantity = orderItem.quantity - resolvedItem.quantity
           return {
             ...orderItem,
             productId: orderItem.productId._id,
-            productOptionId: orderItem.productOptionId._id
+            productOptionId: orderItem.productOptionId._id,
+            quantity: updatedQuantity
           }
-        })
-        .filter((item: any) => item.quantity > 0)
-      console.log(updatedItemsOrder)
+        }
+        return {
+          ...orderItem,
+          productId: orderItem.productId._id,
+          productOptionId: orderItem.productOptionId._id
+        }
+      })
+      const resolvedPrice = itemsResolved.reduce((total, item) => total + item.quantity * item.unitPrice, 0)
 
       const newStatus = {
         _id: data?.data.data._id,
@@ -77,11 +122,11 @@ const OrderReturn = () => {
         returnInfo: {
           ...data?.data.data.returnInfo,
           items: itemsResolved,
-          dateResolved: new Date()
-        }
+          status
+        },
+        totalPrice: data.data.data.totalPrice - resolvedPrice
       }
-      mutate(newStatus)
-      setIsModalOpen(false)
+      finish(newStatus)
     }
   }
   const updateOrderReturn = (status: string, id: string) => {
@@ -113,7 +158,8 @@ const OrderReturn = () => {
         _id: data?.data.data._id,
         returnInfo: {
           ...data?.data.data.returnInfo,
-          items
+          items,
+          status: 'processing'
         }
       }
       mutate(newStatus)
@@ -135,10 +181,10 @@ const OrderReturn = () => {
         <CardContent className='space-y-2'>
           <h2>
             <strong>Trạng thái :</strong>{' '}
-            {data?.data.data.returnInfo?.dateResolved ? (
-              <span className='text-green-500'>Đã giải quyết</span>
+            {data?.data.data.returnInfo?.status ? (
+              <span>{statusText(data.data.data.returnInfo?.status)}</span>
             ) : (
-              <span className='text-red-500'>Chờ giải quyết</span>
+              <span>Chưa có trạng thái</span>
             )}
           </h2>
 
@@ -230,9 +276,27 @@ const OrderReturn = () => {
             <Button
               disabled={!!data?.data.data.returnInfo?.dateResolved}
               onClick={() => setIsModalOpen(true)}
-              className='flex gap-2'
+              className={` gap-2 ${data?.data.data.returnInfo?.status == 'processing' ? 'flex' : 'hidden'}`}
             >
               <Check /> Hoàn thành yêu cầu
+            </Button>
+            <Button
+              onClick={() => handleChangeStatus('returned')}
+              className={` gap-2 ${data?.data.data.returnInfo?.status == 'resolved' ? 'flex' : 'hidden'}`}
+            >
+              <FileCheck2 /> Khách đã trả hàng
+            </Button>
+            <Button
+              onClick={() => handleChangeStatus('refunded')}
+              className={` gap-2 ${data?.data.data.returnInfo?.status == 'returned' ? 'flex' : 'hidden'}`}
+            >
+              <FileCheck2 /> Đã hoàn tiền
+            </Button>
+            <Button
+              onClick={() => handleChangeStatus('finished')}
+              className={` gap-2 ${data?.data.data.returnInfo?.status == 'refunded' ? 'flex' : 'hidden'}`}
+            >
+              <FileCheck2 /> Đóng yêu cầu
             </Button>
           </div>
           <AlertAcitonDialog
@@ -240,7 +304,7 @@ const OrderReturn = () => {
             description='Trạng thái của sản phẩm hoàn trả sẽ không thể thay đổi sau khi đánh dấu hoàn thành !'
             isOpen={isModalOpen}
             setIsOpen={setIsModalOpen}
-            handleAciton={handleFinish}
+            handleAciton={() => handleChangeStatus('resolved')}
             className='dark:bg-gray-800 dark:text-white'
           />
         </CardContent>

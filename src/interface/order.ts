@@ -35,6 +35,8 @@ export interface IOrder {
     date?: Date
   }[]
   returnInfo?: {
+    status: 'pending' | 'processing' | 'resolved' | 'returned' | 'refunded' | 'finished'
+    response : string
     reason: string
     items: IItemReturnOrder[]
     dateRequested: Date

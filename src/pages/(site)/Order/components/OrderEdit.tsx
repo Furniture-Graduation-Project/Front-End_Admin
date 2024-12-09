@@ -88,7 +88,11 @@ const OrderEdit = () => {
     }
   }
   const hanleChangePayment = async () => {
-    if (orderData?.data?.data._id && orderData?.data?.data.status !== 'received') {
+    if (
+      orderData?.data?.data._id &&
+      orderData?.data?.data.status !== 'received' &&
+      orderData?.data?.data.payment?.paymentStatus !== 'paid'
+    ) {
       if (
         orderData?.data?.data.status == 'unpaid' &&
         paymentStatus == 'paid' &&
