@@ -18,7 +18,7 @@ export const useProductItemMutation = (key: ProductItemMutation) => {
           return await ProductItemService.delete(params.id)
         case 'GET_PRODUCT_BY_ID':
           if (!params.id) throw new Error('Cần có ID để nhận sản phẩm')
-          return await ProductItemService.getProductById(params.id)
+          return await ProductItemService.getByProductId(params.id)
         default:
           throw new Error('Khóa không hợp lệ')
       }

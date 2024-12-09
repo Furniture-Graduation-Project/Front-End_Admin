@@ -10,8 +10,6 @@ const AccountPage = () => {
   const [pagination, setPagination] = useState<PaginationState>(DEFAULT_PAGE_SIZE)
   const { data, isLoading, isError, refetch } = useAccountQueryLimited(pagination)
 
-  console.log(data)
-
   const { table } = useDataTable({
     columns: columns,
     data: data?.data || [],

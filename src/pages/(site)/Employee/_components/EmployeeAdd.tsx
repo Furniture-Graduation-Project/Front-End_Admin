@@ -187,9 +187,9 @@ const AddEmployeeForm = () => {
                     {...field}
                     className='border p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100'
                   >
-                    <option value='product'>Product</option>
-                    <option value='support'>Support</option>
-                    <option value='order'>Order</option>
+                    <option value='product'>Nhân viên kho</option>
+                    <option value='support'>Nhân viên hỗ trợ</option>
+                    <option value='order'>Nhân viên bán hàng</option>
                   </select>
                 </FormControl>
                 <FormMessage />

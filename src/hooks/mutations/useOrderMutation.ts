@@ -5,7 +5,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { SubmitHandler } from 'react-hook-form'
 
 type MutationQueryProps = {
-  action: 'CREATE' | 'UPDATE' | 'DELETE'
+  action: 'CREATE' | 'UPDATE' | 'DELETE' | 'FINISH_REQUEST'
 }
 
 const useOrderMutation = ({ action }: MutationQueryProps) => {
@@ -24,25 +24,24 @@ const useOrderMutation = ({ action }: MutationQueryProps) => {
         break
       case 'UPDATE':
         toast({
-          title: 'Cập nhật đơn hàng thành công!'
-        })
-        break
-      case 'DELETE':
-        toast({
-          title: 'Xóa đơn hàng thành công!'
+          title: 'Thành công!',
+          description: `Đơn hàng đã được cập nhật thành công.`,
+          variant: 'default'
         })
         break
     }
   }
 
   const handleError = (error: any) => {
-    const message = error?.response?.data?.message || 'Có lỗi xảy ra!'
+    const message = error?.response?.data?.message || 'Có lỗi xảy ra khi cập nhật đơn hàng !'
     toast({
       title: 'Có lỗi xảy ra!',
       description: message,
       variant: 'destructive'
     })
-    console.log('[ORDER]', error)
+    queryClient.invalidateQueries({
+      queryKey: ['ORDER']
+    })
   }
 
   const mutationFn = async (data: any) => {
@@ -53,6 +52,8 @@ const useOrderMutation = ({ action }: MutationQueryProps) => {
         return OrderService.update(data._id, data)
       case 'DELETE':
         return OrderService.delete(data._id)
+      case 'FINISH_REQUEST':
+        return OrderService.finishRequest(data._id, data)
       default:
         return Promise.reject(new Error('Invalid action'))
     }
