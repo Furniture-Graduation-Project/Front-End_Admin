@@ -59,6 +59,8 @@ export const OrderService = {
   getLimited: async (pagination: {
     pageIndex: number
     pageSize: number
+    sort? : 'createdAt'
+    order? :'desc'
   }): Promise<AxiosResponse<IApiResponse<IOrder[]>>> => {
     try {
       const response: AxiosResponse<IApiResponse<IOrder[]>> = await axiosInstance.get(
@@ -97,5 +99,18 @@ export const OrderService = {
     } catch (error) {
       throw error
     }
+  },
+  getLatestOrders: async (): Promise<AxiosResponse<IApiResponse<IOrder[]>>> => {
+    try {
+      const response: AxiosResponse<IApiResponse<IOrder[]>> = await axiosInstance.get(
+        `${API}/limited?page=1&limit=5&sort=-createdAt`  // Sắp xếp theo thời gian tạo (mới nhất trước)
+      )
+      return response
+    } catch (error) {
+      console.error('Lỗi khi lấy 5 đơn hàng mới nhất:', error)
+      throw error
+    }
   }
 }
+
+

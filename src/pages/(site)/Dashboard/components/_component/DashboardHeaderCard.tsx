@@ -18,10 +18,10 @@ const DashboardHeaderCard = ({ data, period, type }: { data: any; period: string
   console.log(type)
 
   return (
-    <div className='bg-slate-100 rounded-lg p-4 flex flex-col justify-between h-[161px]'>
+    <div className='dark:bg-black bg-slate-100 rounded-lg p-4 flex flex-col justify-between h-[161px]'>
       <div className='flex items-center'>
         <div className='flex-grow'>
-          <p className='text-[16px]'>Total User</p>
+          <p className='text-[16px]'>Tổng số người dùng</p>
           <p className='text-[20px] font-bold mt-4'>
             {getTitle(period)} nay : {type != 'revenue' ? data?.current : formatCurrency(data?.current)}
           </p>
