@@ -46,6 +46,16 @@ export const OrderService = {
     }
   },
 
+  finishRequest: async (id: string, data: Partial<IOrder>): Promise<AxiosResponse<IApiResponse<IOrder>>> => {
+    try {
+      const response: AxiosResponse<IApiResponse<IOrder>> = await axiosInstance.put(`${API}/return/${id}`, data)
+      return response
+    } catch (error) {
+      console.error(`Lỗi khi cập nhật đơn hàng với ID ${id}:`, error)
+      throw error
+    }
+  },
+
   delete: async (id: string): Promise<AxiosResponse<IApiResponse<void>>> => {
     try {
       const response: AxiosResponse<IApiResponse<void>> = await axiosInstance.delete(`${API}/${id}`)

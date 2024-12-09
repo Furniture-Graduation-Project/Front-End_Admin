@@ -143,7 +143,7 @@ const VoucherAdd: React.FC = () => {
           </div>
         </div>
 
-        <Button type='submit' variant='default' className='mt-4 bg-blue-500 text-white hover:bg-blue-600'>
+        <Button type='submit' variant='default' >
           <Plus size={18} />
           <span className='ml-2'>Add Voucher</span>
         </Button>
