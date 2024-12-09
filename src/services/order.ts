@@ -69,8 +69,8 @@ export const OrderService = {
   getLimited: async (pagination: {
     pageIndex: number
     pageSize: number
-    sort?: 'createdAt'
-    order?: 'desc'
+    sort? : 'createdAt'
+    order? :'desc'
   }): Promise<AxiosResponse<IApiResponse<IOrder[]>>> => {
     try {
       const response: AxiosResponse<IApiResponse<IOrder[]>> = await axiosInstance.get(
@@ -113,7 +113,7 @@ export const OrderService = {
   getLatestOrders: async (): Promise<AxiosResponse<IApiResponse<IOrder[]>>> => {
     try {
       const response: AxiosResponse<IApiResponse<IOrder[]>> = await axiosInstance.get(
-        `${API}/limited?page=1&limit=5&sort=-createdAt` // Sắp xếp theo thời gian tạo (mới nhất trước)
+        `${API}/limited?page=1&limit=5&sort=-createdAt`  // Sắp xếp theo thời gian tạo (mới nhất trước)
       )
       return response
     } catch (error) {
@@ -122,3 +122,5 @@ export const OrderService = {
     }
   }
 }
+
+
