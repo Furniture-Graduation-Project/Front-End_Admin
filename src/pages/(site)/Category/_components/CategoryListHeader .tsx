@@ -21,10 +21,14 @@ const CategoryListHeader = ({
 }) => {
   const pageSizeOptions: number[] = [10, 20, 30, 40, 50]
 
+  const columnDisplayNames: Record<string, string> = {
+    categoryName: 'Tên danh mục',
+    description: 'Mô tả'
+  }
+
   return (
     <CardHeader className='grid grid-cols-2 sm:grid-cols-3 p-3'>
-      <div className='flex items-center space-x-2'> 
-      </div>
+      <div className='flex items-center space-x-2'></div>
       <Input
         placeholder='Tìm kiếm theo tên danh mục...'
         value={(table.getColumn('categoryName')?.getFilterValue() as string) ?? ''}
@@ -56,7 +60,7 @@ const CategoryListHeader = ({
                   checked={column.getIsVisible()}
                   onCheckedChange={(value) => column.toggleVisibility(!!value)}
                 >
-                  {column.id}
+                  {columnDisplayNames[column.id] || column.id}
                 </DropdownMenuCheckboxItem>
               )
             })}

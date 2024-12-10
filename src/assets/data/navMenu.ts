@@ -42,12 +42,12 @@ const navMenu = {
       icon: Anvil,
       roles: ['admin', 'product']
     },
-    {
-      title: 'Nhắn Tin',
-      url: '/conversation',
-      icon: Mails,
-      roles: ['admin', 'support']
-    },
+    // {
+    //   title: 'Nhắn Tin',
+    //   url: '/conversation',
+    //   icon: Mails,
+    //   roles: ['admin', 'support']
+    // },
     {
       title: 'Đơn Hàng',
       url: '/order',
@@ -71,13 +71,13 @@ const navMenu = {
       url: '/blog',
       icon: Newspaper,
       roles: ['admin', 'support']
-    },
-    {
-      title: 'Mã giảm giá',
-      url: '/voucher',
-      icon: TicketCheck,
-      roles: ['admin', 'product']
     }
+    // {
+    //   title: 'Mã giảm giá',
+    //   url: '/voucher',
+    //   icon: TicketCheck,
+    //   roles: ['admin', 'product']
+    // }
   ]
 }
 

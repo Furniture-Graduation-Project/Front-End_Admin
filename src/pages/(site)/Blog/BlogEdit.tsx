@@ -115,7 +115,7 @@ const BlogEdit = () => {
   return (
     <div className='bg-[#F5F6FA] dark:bg-gray-900 min-h-screen'>
       <div className='p-4 md:p-10'>
-        <h1 className='text-2xl font-bold mb-6 dark:text-white'>Chỉnh sửa Blog</h1>
+        <h1 className='text-2xl font-bold mb-6 dark:text-white'>Chỉnh sửa bài viết</h1>
         <div className='bg-white dark:bg-gray-800 rounded-lg p-6 shadow-md'>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
@@ -150,7 +150,7 @@ const BlogEdit = () => {
                     <FormControl>
                       <Input
                         disabled={isLoading}
-                        placeholder='Nhập tiêu đề blog'
+                        placeholder='Nhập tiêu đề bài viết'
                         {...field}
                         className='dark:bg-gray-700 dark:text-white'
                       />
@@ -188,11 +188,11 @@ const BlogEdit = () => {
                 control={form.control}
                 render={({ field }) => (
                   <FormItem>
-                    <Label className='font-bold dark:text-white'>Tags</Label>
+                    <Label className='font-bold dark:text-white'>Nhãn</Label>
                     <FormControl>
                       <Input
                         disabled={isLoading}
-                        placeholder='Nhập tags (phân cách bằng dấu phẩy)'
+                        placeholder='Nhập nhãn (phân cách bằng dấu phẩy)'
                         {...field}
                         className='dark:bg-gray-700 dark:text-white'
                       />
@@ -235,14 +235,6 @@ const BlogEdit = () => {
               />
 
               <div className='flex justify-end space-x-4'>
-                <Button
-                  type='button'
-                  variant='outline'
-                  onClick={() => navigate('/blog')}
-                  className='dark:bg-gray-700 dark:text-white'
-                >
-                  Hủy
-                </Button>
                 <Button disabled={isLoading || imageLoading} type='submit'>
                   Cập nhật
                 </Button>

@@ -19,10 +19,12 @@ const AccountPage = () => {
     setPagination
   })
   return (
-    <div>
-      <h1 className='text-[32px] font-semibold'>Danh sách tài khoản người dùng</h1>
-      <DataTableCustom table={table} columns={columns} isLoading={isLoading} isError={isError} refetch={refetch} />
-    </div>
+    <>
+      <h1 className='text-[32px] font-semibold dark:text-gray-100'>Danh sách tài khoản người dùng</h1>
+      <div className='w-full mt-5 bg-white dark:bg-gray-800 rounded-xl p-4'>
+        <DataTableCustom table={table} columns={columns} isLoading={isLoading} isError={isError} refetch={refetch} />
+      </div>
+    </>
   )
 }
 

@@ -128,6 +128,7 @@ const TopBar = () => {
         isOpen={open}
         setIsOpen={setOpen}
         handleAciton={() => mutate(undefined)}
+        className='dark:bg-gray-800 dark:text-white'
       />
     </header>
   )
