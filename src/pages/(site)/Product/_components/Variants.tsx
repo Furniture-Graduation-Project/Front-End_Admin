@@ -153,7 +153,7 @@ const AddVariants: FC<AddVariantsProps> = ({ productId, setVariantChange }) => {
             variant: 'success',
             duration: 3000
           })
-          setVariantChange(null)
+          setVariantChange(Date.now().toString())
         }
       } catch (error) {
         toast({

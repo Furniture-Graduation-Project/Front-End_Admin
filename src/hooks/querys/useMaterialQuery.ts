@@ -1,14 +1,14 @@
 import { DEFAULT_PAGE_SIZE } from '@/constants/pagination'
-import { IMaterialDataResponse } from '@/interface/material'
+import { IMaterial } from '@/interface/material'
 import { MaterialService } from '@/services/material'
 import { useQuery } from '@tanstack/react-query'
 
 export const useSingleMaterialQuery = (id: string) => {
   const { data, ...rest } = useQuery({
     queryKey: ['MATERIAL', id],
-    queryFn: async (): Promise<IMaterialDataResponse> => {
+    queryFn: async (): Promise<IMaterial> => {
       const response = await MaterialService.getMaterialById(id)
-      return response
+      return response.data
     }
   })
 
