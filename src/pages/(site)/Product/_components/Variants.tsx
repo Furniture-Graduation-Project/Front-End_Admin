@@ -226,6 +226,7 @@ const AddVariants: FC<AddVariantsProps> = ({ productId, setVariantChange }) => {
     }
     setImage('')
     setPreview('')
+
     const isAnyBasicProductExists = productItems.some((item) => item.variants.length === 0 && item.status !== 'deleted')
     if (isAnyBasicProductExists && !isBasicProduct) {
       toast({
@@ -246,29 +247,33 @@ const AddVariants: FC<AddVariantsProps> = ({ productId, setVariantChange }) => {
       })
       return
     }
-    const isExactDuplicate = productItems.some((item) => {
-      const sortedExistingVariants = [...item.variants].sort((a, b) => a.variant.localeCompare(b.variant))
-      const sortedInputVariants = [...variantInputs].sort((a, b) => a.variant.localeCompare(b.variant))
-      return (
-        sortedExistingVariants.length === sortedInputVariants.length &&
-        sortedExistingVariants.every(
-          (existingVariant, idx) =>
-            sortedInputVariants[idx] &&
-            existingVariant.variant === sortedInputVariants[idx].variant &&
-            existingVariant.value === sortedInputVariants[idx].value
-        ) &&
-        item.productId === productId
-      )
-    })
-    if (isExactDuplicate) {
-      toast({
-        title: 'Lỗi',
-        description: 'Sản phẩm biến thể đã tồn tại.',
-        variant: 'destructive',
-        duration: 3000
+
+    if (!isEditMode) {
+      const isExactDuplicate = productItems.some((item) => {
+        const sortedExistingVariants = [...item.variants].sort((a, b) => a.variant.localeCompare(b.variant))
+        const sortedInputVariants = [...variantInputs].sort((a, b) => a.variant.localeCompare(b.variant))
+        return (
+          sortedExistingVariants.length === sortedInputVariants.length &&
+          sortedExistingVariants.every(
+            (existingVariant, idx) =>
+              sortedInputVariants[idx] &&
+              existingVariant.variant === sortedInputVariants[idx].variant &&
+              existingVariant.value === sortedInputVariants[idx].value
+          ) &&
+          item.productId === productId
+        )
       })
-      return
+      if (isExactDuplicate) {
+        toast({
+          title: 'Lỗi',
+          description: 'Sản phẩm biến thể đã tồn tại.',
+          variant: 'destructive',
+          duration: 3000
+        })
+        return
+      }
     }
+
     try {
       if (isEditMode && currentItemId) {
         const currentItem = productItems.find((item) => item._id === currentItemId)
