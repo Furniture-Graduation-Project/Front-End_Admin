@@ -8,7 +8,7 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import useAccountMutation from '@/hooks/mutations/useAccountMutation'
-import { MoreHorizontal, Trash2, UserSearch } from 'lucide-react'
+import { MoreHorizontal, UserSearch } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { UserColumn } from './columns'
@@ -69,16 +69,12 @@ export const CellAction = ({ data }: CellActionProps) => {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align='end'>
-          <DropdownMenuLabel className='font-bold'>Hành đông</DropdownMenuLabel>
+          <DropdownMenuLabel className='font-bold'>Hành động</DropdownMenuLabel>
           <DropdownMenuItem>
             <Link to={`/account/${data._id}`} className='flex items-center'>
               <UserSearch className='mr-2 h-4 w-4' />
               Thông tin
             </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setOpen(true)}>
-            <Trash2 className='mr-2 h-4 w-4 text-red-500' />
-            Xóa
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

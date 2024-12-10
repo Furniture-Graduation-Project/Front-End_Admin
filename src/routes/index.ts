@@ -110,33 +110,33 @@ const routes: IRoute[] = [
       }
     ]
   },
-  {
-    path: '/conversation',
-    component: Conversation,
-    layout: MainLayout,
-    children: [
-      {
-        path: '',
-        component: MessageList,
-        guard: () => useCheckPermissions(['support', 'admin'])
-      },
-      {
-        path: 'texting/:id',
-        component: MessageTexting,
-        guard: () => useCheckPermissions(['support', 'admin'])
-      }
-    ]
-  },
-  {
-    path: '/voucher',
-    component: Voucher,
-    layout: MainLayout,
-    children: [
-      { path: '', component: VoucherList, guard: () => useCheckPermissions(['product', 'admin']) },
-      { path: 'add', component: VoucherAdd, guard: () => useCheckPermissions(['product', 'admin']) },
-      { path: ':id/edit', component: VoucherEdit, guard: () => useCheckPermissions(['product', 'admin']) }
-    ]
-  },
+  // {
+  //   path: '/conversation',
+  //   component: Conversation,
+  //   layout: MainLayout,
+  //   children: [
+  //     {
+  //       path: '',
+  //       component: MessageList,
+  //       guard: () => useCheckPermissions(['support', 'admin'])
+  //     },
+  //     {
+  //       path: 'texting/:id',
+  //       component: MessageTexting,
+  //       guard: () => useCheckPermissions(['support', 'admin'])
+  //     }
+  //   ]
+  // },
+  // {
+  //   path: '/voucher',
+  //   component: Voucher,
+  //   layout: MainLayout,
+  //   children: [
+  //     { path: '', component: VoucherList, guard: () => useCheckPermissions(['product', 'admin']) },
+  //     { path: 'add', component: VoucherAdd, guard: () => useCheckPermissions(['product', 'admin']) },
+  //     { path: ':id/edit', component: VoucherEdit, guard: () => useCheckPermissions(['product', 'admin']) }
+  //   ]
+  // },
   {
     path: '/order',
     component: OrderPage,
