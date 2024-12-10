@@ -14,8 +14,12 @@ const FormSchema = z.object({
   fullName: z.string().min(1, { message: 'Tên đầy đủ không được để trống.' }),
   username: z.string().min(1, { message: 'Tên đăng nhập không được để trống.' }),
   password: z.string().min(6, { message: 'Mật khẩu phải ít nhất 6 ký tự.' }),
-  phoneNumber: z.string().optional(),
-  address: z.string().optional(),
+  phoneNumber: z
+    .string()
+    .length(10, { message: 'Số điện thoại phải đúng 10 ký tự.' })
+    .regex(/^[0-9]+$/, { message: 'Số điện thoại chỉ được chứa các chữ số.' })
+    .optional(),
+  address: z.string().min(1, { message: 'Địa chỉ không được để trống.' }).optional(),
   role: z.enum(['product', 'support', 'order'])
 })
 
