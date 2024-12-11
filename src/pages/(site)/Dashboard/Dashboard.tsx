@@ -3,10 +3,10 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import RevenueChart from './components/DashboardRevenueChart';
-// import { SalesChart } from './components/DashboardSaleChart';
 import DashboardHeader from './components/DashboardHeader';
 import { useLatestOrders } from '@/hooks/querys/useOrderQuery';
 import { Link } from 'react-router-dom';
+import DashboardPieChart from './components/DashboardpieChart';
 
 const Dashboard = () => {
   // Lấy dữ liệu từ custom hook
@@ -20,12 +20,12 @@ const Dashboard = () => {
       </div>
 
       {/* Chi tiết bán hàng */}
-      {/* <div className='bg-white ml-5 mr-5 rounded-lg mt-7 dark:bg-gray-800'>
+      <div className='bg-white ml-5 mr-5 rounded-lg mt-7 dark:bg-gray-800'>
         <p className='p-5 font-bold text-[24px]'>Chi tiết bán hàng</p>
         <div className='p-5'>
-          <SalesChart />
+          <DashboardPieChart />
         </div>
-      </div> */}
+      </div>
 
       {/* Doanh thu */}
       <div className='bg-white ml-5 mr-5 rounded-lg mt-7 dark:bg-gray-800'>
