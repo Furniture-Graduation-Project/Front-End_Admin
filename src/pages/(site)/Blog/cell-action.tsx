@@ -63,27 +63,21 @@ export const CellAction = ({ data }: CellActionProps) => {
       <DropdownMenu open={isDropdown} onOpenChange={setIsDropdown}>
         <DropdownMenuTrigger asChild>
           <Button variant={'ghost'} className='h-8 w-8 p-0'>
-            <span className='sr-only'>Open menu</span>
+            <span className='sr-only'>Mở menu</span>
             <MoreHorizontal className='h-4 w-4' />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align='end'>
-          <DropdownMenuLabel className='font-bold'>Actions</DropdownMenuLabel>
-          <DropdownMenuItem>
-            <Link to={`/blog/${data._id}`} className='flex items-center'>
-              <FileText className='mr-2 h-4 w-4' />
-              View
-            </Link>
-          </DropdownMenuItem>
+          <DropdownMenuLabel className='font-bold'>Hành động</DropdownMenuLabel>
           <DropdownMenuItem>
             <Link to={`/blog/edit/${data._id}`} className='flex items-center'>
               <Edit2 className='mr-2 h-4 w-4' />
-              Edit
+              Chỉnh sửa
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem onSelect={() => setIsDropdown(false)} onClick={() => setOpen(true)}>
             <Trash2 className='mr-2 h-4 w-4 text-red-500' />
-            Delete
+            Xóa
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
