@@ -12,13 +12,13 @@ export const useSingleOrderQuery = (id: string) => {
   return { data, ...rest }
 }
 
-export const useMultipleOrderQuery = (pagination?: any) => {
+export const useMultipleOrderQuery = (pagination?: any, params?: any) => {
   const { pageIndex = DEFAULT_PAGE_SIZE.pageIndex, pageSize = DEFAULT_PAGE_SIZE.pageSize } = pagination || {}
   const { data, ...rest } = useQuery({
-    queryKey: ['ORDER', pageIndex, pageSize],
+    queryKey: ['ORDER', pageIndex, pageSize, params],
     queryFn: async () => {
       if (pagination) {
-        const response = await OrderService.getLimited({ pageIndex, pageSize })
+        const response = await OrderService.getLimited({ pageIndex, pageSize }, params)
         return response.data
       } else {
         const response = await OrderService.getAll()
@@ -58,24 +58,18 @@ export const useLatestOrders = () => {
           pageIndex: 0,
           pageSize: 5,
           sort: 'createdAt',
-          order: 'desc',
-        });
-        console.log(response.data.data);  // Log phản hồi từ API để kiểm tra thứ tự đơn hàng
-        return response.data.data;
+          order: 'desc'
+        })
+        console.log(response.data.data)
+        return response.data.data
       } catch (error) {
-        const fallbackResponse = await OrderService.getAll();
+        const fallbackResponse = await OrderService.getAll()
         const latestOrders = fallbackResponse.data
-          .sort(
-            (a: any, b: any) =>
-              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-          )
-          .slice(0, 5);
-        return latestOrders;
+          .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+          .slice(0, 5)
+        return latestOrders
       }
     }
-    
-  });
-  return { data, isLoading, isError, ...rest }; // Trả về tất cả các thông tin
-};
-
-
+  })
+  return { data, isLoading, isError, ...rest }
+}
