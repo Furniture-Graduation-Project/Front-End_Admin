@@ -92,7 +92,7 @@ const RevenueChart = () => {
             <div className="flex items-center gap-2 font-medium leading-none ">
             </div>
             <div className="flex items-center gap-2 leading-none text-muted-foreground">
-              Tháng 7 - Tháng 1 Năm 2025
+              Tháng 7 - Tháng 12 Năm 2024
             </div>
           </div>
         </div>
