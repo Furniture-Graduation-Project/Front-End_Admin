@@ -356,7 +356,7 @@ const OrderEdit = () => {
             {orderData?.data?.data?.totalPrice && formatCurrency(orderData?.data?.data?.totalPrice)}
           </h2>
           <h3 className='text-lg uppercase' id='idOrder'>
-            Mã đơn hàng: <span>{orderData?.data?.data?._id}</span>
+            Mã đơn hàng: <span>{orderData?.data?.data?.code}</span>
           </h3>
         </div>
       </div>
