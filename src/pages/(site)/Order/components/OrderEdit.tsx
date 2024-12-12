@@ -88,41 +88,45 @@ const OrderEdit = () => {
     }
   }
   const hanleChangePayment = async () => {
-    if (orderData?.data?.data._id && orderData?.data?.data.status !== 'received') {
-      if (
-        orderData?.data?.data.status == 'unpaid' &&
-        paymentStatus == 'paid' &&
-        orderData?.data?.data.payment?.paymentStatus == 'unpaid'
-      ) {
-        const newStatus = {
-          _id: orderData?.data?.data._id,
-          status: 'pending',
-          payment: {
-            ...orderData?.data?.data.payment,
-            paymentStatus: 'paid'
-          }
-        }
-        mutate(newStatus)
-        setIsModalOpen(false)
-        return
-      } else {
-        const newStatus = {
-          _id: orderData?.data?.data._id,
-          payment: {
-            ...orderData?.data?.data.payment,
-            paymentStatus: paymentStatus
-          }
-        }
-        mutate(newStatus)
-        setIsModalOpen(false)
-      }
-    } else {
+    if (
+      orderData?.data?.data._id &&
+      orderData?.data?.data.status == 'received' &&
+      orderData?.data?.data.payment?.paymentStatus == 'paid'
+    ) {
       setIsModalOpen(false)
       toast({
         title: 'Cập nhật thất bại',
         description: 'Không thể thay đổi trạng thái thanh toán đơn hàng đã hoàn thành !',
         variant: 'destructive'
       })
+      return
+    }
+    if (
+      orderData?.data?.data.status == 'unpaid' &&
+      paymentStatus == 'paid' &&
+      orderData?.data?.data.payment?.paymentStatus == 'unpaid'
+    ) {
+      const newStatus = {
+        _id: orderData?.data?.data._id,
+        status: 'pending',
+        payment: {
+          ...orderData?.data?.data.payment,
+          paymentStatus: 'paid'
+        }
+      }
+      mutate(newStatus)
+      setIsModalOpen(false)
+      return
+    } else {
+      const newStatus = {
+        _id: orderData?.data?.data._id,
+        payment: {
+          ...orderData?.data?.data.payment,
+          paymentStatus: paymentStatus
+        }
+      }
+      mutate(newStatus)
+      setIsModalOpen(false)
     }
   }
   useEffect(() => {
@@ -352,7 +356,7 @@ const OrderEdit = () => {
             {orderData?.data?.data?.totalPrice && formatCurrency(orderData?.data?.data?.totalPrice)}
           </h2>
           <h3 className='text-lg uppercase' id='idOrder'>
-            Mã đơn hàng: <span>{orderData?.data?.data?._id}</span>
+            Mã đơn hàng: <span>{orderData?.data?.data?.code}</span>
           </h3>
         </div>
       </div>

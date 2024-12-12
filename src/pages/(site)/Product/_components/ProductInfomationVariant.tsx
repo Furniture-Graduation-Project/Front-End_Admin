@@ -60,6 +60,9 @@ const ProductInfomationVariant = ({ productId }: { productId?: string }) => {
                 <p>
                   <span className='font-bold'>SKU:</span> {item.SKU}
                 </p>
+                <p>
+                  <span className='font-bold'>Trạng thái:</span> {item.status == 'active' ? 'Đang bán' : 'Đã xóa'}
+                </p>
               </div>
             </div>
           </div>

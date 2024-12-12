@@ -2,15 +2,20 @@ import { useEffect } from 'react'
 import { SocketService } from '@/services/socket'
 import { toast } from 'sonner'
 import { useAuth } from '@/context/AuthContext'
+import { useNavigate } from 'react-router-dom'
 
 const useListenOrder = () => {
   const { user } = useAuth()
+  const naviagte = useNavigate()
   const handleOrderEvent = (data: any) => {
     toast('Order received', {
-      description: 'Order by : ' + data.orderName,
+      icon: '📝',
+      description: 'Đặt bới khách hàng : ' + data.orderName,
       action: {
-        label: 'Undo',
-        onClick: () => console.log('Undo action clicked')
+        label: 'Chi tiết',
+        onClick: () => {
+          naviagte(`/order/edit/${data._id}`)
+        }
       }
     })
   }

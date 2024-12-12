@@ -1,8 +1,6 @@
 import { ColumnDef } from '@tanstack/react-table'
 import { CellAction } from './cell-action'
 import { IBlog } from '@/interface/blog'
-import { format } from 'date-fns'
-import { vi } from 'date-fns/locale'
 import { formatDate } from '@/utils/formatDate'
 
 export const columns: ColumnDef<IBlog>[] = [

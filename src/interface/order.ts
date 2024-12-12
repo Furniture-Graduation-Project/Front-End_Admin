@@ -4,6 +4,7 @@ import { IShipment } from './shipment'
 
 export interface IOrder {
   _id: string
+  code : string
   userId: string
   orderName: string
   orderPhone: string
@@ -21,8 +22,6 @@ export interface IOrder {
     | 'delivered'
     | 'received'
     | 'cancelled'
-    | 'returned'
-    | 'refunded'
   statusHistory: {
     status:
       | 'unpaid'
@@ -33,11 +32,11 @@ export interface IOrder {
       | 'delivered'
       | 'received'
       | 'cancelled'
-      | 'returned'
-      | 'refunded'
     date?: Date
   }[]
   returnInfo?: {
+    status: 'pending' | 'processing' | 'resolved' | 'returned' | 'refunded' | 'finished'
+    response : string
     reason: string
     items: IItemReturnOrder[]
     dateRequested: Date
