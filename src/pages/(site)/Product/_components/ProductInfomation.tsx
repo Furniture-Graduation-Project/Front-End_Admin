@@ -2,6 +2,7 @@ import { useParams } from 'react-router-dom'
 import { useSingleProductQuery } from '@/hooks/querys/useProductQuery'
 import { Skeleton } from '@/components/ui/skeleton'
 import ProductInfomationVariant from './ProductInfomationVariant'
+import ProductDetailReviews from './ProductDetailReviews'
 
 const ProductInfo = () => {
   const { id } = useParams<{ id: string }>()
@@ -83,6 +84,7 @@ const ProductInfo = () => {
           </div>
         </div>
         <ProductInfomationVariant productId={data?.data.data._id} />
+        <ProductDetailReviews dataId={data?.data.data._id || ''} />
       </div>
     </div>
   )
