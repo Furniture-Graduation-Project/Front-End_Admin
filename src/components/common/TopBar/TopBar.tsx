@@ -53,7 +53,7 @@ const TopBar = () => {
               )}
             </Button>
             <DarkMode />
-            <Button
+            {/* <Button
               variant='ghost'
               className='p-2 text-black dark:text-slate-200 focus:outline-none hover:text-blue-500 relative'
             >
@@ -80,7 +80,7 @@ const TopBar = () => {
                   </span>
                 </span>
               </div>
-            </Button>
+            </Button> */}
           </div>
 
           <div className='h-full flex items-center space-x-2 bg-[#F5F6FA] dark:bg-slate-800 px-4 py-[10px]'>
@@ -128,6 +128,7 @@ const TopBar = () => {
         isOpen={open}
         setIsOpen={setOpen}
         handleAciton={() => mutate(undefined)}
+        className='dark:bg-gray-800 dark:text-white'
       />
     </header>
   )

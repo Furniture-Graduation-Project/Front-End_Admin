@@ -43,7 +43,7 @@ const BlogList = () => {
         </Link>
       </div>
       <div className='w-full mt-5 dark:p-5 bg-white dark:bg-gray-800 rounded-xl'>
-        <div className='mr-5 pt-5'>
+        {/* <div className='mr-5 pt-5'>
           <Input
             type='text'
             placeholder='Tìm kiếm theo tên tác giả...'
@@ -51,7 +51,7 @@ const BlogList = () => {
             onChange={handleSearch}
             className='border p-2 rounded mb-5 w-1/3 ml-auto dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600'
           />
-        </div>
+        </div> */}
         {/* {isLoading && <p className='text-gray-700 dark:text-gray-300'>Đang tải dữ liệu...</p>} */}
         {/* {isError && <p className='text-red-600'>Đã có lỗi xảy ra khi lấy dữ liệu.</p>} */}
         <DataTableCustom columns={columns} isError={isError} isLoading={isLoading} refetch={refetch} table={table} />
