@@ -3,6 +3,7 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from '@/component
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Textarea } from '@/components/ui/textarea'
 import { useAuth } from '@/context/AuthContext'
 import { toast } from '@/hooks/use-toast'
 import { ICreateBlog } from '@/interface/blog'
@@ -142,12 +143,13 @@ const BlogAdd = () => {
                       Nội dung
                     </Label>
                     <FormControl>
-                      <Input
+                      <Textarea
                         id='content'
                         placeholder='Nội dung'
-                        className='dark:bg-gray-700 dark:text-white'
                         {...field}
+                        className='dark:bg-gray-700 dark:text-white'
                         aria-required='true'
+                        rows={10}
                       />
                     </FormControl>
                     <FormMessage />

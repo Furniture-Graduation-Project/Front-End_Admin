@@ -3,6 +3,7 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from '@/component
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Textarea } from '@/components/ui/textarea'
 import { toast } from '@/hooks/use-toast'
 import { IBlog, ICreateBlog } from '@/interface/blog'
 import { BlogService } from '@/services/blog'
@@ -17,10 +18,7 @@ const FormSchema = z.object({
   employeeId: z.string().min(1, { message: 'Người viết không được để trống.' }),
   title: z.string().min(1, { message: 'Tiêu đề không được để trống.' }),
   content: z.string().min(1, { message: 'Nội dung không được để trống.' }),
-  tags: z
-    .string()
-    .optional()
-    .transform((val) => (val ? val.split(',').map((tag) => tag.trim()) : [])),
+  tags: z.array(z.string()).optional(),
   image: z.string().optional()
 })
 
@@ -30,6 +28,7 @@ const BlogEdit = () => {
   const [image, setImage] = useState<string | null>('')
   const [blog, setBlog] = useState<IBlog | null>(null)
   const [imageLoading, setImageLoading] = useState(false)
+  const [tag, setTag] = useState('')
   const navigate = useNavigate()
 
   const form = useForm<ICreateBlog>({
@@ -53,13 +52,12 @@ const BlogEdit = () => {
       try {
         const response = await BlogService.getById(id)
         const blogData = response.data.data
-
         setBlog(blogData)
         form.reset({
           employeeId: blogData.employeeId._id,
           title: blogData.title,
           content: blogData.content,
-          tags: blogData.tags,
+          tags: blogData.tags || [],
           image: blogData.image
         })
       } catch (error) {
@@ -169,20 +167,20 @@ const BlogEdit = () => {
                       Nội dung
                     </Label>
                     <FormControl>
-                      <Input
+                      <Textarea
                         disabled={isLoading}
                         id='content'
                         placeholder='Nội dung'
                         {...field}
                         className='dark:bg-gray-700 dark:text-white'
                         aria-required='true'
+                        rows={10}
                       />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-
               <FormField
                 name='tags'
                 control={form.control}
@@ -190,12 +188,62 @@ const BlogEdit = () => {
                   <FormItem>
                     <Label className='font-bold dark:text-white'>Nhãn</Label>
                     <FormControl>
-                      <Input
-                        disabled={isLoading}
-                        placeholder='Nhập nhãn (phân cách bằng dấu phẩy)'
-                        {...field}
-                        className='dark:bg-gray-700 dark:text-white'
-                      />
+                      <div className='space-y-2'>
+                        {field.value && field.value.length > 0 ? (
+                          <div className='flex flex-wrap gap-2'>
+                            {field.value.map((tag, index) => (
+                              <div key={index} className='flex items-center gap-2'>
+                                <span className='text-sm'>{tag}</span>
+                                <button
+                                  type='button'
+                                  onClick={() => {
+                                    const updatedTags = field.value && field.value.filter((_, i) => i !== index)
+                                    field.onChange(updatedTags)
+                                  }}
+                                  className='text-red-500'
+                                >
+                                  Xóa
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className='text-sm text-gray-400'>Chưa có nhãn</p>
+                        )}
+
+                        <Input
+                          disabled={isLoading}
+                          placeholder='Nhập thêm nhãn (Kết thúc tag bằng dấu phẩy để lưu)'
+                          value={tag}
+                          onChange={(e) => {
+                            const inputValue = e.target.value
+                            setTag(inputValue)
+                            if (inputValue.includes(',') && field.value) {
+                              const tagsArray = inputValue
+                                .split(',')
+                                .map((tag) => tag.trim())
+                                .filter((tag) => tag !== '')
+                              const uniqueTags = Array.from(new Set([...field.value, ...tagsArray]))
+                              field.onChange(uniqueTags)
+                              setTag('')
+                            }
+                          }}
+                          onBlur={(e) => {
+                            const inputValue = e.target.value
+                            setTag(inputValue)
+                            if (inputValue && inputValue.trim() !== '' && field.value) {
+                              const tagsArray = inputValue
+                                .split(',')
+                                .map((tag) => tag.trim())
+                                .filter((tag) => tag !== '')
+                              const uniqueTags = Array.from(new Set([...field.value, ...tagsArray]))
+                              field.onChange(uniqueTags)
+                              setTag('')
+                            }
+                          }}
+                          className='dark:bg-gray-700 dark:text-white'
+                        />
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
