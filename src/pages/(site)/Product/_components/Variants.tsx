@@ -13,17 +13,17 @@ import { uploadFileCloudinary } from '@/utils/upload-cloudinary'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Edit3, Eye, RefreshCw, Trash2 } from 'lucide-react'
 import AlertAcitonDialog from '@/components/modals/AlertDialog'
+import { useQueryClient } from '@tanstack/react-query'
 
 interface AddVariantsProps {
   productId: string
-  setVariantChange: (emit: any) => void
 }
 
 const VariantFormSchema = {
   fixedVariants: ['Màu sắc', 'Mùi hương', 'Kích cỡ', 'Phong cách']
 }
 
-const AddVariants: FC<AddVariantsProps> = ({ productId, setVariantChange }) => {
+const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
   const {
     register,
     handleSubmit,
@@ -61,6 +61,7 @@ const AddVariants: FC<AddVariantsProps> = ({ productId, setVariantChange }) => {
   const [restoreItemId, setRestoreItemId] = useState<string | null>(null)
   const [isRestoreDialogOpen, setIsRestoreDialogOpen] = useState(false)
 
+  const queryClient = useQueryClient()
   const toggleShowDeleted = () => {
     setShowDeleted((prev) => !prev)
   }
@@ -140,11 +141,10 @@ const AddVariants: FC<AddVariantsProps> = ({ productId, setVariantChange }) => {
           duration: 3000
         })
         await fetchProductItems()
-        const productItemsRes = await ProductItemService.getByProductId(productId)
-        const productItems = productItemsRes.data.data
-        const allDisabled = productItems.every((item: ProductItem) => item.status === 'deleted')
+        const productItems = await ProductItemService.getByProductId(productId)
+        const allDisabled = productItems?.data?.data.every((item: ProductItem) => item.status === 'deleted')
         if (allDisabled) {
-          const product = ProductService.getById(productId)
+          const product = await ProductService.getById(productId)
           const updatedData = { ...product, status: 'creating' }
           await ProductService.update(productId, updatedData as any)
           toast({
@@ -153,7 +153,7 @@ const AddVariants: FC<AddVariantsProps> = ({ productId, setVariantChange }) => {
             variant: 'success',
             duration: 3000
           })
-          setVariantChange(Date.now().toString())
+          queryClient.invalidateQueries({ queryKey: ['PRODUCT', productId] })
         }
       } catch (error) {
         toast({

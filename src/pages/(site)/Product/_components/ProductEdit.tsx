@@ -39,7 +39,6 @@ const EditProductForm = () => {
   const [files, setFiles] = useState<File[] | null>(null)
   const [galleryPreview, setGalleryPreview] = useState<string[]>([])
   const [loading, setLoading] = useState(false)
-  const [variantChange, setVariantChange] = useState('')
   const dropZoneConfig = {
     maxFiles: 5,
     maxSize: 1024 * 1024 * 4,
@@ -69,7 +68,7 @@ const EditProductForm = () => {
       }
       form.reset(formData)
     }
-  }, [productData, form, variantChange])
+  }, [productData, form])
   const handleSubmit = async (data: ProductFormData) => {
     const finalImages = files && files.length > 0 ? files : productData?.data?.data.images
     try {
@@ -364,7 +363,7 @@ const EditProductForm = () => {
           </form>
         </Form>
       </div>
-      {id && <AddVariants setVariantChange={setVariantChange} productId={id} />}
+      {id && <AddVariants productId={id} />}
     </div>
   )
 }
