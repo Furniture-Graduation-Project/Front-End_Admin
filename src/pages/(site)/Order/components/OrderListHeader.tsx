@@ -118,15 +118,15 @@ const OrderListHeader = ({
       </div>
       <div>
         <div
-          className={` grid-cols-2 gap-2 ${!queryParams?.filter || queryParams?.filter == 'return' ? 'hidden' : 'grid'}`}
+          className={` grid-cols-2 gap-2 ${queryParams?.filter && queryParams?.filter == 'return' ? 'hidden' : 'grid'}`}
         >
           <Select onValueChange={handleSelectChange('status')}>
             <SelectTrigger className='w-full max-w-[200px]'>
               <SelectValue placeholder='Trạng thái đơn' />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value='pending'>Chờ thanh toán</SelectItem>
-              <SelectItem value='unpaid'>Chờ xử lý</SelectItem>
+              <SelectItem value='unpaid'>Chờ thanh toán</SelectItem>
+              <SelectItem value='pending'>Chờ xử lý</SelectItem>
               <SelectItem value='confirmed'>Đã xác nhận</SelectItem>
               <SelectItem value='processing'>Đang lấy hàng</SelectItem>
               <SelectItem value='shipped'>Đã gửi hàng</SelectItem>
