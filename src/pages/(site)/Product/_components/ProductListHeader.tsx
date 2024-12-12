@@ -44,6 +44,14 @@ const ProductListHeader = ({
     table.getColumn('name')?.setFilterValue(value)
   }
 
+  const columnDisplayNames: Record<string, string> = {
+    name: 'Tên sản phẩm',
+    images: 'Ảnh',
+    categoryId: 'Danh mục',
+    materialDetail: 'Chi tiết chất liệu',
+    status: 'Trạng thái'
+  }
+
   return (
     <CardHeader className='grid grid-cols-1 sm:grid-cols-4 gap-4 p-3 place-items-center'>
       <Input placeholder='Tìm kiếm sản phẩm...' value={searchTerm} onChange={handleSearchChange} className='mt-[5px]' />
@@ -117,7 +125,7 @@ const ProductListHeader = ({
                 checked={column.getIsVisible()}
                 onCheckedChange={(value) => column.toggleVisibility(!!value)}
               >
-                {column.id}
+                {columnDisplayNames[column.id] || column.id}
               </DropdownMenuCheckboxItem>
             ))}
           <DropdownMenuLabel>Bản ghi mỗi trang</DropdownMenuLabel>
