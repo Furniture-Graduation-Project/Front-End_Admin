@@ -149,7 +149,7 @@ const AddVariants: FC<AddVariantsProps> = ({ productId, setVariantChange }) => {
           await ProductService.update(productId, updatedData as any)
           toast({
             title: 'Chuyển trạng thái thành công',
-            description: `Sản phẩm đã được chuyển sang danh sách chưa bán".`,
+            description: `Sản phẩm đã được chuyển sang danh sách " Chưa bán ".`,
             variant: 'success',
             duration: 3000
           })
@@ -441,7 +441,8 @@ const AddVariants: FC<AddVariantsProps> = ({ productId, setVariantChange }) => {
       <AlertAcitonDialog
         title='Xác nhận khôi phục'
         description='Bạn có chắc chắn muốn khôi phục biến thể này không?'
-        variant='destructive'
+        variant={'destructive'}
+        className='dark:bg-gray-800 dark:text-white'
         isOpen={isRestoreDialogOpen}
         setIsOpen={setIsRestoreDialogOpen}
         handleAciton={handleRestoreConfirmed}
@@ -539,7 +540,8 @@ const AddVariants: FC<AddVariantsProps> = ({ productId, setVariantChange }) => {
       <AlertAcitonDialog
         title='Xác nhận xóa'
         description='Bạn có chắc chắn muốn xóa biến thể này không?'
-        variant='destructive'
+        variant={'destructive'}
+        className='dark:bg-gray-800 dark:text-white'
         isOpen={isDeleteDialogOpen}
         setIsOpen={setIsDeleteDialogOpen}
         handleAciton={handleDeleteConfirmed}

@@ -29,13 +29,11 @@ const FormSchema = z.object({
 })
 
 const AddProductForm = () => {
+  const { data: categories } = useMultipleCategoryQuery()
+  const { data: materials } = useMultipleMaterialQuery()
   const [files, setFiles] = useState<File[] | null>(null)
   const [galleryPreview, setGalleryPreview] = useState<string[]>([])
   const [loading, setLoading] = useState(false)
-  const { data: categoriesRes } = useMultipleCategoryQuery()
-  const { data: materialsRes } = useMultipleMaterialQuery()
-  const categories = categoriesRes?.data
-  const materials = materialsRes?.data
   const dropZoneConfig = {
     maxFiles: 5,
     maxSize: 1024 * 1024 * 4,
@@ -176,7 +174,7 @@ const AddProductForm = () => {
                       className='dark:bg-gray-700 dark:text-gray-100 border rounded-md p-1 min-w-[150px]'
                     >
                       <option value=''>Chọn danh mục</option>
-                      {categories.map((category) => (
+                      {categories?.data.map((category) => (
                         <option key={category._id} value={category._id}>
                           {category.categoryName}
                         </option>
@@ -204,7 +202,7 @@ const AddProductForm = () => {
                       className='dark:bg-gray-700 dark:text-gray-100 border rounded-md p-1 min-w-[150px]'
                     >
                       <option value=''>Chọn chất liệu</option>
-                      {materials.map((material) => (
+                      {materials?.data.map((material) => (
                         <option key={material._id} value={material._id}>
                           {material.materialName}
                         </option>

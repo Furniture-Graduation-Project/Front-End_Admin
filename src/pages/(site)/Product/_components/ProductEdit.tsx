@@ -32,26 +32,14 @@ const FormSchema = z.object({
 })
 
 const EditProductForm = () => {
+  const { data: categories } = useMultipleCategoryQuery()
+  const { data: materials } = useMultipleMaterialQuery()
+  const { id } = useParams<{ id: string }>()
+  const { data: productData } = useSingleProductQuery(id || ``)
   const [files, setFiles] = useState<File[] | null>(null)
   const [galleryPreview, setGalleryPreview] = useState<string[]>([])
   const [loading, setLoading] = useState(false)
-  const { id } = useParams<{ id: string }>()
   const [variantChange, setVariantChange] = useState('')
-  const { data: categoriesRes } = useMultipleCategoryQuery()
-  const { data: materialsRes } = useMultipleMaterialQuery()
-  if (!id) {
-    return
-  }
-  const { data: productData } = useSingleProductQuery(id)
-  if (!productData) {
-    return <div>Không tồn tại sản phẩm có ID tương ứng</div>
-  }
-  const product = productData?.data.data
-  const categories = categoriesRes?.data
-  const materials = materialsRes?.data
-  if (!categories || !materials || !product) {
-    return <div>Loading...</div>
-  }
   const dropZoneConfig = {
     maxFiles: 5,
     maxSize: 1024 * 1024 * 4,
@@ -71,9 +59,9 @@ const EditProductForm = () => {
   })
   useEffect(() => {
     if (productData) {
-      const product = productData.data.data
-      const material = product.material?._id
-      const category = product.category?._id
+      const product = productData?.data?.data
+      const material = product?.material?._id
+      const category = product?.category?._id
       const formData = {
         ...product,
         material,
@@ -83,7 +71,7 @@ const EditProductForm = () => {
     }
   }, [productData, form, variantChange])
   const handleSubmit = async (data: ProductFormData) => {
-    const finalImages = files && files.length > 0 ? files : product?.images
+    const finalImages = files && files.length > 0 ? files : productData?.data?.data.images
     try {
       if (id) {
         await ProductService.update(id, { ...data, images: finalImages })
@@ -139,6 +127,9 @@ const EditProductForm = () => {
     setFiles(updatedFiles)
   }
   const isLoading = form.formState.isSubmitting
+  if (!productData) {
+    return <div>Không tồn tại sản phẩm có ID tương ứng</div>
+  }
   return (
     <div className='bg-[#F5F6FA] dark:bg-[#0f172a]'>
       <div className='bg-[#ffffff] dark:bg-[#1f2937] rounded-md '>
@@ -184,7 +175,7 @@ const EditProductForm = () => {
                         {...field}
                         className='dark:bg-gray-700 dark:text-gray-100 border rounded-md p-1 min-w-[150px]'
                       >
-                        {categories.map((category) => (
+                        {categories?.data.map((category) => (
                           <option key={category._id} value={category._id}>
                             {category.categoryName}
                           </option>
@@ -211,7 +202,7 @@ const EditProductForm = () => {
                         {...field}
                         className='dark:bg-gray-700 dark:text-gray-100 border rounded-md p-1 min-w-[150px]'
                       >
-                        {materials.map((material) => (
+                        {materials?.data.map((material) => (
                           <option key={material._id} value={material._id}>
                             {material.materialName}
                           </option>
@@ -329,8 +320,8 @@ const EditProductForm = () => {
                     />
                   </div>
                 ))
-              ) : product.images && product.images.length > 0 ? (
-                product.images.map((url, index) => (
+              ) : productData?.data?.data.images && productData?.data?.data.images.length > 0 ? (
+                productData?.data?.data.images.map((url, index) => (
                   <div className='relative' key={index}>
                     <img
                       src={typeof url === 'string' ? url : URL.createObjectURL(url)}
