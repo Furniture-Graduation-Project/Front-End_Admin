@@ -6,23 +6,23 @@ import RevenueChart from './components/DashboardRevenueChart';
 import DashboardHeader from './components/DashboardHeader';
 import { useLatestOrders } from '@/hooks/querys/useOrderQuery';
 import { Link } from 'react-router-dom';
-import DashboardPieChart from './components/DashboardpieChart';
+import DashboardPieChart from './components/DashboardPieChart';
 
 const Dashboard = () => {
   // Lấy dữ liệu từ custom hook
   const { data: orders, isLoading, isError } = useLatestOrders();
 
   return (
-    <div className='min-h-screen bg-[#F5F6FA]'>
+    <div className='min-h-screen bg-[#F5F6FA] dark:bg-gray-800'>
       {/* Header */}
-      <div className='ml-5 mr-5 mt-7 bg-white p-5 rounded-lg'>
+      <div className='ml-5 mr-5 mt-7 bg-white p-5 rounded-lg dark:bg-gray-800'>
         <DashboardHeader />
       </div>
 
       {/* Chi tiết bán hàng */}
       <div className='bg-white ml-5 mr-5 rounded-lg mt-7 dark:bg-gray-800'>
         <p className='p-5 font-bold text-[24px]'>Chi tiết bán hàng</p>
-        <div className='p-5'>
+        <div className='p-5 dark:bg-gray-800'>
           <DashboardPieChart />
         </div>
       </div>
