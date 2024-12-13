@@ -6,20 +6,19 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { Form, FormControl, FormDescription, FormField, FormItem, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { CategoryService } from '@/services/category'
 import { ProductService } from '@/services/product'
 import { useState, useEffect } from 'react'
-import { IProduct, ProductFormData } from '@/interface/product'
-import { ICategory } from '@/interface/category'
+import { ProductFormData } from '@/interface/product'
 import { toast } from '@/hooks/use-toast'
-import { useNavigate, useParams } from 'react-router-dom'
-import { IMaterial } from '@/interface/material'
-import { MaterialService } from '@/services/material'
+import { useParams } from 'react-router-dom'
 import AddVariants from './Variants'
 import { uploadFileCloudinary } from '@/utils/upload-cloudinary'
 import { Skeleton } from '@/components/ui/skeleton'
 import { CloudUpload, X } from 'lucide-react'
 import { FileInput, FileUploader } from '@/components/ui/file-upload'
+import { useSingleProductQuery } from '@/hooks/querys/useProductQuery'
+import { useMultipleCategoryQuery } from '@/hooks/querys/useCategoryQuery'
+import { useMultipleMaterialQuery } from '@/hooks/querys/useMaterialQuery'
 
 const FormSchema = z.object({
   name: z.string().min(3, { message: 'Tên sản phẩm phải có ít nhất 3 ký tự.' }),
@@ -33,21 +32,18 @@ const FormSchema = z.object({
 })
 
 const EditProductForm = () => {
-  const [categories, setCategories] = useState<ICategory[]>([])
-  const [materials, setMaterials] = useState<IMaterial[]>([])
-  const [product, setProduct] = useState<IProduct | null>(null)
+  const { data: categories } = useMultipleCategoryQuery()
+  const { data: materials } = useMultipleMaterialQuery()
+  const { id } = useParams<{ id: string }>()
+  const { data: productData } = useSingleProductQuery(id || ``)
   const [files, setFiles] = useState<File[] | null>(null)
   const [galleryPreview, setGalleryPreview] = useState<string[]>([])
   const [loading, setLoading] = useState(false)
-  const { id } = useParams<{ id: string }>()
-  const [variantChange, setVariantChange] = useState('')
-
   const dropZoneConfig = {
     maxFiles: 5,
     maxSize: 1024 * 1024 * 4,
     multiple: true
   }
-
   const form = useForm<ProductFormData>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -60,49 +56,21 @@ const EditProductForm = () => {
       status: 'creating'
     }
   })
-
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const res = await CategoryService.getAllCategories()
-        setCategories(res.data.data)
-      } catch (error) {
-        console.error('Lỗi khi lấy danh mục:', error)
+    if (productData) {
+      const product = productData?.data?.data
+      const material = product?.material?._id
+      const category = product?.category?._id
+      const formData = {
+        ...product,
+        material,
+        category
       }
+      form.reset(formData)
     }
-    const fetchMaterials = async () => {
-      try {
-        const res = await MaterialService.getAllMaterials()
-        setMaterials(res.data.data)
-      } catch (error) {
-        console.error('Lỗi khi lấy danh mục:', error)
-      }
-    }
-    const fetchProduct = async () => {
-      if (id) {
-        try {
-          const res = await ProductService.getById(id)
-          setProduct(res.data.data)
-          const product = res.data.data
-          const material = product.material?._id
-          const category = product.category?._id
-          const formData = {
-            ...product,
-            material,
-            category
-          }
-          form.reset(formData)
-        } catch (error) {
-          console.error('Lỗi khi lấy sản phẩm:', error)
-        }
-      }
-    }
-    fetchMaterials()
-    fetchCategories()
-    fetchProduct()
-  }, [id, form, variantChange])
+  }, [productData, form])
   const handleSubmit = async (data: ProductFormData) => {
-    const finalImages = files && files.length > 0 ? files : product?.images
+    const finalImages = files && files.length > 0 ? files : productData?.data?.data.images
     try {
       if (id) {
         await ProductService.update(id, { ...data, images: finalImages })
@@ -157,13 +125,10 @@ const EditProductForm = () => {
     const updatedFiles = files.filter((_, i) => i !== index)
     setFiles(updatedFiles)
   }
-
   const isLoading = form.formState.isSubmitting
-
-  if (!product) {
-    return <div>Loading...</div>
+  if (!productData) {
+    return <div>Không tồn tại sản phẩm có ID tương ứng</div>
   }
-
   return (
     <div className='bg-[#F5F6FA] dark:bg-[#0f172a]'>
       <div className='bg-[#ffffff] dark:bg-[#1f2937] rounded-md '>
@@ -209,7 +174,7 @@ const EditProductForm = () => {
                         {...field}
                         className='dark:bg-gray-700 dark:text-gray-100 border rounded-md p-1 min-w-[150px]'
                       >
-                        {categories.map((category) => (
+                        {categories?.data.map((category) => (
                           <option key={category._id} value={category._id}>
                             {category.categoryName}
                           </option>
@@ -236,7 +201,7 @@ const EditProductForm = () => {
                         {...field}
                         className='dark:bg-gray-700 dark:text-gray-100 border rounded-md p-1 min-w-[150px]'
                       >
-                        {materials.map((material) => (
+                        {materials?.data.map((material) => (
                           <option key={material._id} value={material._id}>
                             {material.materialName}
                           </option>
@@ -354,8 +319,8 @@ const EditProductForm = () => {
                     />
                   </div>
                 ))
-              ) : product.images && product.images.length > 0 ? (
-                product.images.map((url, index) => (
+              ) : productData?.data?.data.images && productData?.data?.data.images.length > 0 ? (
+                productData?.data?.data.images.map((url, index) => (
                   <div className='relative' key={index}>
                     <img
                       src={typeof url === 'string' ? url : URL.createObjectURL(url)}
@@ -398,7 +363,7 @@ const EditProductForm = () => {
           </form>
         </Form>
       </div>
-      {id && <AddVariants setVariantChange={setVariantChange} productId={id} />}
+      {id && <AddVariants productId={id} />}
     </div>
   )
 }
