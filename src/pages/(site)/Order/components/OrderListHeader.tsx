@@ -118,7 +118,7 @@ const OrderListHeader = ({
       </div>
       <div>
         <div
-          className={` grid-cols-2 gap-2 ${queryParams?.filter && queryParams?.filter == 'return' ? 'hidden' : 'grid'}`}
+          className={` grid-cols-2 gap-2 ${!queryParams?.filter || queryParams?.filter != 'return' ? 'grid' : 'hidden'}`}
         >
           <Select onValueChange={handleSelectChange('status')}>
             <SelectTrigger className='w-full max-w-[200px]'>

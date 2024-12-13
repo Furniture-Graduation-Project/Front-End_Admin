@@ -13,7 +13,7 @@ import { SidebarTrigger } from '@/components/ui/sidebar'
 import { Button } from '@/components/ui/button'
 import { DarkMode } from '@/components/modals/DarkMode'
 import useFullScreen from '@/hooks/useFullScreen'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
 import useEmployeeMutation from '@/hooks/mutations/useEmployeeMutation'
 import AlertAcitonDialog from '@/components/modals/AlertDialog'
@@ -27,9 +27,15 @@ const TopBar = () => {
     support: 'Nhân viên hỗ trợ'
   }
   const { user } = useAuth()
+  const naviagte = useNavigate()
   const { mutate } = useEmployeeMutation({ action: 'LOGOUT' })
   const { isFullScreen, toggleFullScreen } = useFullScreen()
   const [open, setOpen] = useState<boolean>(false)
+
+  const handleLogout = () => {
+    naviagte('/')
+    mutate(undefined)
+  }
 
   return (
     <header className='fixed md:sticky w-full top-0 left-0 right-0 z-20 flex h-16 items-center gap-2 bg-white dark:bg-slate-950 border-b border-b-slate-200 dark:border-b-slate-800'>
@@ -127,7 +133,7 @@ const TopBar = () => {
         variant={'default'}
         isOpen={open}
         setIsOpen={setOpen}
-        handleAciton={() => mutate(undefined)}
+        handleAciton={handleLogout}
         className='dark:bg-gray-800 dark:text-white'
       />
     </header>

@@ -2,21 +2,24 @@ import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 import SideBar from '@/components/common/SideBar/SideBar'
 import TopBar from '@/components/common/TopBar/TopBar'
 import { useAuth } from '@/context/AuthContext'
-import ErrorPage from '@/pages/(site)/404/404'
-import {  Loader2 } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
 import useListenOrder from '@/hooks/useListenOrder'
 import { Toaster } from 'sonner'
 import { useAuthToken } from '@/hooks/useAuthToken'
+import useListenUnauthorized from '@/hooks/useListenUnauthorized'
 
 function MainLayout({ children }: { children: React.ReactNode }) {
-  const { user, isLoading } = useAuth()
+  const { isLoading } = useAuth()
   useAuthToken()
   useListenOrder()
-  return isLoading ? (
-    <div className='flex items-center justify-center h-screen'>
-      <Loader2 size='100' className='animate-spin'></Loader2>
-    </div>
-  ) : user ? (
+  useListenUnauthorized()
+  if (isLoading)
+    return (
+      <div className='flex items-center justify-center h-screen'>
+        <Loader2 size='100' className='animate-spin'></Loader2>
+      </div>
+    )
+  return (
     <SidebarProvider className='flex-col md:flex-row'>
       <SideBar />
       <SidebarInset className='relative inset-0'>
@@ -27,8 +30,6 @@ function MainLayout({ children }: { children: React.ReactNode }) {
         <Toaster />
       </SidebarInset>
     </SidebarProvider>
-  ) : (
-    <ErrorPage />
   )
 }
 
