@@ -16,10 +16,20 @@ const DashboardHeaderCard = ({ data, period, type }: { data: any; period: string
     }
   }
   return (
-    <div className='bg-slate-100 rounded-lg p-4 flex flex-col justify-between h-[161px]'>
+    <div className='dark:bg-black bg-slate-100 rounded-lg p-4 flex flex-col justify-between h-[161px]'>
       <div className='flex items-center'>
         <div className='flex-grow'>
-          <p className='text-[16px]'>Total User</p>
+          <p className='text-[16px]'>
+            {' '}
+            Tổng số{' '}
+            {type == 'revenue'
+              ? 'doanh thu'
+              : type == 'order'
+                ? 'đơn hàng'
+                : type == 'user'
+                  ? 'người dùng'
+                  : 'sản phẩm'}
+          </p>
           <p className='text-[20px] font-bold mt-4'>
             {getTitle(period)} nay : {type != 'revenue' ? data?.current : formatCurrency(data?.current)}
           </p>
@@ -32,12 +42,13 @@ const DashboardHeaderCard = ({ data, period, type }: { data: any; period: string
         </div>
       </div>
       <p className='text-center text-gray-500 text-sm mt-2'>
-        Tăng{' '}
-        {data?.current === 0 && data?.previous === 0
+        {isNaN(data?.current) || isNaN(data?.previous) || data?.current === undefined || data?.previous === undefined
           ? 0
-          : data?.current <= data?.previous
-            ? (data?.current / (data?.previous || 1)) * 100
-            : (data?.current / 1) * 100}
+          : data?.current === 0 && data?.previous === 0
+            ? 0
+            : data?.current <= data?.previous
+              ? ((data?.current / (data?.previous || 1)) * 100).toFixed(2)
+              : ((data?.current / 1) * 100).toFixed(2)}
         % so với {getTitle(period).toLocaleLowerCase()} trước
       </p>
     </div>

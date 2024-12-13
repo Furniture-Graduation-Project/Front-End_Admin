@@ -3,6 +3,7 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from '@/component
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Textarea } from '@/components/ui/textarea'
 import { useAuth } from '@/context/AuthContext'
 import { toast } from '@/hooks/use-toast'
 import { ICreateBlog } from '@/interface/blog'
@@ -122,7 +123,11 @@ const BlogAdd = () => {
                   <FormItem>
                     <Label className='font-bold dark:text-white'>Tiêu đề</Label>
                     <FormControl>
-                      <Input placeholder='Nhập tiêu đề blog' {...field} className='dark:bg-gray-700 dark:text-white' />
+                      <Input
+                        placeholder='Nhập tiêu đề bài viết'
+                        {...field}
+                        className='dark:bg-gray-700 dark:text-white'
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -138,12 +143,13 @@ const BlogAdd = () => {
                       Nội dung
                     </Label>
                     <FormControl>
-                      <Input
+                      <Textarea
                         id='content'
                         placeholder='Nội dung'
-                        className='dark:bg-gray-700 dark:text-white'
                         {...field}
+                        className='dark:bg-gray-700 dark:text-white'
                         aria-required='true'
+                        rows={10}
                       />
                     </FormControl>
                     <FormMessage />
@@ -159,7 +165,7 @@ const BlogAdd = () => {
                     <Label className='font-bold dark:text-white'>Nhãn</Label>
                     <FormControl>
                       <Input
-                        placeholder='Nhập tags (phân cách bằng dấu phẩy)'
+                        placeholder='Nhập nhãn (phân cách bằng dấu phẩy)'
                         {...field}
                         className='dark:bg-gray-700 dark:text-white'
                       />
@@ -196,10 +202,11 @@ const BlogAdd = () => {
                   </FormItem>
                 )}
               />
-
-              <Button type='submit' disabled={loading} className='w-full'>
-                {loading ? 'Đang xử lý...' : 'Thêm Blog'}
-              </Button>
+              <div className='flex justify-end space-x-4'>
+                <Button disabled={loading} type='submit'>
+                  {loading ? 'Đang xử lý...' : 'Thêm bài viết'}
+                </Button>
+              </div>
             </form>
           </Form>
         </div>

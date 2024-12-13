@@ -81,7 +81,7 @@ const AddProductForm = () => {
 
   const handleSubmit = async (data: any) => {
     try {
-      const product = await ProductService.create({ ...data, images: files || [] })
+      const product = await ProductService.create({ ...data, images: files || ['http://res.cloudinary.com/dfykg7wtt/image/upload/v1733647723/test/ldlnhcdhjd1z82run81q.png'] })
       toast({
         title: 'Thêm thành công',
         description: `Sản phẩm ${data.name} đã được thêm thành công.`,
@@ -248,7 +248,7 @@ const AddProductForm = () => {
                       className='dark:bg-gray-700 dark:text-gray-100 border rounded-md p-1 min-w-[150px]'
                       disabled
                     >
-                      <option value='creating'>Đang tạo</option>
+                      <option value='creating'>Chưa bán</option>
                     </select>
                   </FormControl>
                   <FormMessage />

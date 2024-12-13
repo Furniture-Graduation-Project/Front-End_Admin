@@ -15,6 +15,7 @@ const ProductDetailReviews = ({ dataId }: { dataId: string }) => {
     if (rating === 4 || rating === 5) return 'text-green-500'
     return ''
   }
+
   return (
     <div>
       <Label className='font-bold text-2xl'>Đánh giá của khách hàng</Label>
@@ -42,8 +43,8 @@ const ProductDetailReviews = ({ dataId }: { dataId: string }) => {
                   Failed to load reviews
                 </TableCell>
               </TableRow>
-            ) : (
-              reviewList?.data.map((review) => (
+            ) : reviewList?.data && reviewList.data.length > 0 ? (
+              reviewList.data.map((review) => (
                 <TableRow key={review.id} className='border-b'>
                   <TableCell className='text-left p-2'>{review.reviewText}</TableCell>
                   <TableCell className={`text-center p-2 ${getRatingColor(review.rating)}`}>
@@ -64,6 +65,12 @@ const ProductDetailReviews = ({ dataId }: { dataId: string }) => {
                   </TableCell>
                 </TableRow>
               ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={5} className='text-center p-2'>
+                  Không có đánh giá nào.
+                </TableCell>
+              </TableRow>
             )}
           </TableBody>
         </Table>

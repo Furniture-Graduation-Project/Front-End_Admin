@@ -15,8 +15,12 @@ const FormSchema = z.object({
   fullName: z.string().min(1, { message: 'Tên đầy đủ không được để trống.' }),
   username: z.string().min(1, { message: 'Tên đăng nhập không được để trống.' }),
   password: z.string().min(6, { message: 'Mật khẩu phải ít nhất 6 ký tự.' }),
-  phoneNumber: z.string().optional(),
-  address: z.string().optional(),
+  phoneNumber: z
+    .string()
+    .length(10, { message: 'Số điện thoại phải đúng 10 ký tự.' })
+    .regex(/^[0-9]+$/, { message: 'Số điện thoại chỉ được chứa các chữ số.' })
+    .optional(),
+  address: z.string().min(1, { message: 'Địa chỉ không được để trống.' }).optional(),
   role: z.enum(['product', 'support', 'order'])
 })
 
@@ -46,8 +50,9 @@ const EmployeeEdit = () => {
 
       try {
         const response = await EmployeeService.getById(id)
-        setEmployee(response.data.data)
-        form.reset(response.data.data)
+        const data = response.data.data
+        setEmployee({ ...data, password: data.password || '********' })
+        form.reset({ ...data, password: data.password || '********' })
       } catch (error) {
         console.error('Lỗi khi lấy thông tin nhân viên:', error)
         toast({
@@ -66,7 +71,11 @@ const EmployeeEdit = () => {
   const handleSubmit = async (data: IEmployee) => {
     setLoading(true)
     try {
-      await EmployeeService.update(id!, data)
+      const payload = {
+        ...data,
+        password: data.password === '********' ? undefined : data.password
+      }
+      await EmployeeService.update(id!, payload)
       toast({
         title: 'Cập nhật thành công',
         description: `Nhân viên ${data.fullName} đã được cập nhật thành công.`,
@@ -224,9 +233,9 @@ const EmployeeEdit = () => {
                     {...field}
                     className='border p-2 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100'
                   >
-                    <option value='product'>Product</option>
-                    <option value='support'>Support</option>
-                    <option value='order'>Order</option>
+                    <option value='product'>Nhân viên kho</option>
+                    <option value='support'>Nhân viên hỗ trợ</option>
+                    <option value='order'>Nhân viên bán hàng</option>
                   </select>
                 </FormControl>
                 <FormMessage />
