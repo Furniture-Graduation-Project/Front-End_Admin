@@ -125,8 +125,8 @@ const OrderListHeader = ({
               <SelectValue placeholder='Trạng thái đơn' />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value='pending'>Chờ thanh toán</SelectItem>
-              <SelectItem value='unpaid'>Chờ xử lý</SelectItem>
+              <SelectItem value='unpaid'>Chờ thanh toán</SelectItem>
+              <SelectItem value='pending'>Chờ xử lý</SelectItem>
               <SelectItem value='confirmed'>Đã xác nhận</SelectItem>
               <SelectItem value='processing'>Đang lấy hàng</SelectItem>
               <SelectItem value='shipped'>Đã gửi hàng</SelectItem>
