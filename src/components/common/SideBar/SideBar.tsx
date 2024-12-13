@@ -12,7 +12,7 @@ import {
   SidebarRail,
   SidebarSeparator
 } from '@/components/ui/sidebar'
-import { Link, NavLink } from 'react-router-dom'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
 import navMenu from '@/assets/data/navMenu'
 import { useState } from 'react'
 import { useAuth } from '@/context/AuthContext'
@@ -23,13 +23,17 @@ import { Button } from '@/components/ui/button'
 
 const SideBar = () => {
   const { user } = useAuth()
+  const naviagte = useNavigate()
   const [open, setOpen] = useState<boolean>(false)
   const { mutate } = useEmployeeMutation({ action: 'LOGOUT' })
   const hasRole = (requiredRoles: string[]) => {
     if (!user?.role) return false
     return requiredRoles.includes(user.role)
   }
-
+  const handleLogout = () => {
+    naviagte('/')
+    mutate(undefined)
+  }
   return (
     <>
       <Sidebar collapsible='icon' className='dark:bg-slate-950'>
@@ -112,7 +116,7 @@ const SideBar = () => {
         variant={'default'}
         isOpen={open}
         setIsOpen={setOpen}
-        handleAciton={() => mutate(undefined)}
+        handleAciton={handleLogout}
       />
     </>
   )
