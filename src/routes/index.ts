@@ -49,7 +49,12 @@ import OrderReturn from '@/pages/(site)/Order/components/OrderReturn'
 const routes: IRoute[] = [
   { path: '/', component: Signin, layout: AuthLayout },
   { path: '/signup', component: Signup, layout: AuthLayout },
-  { path: '/dashboard', component: Dashboard, layout: MainLayout },
+  {
+    path: '/dashboard',
+    component: Dashboard,
+    layout: MainLayout,
+    guard: () => useCheckPermissions(['product', 'admin', 'support', 'order'])
+  },
 
   {
     path: '/category',

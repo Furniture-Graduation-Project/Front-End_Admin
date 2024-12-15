@@ -31,6 +31,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [token, setToken, removeToken] = useLocalStorage('user', null)
   const [id, setId] = useState<string | null>(null)
   const [user, setUser] = useState<IEmployee | null>(null)
+  const [isInitialized, setIsInitialized] = useState(false)
   const { data, isLoading } = useSingleEmployeeQuery(id ?? '')
   const login = (newToken: string) => {
     setToken(newToken)
@@ -47,23 +48,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const updateUser = (updatedUserData: Partial<IEmployee>) => {
     setUser((prevUser) => ({ ...prevUser, ...updatedUserData }) as IEmployee)
   }
-
   useEffect(() => {
     if (token) {
       const userId = getUserIdFromToken(token)
       setId(userId)
+    } else {
+      setIsInitialized(true)
     }
   }, [token])
 
   useEffect(() => {
     if (data) {
       setUser(data.data)
+      setIsInitialized(true)
     }
   }, [data])
 
   return (
     <AuthContext.Provider value={{ user, isLoading, login, logout, updateUser, token, setToken }}>
-      {children}
+      {isInitialized ? children : null}
     </AuthContext.Provider>
   )
 }
