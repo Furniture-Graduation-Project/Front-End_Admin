@@ -2,13 +2,15 @@ import { Route, Routes, Navigate } from 'react-router-dom'
 import { IRoute } from '@/interface/route'
 import routes from '@/routes'
 import { ThemeProvider } from './context/ThemeProvider'
-import { AuthProvider } from './context/AuthContext'
+import { AuthProvider, useAuth } from './context/AuthContext'
 
 const renderRoutes = (routes: IRoute[]) =>
   routes.map(({ path, component: Component, layout: Layout, children, guard }: IRoute) => {
     const Element = () => {
+      const { isLoading } = useAuth()
       const hasAccess = guard ? guard() : true
-      if (!hasAccess) return <Navigate to='/unauthorized' />
+      // if (!token) return <Navigate to='/' />
+      if (!hasAccess && !isLoading) return <Navigate to='/unauthorized' />
       return Layout ? (
         <Layout>
           <Component />
