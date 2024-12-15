@@ -23,7 +23,7 @@ interface CellActionProps {
 export const CellAction = ({ data }: CellActionProps) => {
   const [isDropdown, setIsDropdown] = useState(false)
   const [open, setOpen] = useState(false)
-  const [loading, setLoading] = useState(false)
+  const [, setLoading] = useState(false)
   const queryClient = useQueryClient()
 
   const handleDelete = async () => {
@@ -74,8 +74,7 @@ export const CellAction = ({ data }: CellActionProps) => {
   return (
     <>
       <AlertAcitonDialog
-        title='Bạn có chắc chắn muốn chuyển bản ghi này vào thùng rác?'
-        description='Bản ghi khi chuyển vào thùng rác sẽ bị xóa sau 30 ngày không làm việc.'
+        title='Bạn có chắc muốn xóa danh mục này không ?'
         variant={'destructive'}
         className='dark:bg-gray-800 dark:text-white'
         isOpen={open}

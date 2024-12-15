@@ -10,6 +10,7 @@ import { useState } from 'react'
 import { IMaterial } from '@/interface/material'
 import { toast } from '@/hooks/use-toast'
 import { useNavigate } from 'react-router-dom'
+import { Textarea } from '@/components/ui/textarea'
 
 const FormSchema = z.object({
   materialName: z.string().min(1, { message: 'Tên chất liệu không được để trống.' }),
@@ -17,7 +18,7 @@ const FormSchema = z.object({
 })
 
 const AddMaterialForm = () => {
-  const [loading, setLoading] = useState(false)
+  const [, setLoading] = useState(false)
   const navigate = useNavigate()
   const form = useForm<IMaterial>({
     resolver: zodResolver(FormSchema),
@@ -97,7 +98,7 @@ const AddMaterialForm = () => {
                   Mô tả
                 </Label>
                 <FormControl>
-                  <Input
+                  <Textarea
                     id='description'
                     placeholder='Mô tả chất liệu'
                     {...field}

@@ -7,6 +7,7 @@ export interface ProductItem {
   productId: string
   variants: Variant[]
   stock: number
+  inStock?: number
   outStock: number
   price: number
   image?: string

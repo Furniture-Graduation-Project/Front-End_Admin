@@ -13,6 +13,7 @@ import { toast } from '@/hooks/use-toast'
 import AlertAcitonDialog from '@/components/modals/AlertDialog'
 import { ProductService } from '@/services/product'
 import { IProduct } from '@/interface/product'
+import { useQueryClient } from '@tanstack/react-query'
 import { useAuth } from '@/context/AuthContext'
 
 interface ProductCellActionProps {
@@ -20,6 +21,7 @@ interface ProductCellActionProps {
 }
 
 export const CellAction = ({ data }: ProductCellActionProps) => {
+  const queryClient = useQueryClient()
   const { user } = useAuth()
   const [isDropdown, setIsDropdown] = useState(false)
   const [open, setOpen] = useState(false)
@@ -46,10 +48,11 @@ export const CellAction = ({ data }: ProductCellActionProps) => {
 
       toast({
         title: 'Cập nhật trạng thái thành công',
-        description: `Sản phẩm ${data.name} đã được chuyển sang trạng thái " ${updatedStatus === 'available' ? 'Đang bán' : 'Ngừng bán'} ".`,
+        description: `Sản phẩm "${data.name}" đã được chuyển sang trạng thái "${updatedStatus === 'available' ? 'Đang bán' : 'Ngừng bán'}" .`,
         variant: 'success',
         duration: 3000
       })
+      queryClient.invalidateQueries({ queryKey: ['PRODUCT'] })
     } catch (error) {
       toast({
         title: 'Lỗi cập nhật trạng thái sản phẩm',
@@ -67,7 +70,7 @@ export const CellAction = ({ data }: ProductCellActionProps) => {
   return (
     <>
       <AlertAcitonDialog
-        title={`Bạn có chắc chắn muốn chuyển sản phẩm sang trạng thái " ${data.status === 'available' ? 'Ngừng bán' : 'Đang bán'} " ?`}
+        title={`Bạn có chắc chắn muốn chuyển sản phẩm sang trạng thái "${data.status === 'available' ? 'Ngừng bán' : 'Đang bán'}" ?`}
         variant={'default'}
         className='dark:bg-gray-800 dark:text-white'
         isOpen={open}
@@ -100,11 +103,16 @@ export const CellAction = ({ data }: ProductCellActionProps) => {
           {(user?.role === 'admin' || user?.role === 'product') && (
             <DropdownMenuItem onClick={() => setOpen(true)} className='cursor-pointer'>
               {data.status === 'available' ? (
-                <LucideBan className='mr-2 h-4 w-4' />
-              ) : (
-                <RefreshCcw className='mr-2 h-4 w-4' />
-              )}
-              {data.status === 'available' ? 'Ngừng bán' : 'Chuyển bán'}
+                <>
+                  <LucideBan className='mr-2 h-4 w-4 text-red-500' />
+                  Ngừng bán
+                </>
+              ) : data.status === 'disable' ? (
+                <>
+                  <RefreshCcw className='mr-2 h-4 w-4 text-green-500' />
+                  Chuyển bán
+                </>
+              ) : null}
             </DropdownMenuItem>
           )}
         </DropdownMenuContent>
