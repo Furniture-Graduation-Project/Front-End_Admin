@@ -1,5 +1,5 @@
 import { formatCurrency } from '@/utils/formatCurrency'
-import { User } from 'lucide-react'
+import { BarChart2, Package, ShoppingCart, User } from 'lucide-react'
 const DashboardHeaderCard = ({ data, period, type }: { data: any; period: string; type: string }) => {
   const getTitle = (period: string) => {
     switch (period) {
@@ -38,7 +38,15 @@ const DashboardHeaderCard = ({ data, period, type }: { data: any; period: string
           </p>
         </div>
         <div className='bg-[#8280FF] w-[60px] h-[60px] rounded-xl flex items-center justify-center'>
-          <User className='w-[30px] h-[30px]' />
+          {type === 'revenue' ? (
+            <BarChart2 className='w-[30px] h-[30px]' />
+          ) : type === 'order' ? (
+            <ShoppingCart className='w-[30px] h-[30px]' />
+          ) : type === 'user' ? (
+            <User className='w-[30px] h-[30px]' />
+          ) : (
+            <Package className='w-[30px] h-[30px]' />
+          )}
         </div>
       </div>
       <p className='text-center text-gray-500 text-sm mt-2'>

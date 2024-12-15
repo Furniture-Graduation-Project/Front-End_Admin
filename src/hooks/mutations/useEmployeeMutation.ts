@@ -43,7 +43,6 @@ const useEmployeeMutation = ({ action }: MutationQueryProps) => {
         break
       case 'LOGOUT':
         logout()
-        navigate('/')
         toast({
           title: 'Đăng xuất thành công!'
         })

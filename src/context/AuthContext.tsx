@@ -31,9 +31,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [token, setToken, removeToken] = useLocalStorage('user', null)
   const [id, setId] = useState<string | null>(null)
   const [user, setUser] = useState<IEmployee | null>(null)
-  const [isLoading, setIsLoading] = useState<boolean>(true)
-  const { data, isError } = useSingleEmployeeQuery(id ?? '')
-
+  const { data, isLoading } = useSingleEmployeeQuery(id ?? '')
   const login = (newToken: string) => {
     setToken(newToken)
     setId(getUserIdFromToken(newToken))
@@ -60,12 +58,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     if (data) {
       setUser(data.data)
-      setIsLoading(false)
     }
-    if (isError) {
-      setIsLoading(false)
-    }
-  }, [data, isError])
+  }, [data])
 
   return (
     <AuthContext.Provider value={{ user, isLoading, login, logout, updateUser, token, setToken }}>
