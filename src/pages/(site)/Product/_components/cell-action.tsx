@@ -13,12 +13,14 @@ import { toast } from '@/hooks/use-toast'
 import AlertAcitonDialog from '@/components/modals/AlertDialog'
 import { ProductService } from '@/services/product'
 import { IProduct } from '@/interface/product'
+import { useAuth } from '@/context/AuthContext'
 
 interface ProductCellActionProps {
   data: IProduct
 }
 
 export const CellAction = ({ data }: ProductCellActionProps) => {
+  const { user } = useAuth()
   const [isDropdown, setIsDropdown] = useState(false)
   const [open, setOpen] = useState(false)
   const [, setLoading] = useState(false)
@@ -87,20 +89,24 @@ export const CellAction = ({ data }: ProductCellActionProps) => {
               Chi tiết
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Link to={`/product/edit/${data._id}`} className='flex items-center'>
-              <Edit2 className='mr-2 h-4 w-4' />
-              Chỉnh sửa
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setOpen(true)} className='cursor-pointer'>
-            {data.status === 'available' ? (
-              <LucideBan className='mr-2 h-4 w-4' />
-            ) : (
-              <RefreshCcw className='mr-2 h-4 w-4' />
-            )}
-            {data.status === 'available' ? 'Ngừng bán' : 'Chuyển bán'}
-          </DropdownMenuItem>
+          {(user?.role === 'admin' || user?.role === 'product') && (
+            <DropdownMenuItem>
+              <Link to={`/product/edit/${data._id}`} className='flex items-center'>
+                <Edit2 className='mr-2 h-4 w-4' />
+                Chỉnh sửa
+              </Link>
+            </DropdownMenuItem>
+          )}
+          {(user?.role === 'admin' || user?.role === 'product') && (
+            <DropdownMenuItem onClick={() => setOpen(true)} className='cursor-pointer'>
+              {data.status === 'available' ? (
+                <LucideBan className='mr-2 h-4 w-4' />
+              ) : (
+                <RefreshCcw className='mr-2 h-4 w-4' />
+              )}
+              {data.status === 'available' ? 'Ngừng bán' : 'Chuyển bán'}
+            </DropdownMenuItem>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
     </>
