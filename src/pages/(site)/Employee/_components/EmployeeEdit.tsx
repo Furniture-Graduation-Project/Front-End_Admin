@@ -10,11 +10,14 @@ import { z } from 'zod'
 import { EmployeeService } from '@/services/employee'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
 import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
 
 const FormSchema = z.object({
   fullName: z.string().min(1, { message: 'Tên đầy đủ không được để trống.' }),
   username: z.string().min(1, { message: 'Tên đăng nhập không được để trống.' }),
-  password: z.string().min(6, { message: 'Mật khẩu phải ít nhất 6 ký tự.' }),
+  password: z
+    .union([z.string().min(6, { message: 'Mật khẩu phải ít nhất 6 ký tự.' }), z.literal(''), z.undefined()])
+    .optional(),
   phoneNumber: z
     .string()
     .length(10, { message: 'Số điện thoại phải đúng 10 ký tự.' })
@@ -51,8 +54,8 @@ const EmployeeEdit = () => {
       try {
         const response = await EmployeeService.getById(id)
         const data = response.data.data
-        setEmployee({ ...data, password: data.password || '********' })
-        form.reset({ ...data, password: data.password || '********' })
+        setEmployee({ ...data, password: undefined })
+        form.reset({ ...data, password: undefined })
       } catch (error) {
         console.error('Lỗi khi lấy thông tin nhân viên:', error)
         toast({
@@ -73,7 +76,7 @@ const EmployeeEdit = () => {
     try {
       const payload = {
         ...data,
-        password: data.password === '********' ? undefined : data.password
+        password: data.password ? data.password : undefined
       }
       await EmployeeService.update(id!, payload)
       toast({
@@ -166,7 +169,6 @@ const EmployeeEdit = () => {
                     id='password'
                     placeholder='Mật khẩu'
                     {...field}
-                    disabled
                     className='dark:bg-gray-700 dark:text-gray-100'
                   />
                 </FormControl>
@@ -206,7 +208,7 @@ const EmployeeEdit = () => {
                   Địa chỉ
                 </Label>
                 <FormControl>
-                  <Input
+                  <Textarea
                     id='address'
                     placeholder='Địa chỉ'
                     {...field}
