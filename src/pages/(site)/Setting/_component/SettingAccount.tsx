@@ -59,7 +59,7 @@ const SettingAccount = () => {
     try {
       const updatedData = {
         ...data,
-        avatar: avatar || data.avatar
+        avatar: avatar ? avatar : data.avatar || undefined
       }
 
       if (auth.user && auth.user._id) {
