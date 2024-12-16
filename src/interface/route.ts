@@ -6,5 +6,5 @@ export interface IRoute {
   layout?: React.FC<{ children: React.ReactNode }>
   children?: IRoute[]
   requiredRole?: string[]
-  guard?: () => boolean
+  guard?: string[]
 }

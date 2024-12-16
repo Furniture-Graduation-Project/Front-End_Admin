@@ -2,15 +2,29 @@ import { Route, Routes, Navigate } from 'react-router-dom'
 import { IRoute } from '@/interface/route'
 import routes from '@/routes'
 import { ThemeProvider } from './context/ThemeProvider'
-import { AuthProvider, useAuth } from './context/AuthContext'
+import { AuthProvider } from './context/AuthContext'
+import useCheckPermissions from './hooks/useCheckPermissions'
+import { Loader2 } from 'lucide-react'
+// import { useEffect } from 'react'
 
 const renderRoutes = (routes: IRoute[]) =>
   routes.map(({ path, component: Component, layout: Layout, children, guard }: IRoute) => {
     const Element = () => {
-      const { isLoading } = useAuth()
-      const hasAccess = guard ? guard() : true
-      // if (!token) return <Navigate to='/' />
-      if (!hasAccess && !isLoading) return <Navigate to='/unauthorized' />
+      const hasPermission = useCheckPermissions(guard || [])
+
+      if (hasPermission === null && guard) {
+        return (
+          <div className='fixed top-0 left-0 z-[999] w-full h-full flex items-center justify-center bg-white'>
+            <Loader2 size='100' className='animate-spin' />
+          </div>
+        )
+      }
+      if (hasPermission === false && guard) {
+        console.log('lioad')
+
+        return <Navigate to='/unauthorized' />
+      }
+
       return Layout ? (
         <Layout>
           <Component />
@@ -28,6 +42,14 @@ const renderRoutes = (routes: IRoute[]) =>
   })
 
 const App = () => {
+  // useEffect(() => {
+  //   const handleRightClick = (e: MouseEvent) => e.preventDefault()
+  //   document.addEventListener('contextmenu', handleRightClick)
+  //   return () => {
+  //     document.removeEventListener('contextmenu', handleRightClick)
+  //   }
+  // }, [])
+
   return (
     <AuthProvider>
       <ThemeProvider defaultTheme='light' storageKey='vite-ui-theme'>
