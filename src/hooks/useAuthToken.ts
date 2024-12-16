@@ -12,8 +12,7 @@ export const useAuthToken = () => {
 
   useEffect(() => {
     const refreshAuthToken = async () => {
-      if (!token) return
-      if (isTokenExpired(token)) {
+      if (token && isTokenExpired(token)) {
         try {
           const refreshedToken = await EmployeeService.refreshToken()
           if (refreshedToken) {
