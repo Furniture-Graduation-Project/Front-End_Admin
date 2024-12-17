@@ -7,12 +7,12 @@ const Unauthorized: React.FC = () => {
       <div className='text-center'>
         <h1 className='text-4xl sm:text-5xl font-bold text-gray-800 opacity-90'>Truy cập không hợp lệ</h1>
         <p className='mt-4 text-lg text-gray-600'>Bạn không có quyền xem trang này.</p>
-        <Link to='/dashboard' className='flex justify-center mt-8'>
+        <Link to='/' className='flex justify-center mt-8'>
           <Button
             variant={'outline'}
             className='px-6 py-3 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 transition duration-300 text-lg font-semibold'
           >
-            Quay về trang chính
+            Quay về trang đăng nhập
           </Button>
         </Link>
       </div>

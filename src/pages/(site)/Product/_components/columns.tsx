@@ -73,8 +73,8 @@ export const columns: ColumnDef<IProduct>[] = [
       return (
         <div className='flex justify-start'>
           <div className='flex flex-col items-end'>
-            <p className='whitespace-nowrap'>{formatPrice(minPrice)} Đ</p>
-            <p className='whitespace-nowrap'>{formatPrice(maxPrice)} Đ</p>
+            <p className='whitespace-nowrap'>{formatPrice(minPrice)} đ</p>
+            <p className='whitespace-nowrap'>{formatPrice(maxPrice)} đ</p>
           </div>
         </div>
       )

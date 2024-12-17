@@ -9,6 +9,7 @@ import { EmployeeService } from '@/services/employee'
 import { useState } from 'react'
 import { ICreateEmployee } from '@/interface/employee'
 import { toast } from '@/hooks/use-toast'
+import { Textarea } from '@/components/ui/textarea'
 
 const FormSchema = z.object({
   fullName: z.string().min(1, { message: 'Tên đầy đủ không được để trống.' }),
@@ -165,7 +166,7 @@ const AddEmployeeForm = () => {
                   Địa chỉ
                 </Label>
                 <FormControl>
-                  <Input
+                  <Textarea
                     id='address'
                     placeholder='Địa chỉ'
                     {...field}

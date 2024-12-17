@@ -5,17 +5,16 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormMessage } 
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Textarea } from '@/components/ui/textarea'
+import { useMultipleCategoryQuery } from '@/hooks/querys/useCategoryQuery'
+import { useMultipleMaterialQuery } from '@/hooks/querys/useMaterialQuery'
 import { toast } from '@/hooks/use-toast'
-import { ICategory } from '@/interface/category'
-import { IMaterial } from '@/interface/material'
 import { ProductFormData } from '@/interface/product'
-import { CategoryService } from '@/services/category'
-import { MaterialService } from '@/services/material'
 import { ProductService } from '@/services/product'
 import { uploadFileCloudinary } from '@/utils/upload-cloudinary'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { CloudUpload, X } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { z } from 'zod'
@@ -31,12 +30,11 @@ const FormSchema = z.object({
 })
 
 const AddProductForm = () => {
-  const [categories, setCategories] = useState<ICategory[]>([])
-  const [materials, setMaterials] = useState<IMaterial[]>([])
+  const { data: categories } = useMultipleCategoryQuery()
+  const { data: materials } = useMultipleMaterialQuery()
   const [files, setFiles] = useState<File[] | null>(null)
   const [galleryPreview, setGalleryPreview] = useState<string[]>([])
   const [loading, setLoading] = useState(false)
-
   const dropZoneConfig = {
     maxFiles: 5,
     maxSize: 1024 * 1024 * 4,
@@ -58,30 +56,12 @@ const AddProductForm = () => {
     }
   })
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const res = await CategoryService.getAllCategories()
-        setCategories(res.data.data || [])
-      } catch (error) {
-        console.error('Lỗi khi lấy danh mục:', error)
-      }
-    }
-    const fetchMaterials = async () => {
-      try {
-        const res = await MaterialService.getAllMaterials()
-        setMaterials(res.data.data || [])
-      } catch (error) {
-        console.error('Lỗi khi lấy chất liệu:', error)
-      }
-    }
-    fetchMaterials()
-    fetchCategories()
-  }, [])
-
   const handleSubmit = async (data: any) => {
     try {
-      const product = await ProductService.create({ ...data, images: files || ['http://res.cloudinary.com/dfykg7wtt/image/upload/v1733647723/test/ldlnhcdhjd1z82run81q.png'] })
+      const product = await ProductService.create({
+        ...data,
+        images: files || ['http://res.cloudinary.com/dfykg7wtt/image/upload/v1733647723/test/ldlnhcdhjd1z82run81q.png']
+      })
       toast({
         title: 'Thêm thành công',
         description: `Sản phẩm ${data.name} đã được thêm thành công.`,
@@ -147,7 +127,9 @@ const AddProductForm = () => {
   }
 
   const isLoading = form.formState.isSubmitting
-
+  if (!categories || !materials) {
+    return <div>Loading...</div>
+  }
   return (
     <div className='bg-[#F5F6FA] dark:bg-gray-900 h-screen'>
       <Form {...form}>
@@ -193,7 +175,7 @@ const AddProductForm = () => {
                       className='dark:bg-gray-700 dark:text-gray-100 border rounded-md p-1 min-w-[150px]'
                     >
                       <option value=''>Chọn danh mục</option>
-                      {categories.map((category) => (
+                      {categories?.data.map((category) => (
                         <option key={category._id} value={category._id}>
                           {category.categoryName}
                         </option>
@@ -221,7 +203,7 @@ const AddProductForm = () => {
                       className='dark:bg-gray-700 dark:text-gray-100 border rounded-md p-1 min-w-[150px]'
                     >
                       <option value=''>Chọn chất liệu</option>
-                      {materials.map((material) => (
+                      {materials?.data.map((material) => (
                         <option key={material._id} value={material._id}>
                           {material.materialName}
                         </option>
@@ -267,7 +249,7 @@ const AddProductForm = () => {
                   Mô tả
                 </Label>
                 <FormControl>
-                  <Input
+                  <Textarea
                     disabled={isLoading}
                     id='description'
                     placeholder='Mô tả sản phẩm'
@@ -351,7 +333,7 @@ const AddProductForm = () => {
                   Chi tiết chất liệu
                 </Label>
                 <FormControl>
-                  <Input
+                  <Textarea
                     disabled={isLoading}
                     id='materialDetail'
                     placeholder='Chi tiết chất liệu'
