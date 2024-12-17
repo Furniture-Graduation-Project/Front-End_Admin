@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button'
+import { useAuth } from '@/context/AuthContext'
 import useAccountMutation from '@/hooks/mutations/useAccountMutation'
 import useAccountQuery from '@/hooks/querys/useAccountQuery'
 import { toast } from '@/hooks/use-toast'
@@ -15,6 +16,8 @@ const AccountDetail = () => {
   })
   const { data } = useAccountQuery(id)
   const user = data?.data || {}
+  const auth = useAuth()
+  const userRole = auth.user?.role
 
   const onLock = () => {
     if (id) {
@@ -69,17 +72,18 @@ const AccountDetail = () => {
           </div>
           <div className='mt-6 flex flex-wrap gap-4 justify-between'>
             <div className='flex gap-2'>
-              {user.data?.active ? (
-                <Button onClick={onLock} variant='outline' color='yellow' className='mr-2'>
-                  <Lock size={18} className='mr-2 text-yellow-500' />
-                  Khóa tài khoản
-                </Button>
-              ) : (
-                <Button onClick={onUnlock} variant='outline' color='green' className='mr-2'>
-                  <Unlock size={18} className='mr-2 text-green-500' />
-                  Mở khóa tài khoản
-                </Button>
-              )}
+              {(userRole === 'admin' || userRole === 'support') &&
+                (user.data?.active ? (
+                  <Button onClick={onLock} variant='outline' color='yellow' className='mr-2'>
+                    <Lock size={18} className='mr-2 text-yellow-500' />
+                    Khóa tài khoản
+                  </Button>
+                ) : (
+                  <Button onClick={onUnlock} variant='outline' color='green' className='mr-2'>
+                    <Unlock size={18} className='mr-2 text-green-500' />
+                    Mở khóa tài khoản
+                  </Button>
+                ))}
             </div>
           </div>
         </div>
