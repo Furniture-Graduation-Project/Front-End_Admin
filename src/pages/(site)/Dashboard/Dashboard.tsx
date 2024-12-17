@@ -3,30 +3,40 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import RevenueChart from './components/DashboardRevenueChart';
+// import { SalesChart } from './components/DashboardSaleChart';
 import DashboardHeader from './components/DashboardHeader';
 import { useLatestOrders } from '@/hooks/querys/useOrderQuery';
 import { Link } from 'react-router-dom';
 import DashboardPieChart from './components/DashboardPieChart';
+import DashboardTopProduct from './components/DashboardTopProducts';
+import { formatCurrency } from '@/utils/formatCurrency';
+import { formatDate } from '@/utils/formatDate';
 
 const Dashboard = () => {
   // Lấy dữ liệu từ custom hook
   const { data: orders, isLoading, isError } = useLatestOrders();
 
   return (
-    <div className='min-h-screen bg-[#F5F6FA] dark:bg-gray-800'>
+    <div className='min-h-screen bg-[#F5F6FA]'>
       {/* Header */}
-      <div className='ml-5 mr-5 mt-7 bg-white p-5 rounded-lg dark:bg-gray-800'>
+      <div className='ml-5 mr-5 mt-7 bg-white p-5 rounded-lg'>
         <DashboardHeader />
       </div>
 
       {/* Chi tiết bán hàng */}
       <div className='bg-white ml-5 mr-5 rounded-lg mt-7 dark:bg-gray-800'>
-        <p className='p-5 font-bold text-[24px]'>Chi tiết bán hàng</p>
-        <div className='p-5 dark:bg-gray-800'>
-          <DashboardPieChart />
+        <p className='p-5 font-bold text-[24px]'>Thống kê</p>
+        <div className='p-5'>
+        <DashboardPieChart />
         </div>
       </div>
-
+      {/* Danh sách sản phẩm bán chạy nhất */}
+      <div className='bg-white ml-5 mr-5 rounded-lg mt-7 dark:bg-gray-800'>
+        <p className='p-5 font-bold text-[24px]'>Top sản phẩm bán chạy nhất</p>
+        <div className='p-5'>
+          <DashboardTopProduct />
+        </div>
+      </div>
       {/* Doanh thu */}
       <div className='bg-white ml-5 mr-5 rounded-lg mt-7 dark:bg-gray-800'>
         <p className='p-5 font-bold text-[24px]'>Thống kê danh mục</p>
@@ -34,10 +44,9 @@ const Dashboard = () => {
           <RevenueChart />
         </div>
       </div>
-
       {/* Chi tiết giao dịch */}
       <div className='bg-white ml-5 mr-5 rounded-lg mt-7 dark:bg-gray-800'>
-        <p className='p-5 font-bold text-[24px]'>Chi tiết giao dịch</p>
+        <p className='p-5 font-bold text-[24px]'>Giao dịch gần đây</p>
         <div className='ml-5 mr-5'>
           {isLoading && (
             <div className='text-center p-5 text-gray-500'>
@@ -71,10 +80,9 @@ const Dashboard = () => {
                       <TableCell>{order?.orderPhone || 'Không xác định'}</TableCell>
                       <TableCell>{order?.orderAddress || 'Không xác định'}</TableCell>
                       <TableCell>
-                        {order?.createdAt
-                          ? `${new Date(order.createdAt).toLocaleDateString()}`: 'Không xác định'}
+                        {order?.createdAt ? formatDate(order.createdAt) : 'Không xác định'}
                       </TableCell>
-                      <TableCell>{order?.totalPrice}</TableCell>
+                      <TableCell>{formatCurrency(order?.totalPrice)}</TableCell>
                       <TableCell>
                       <Button className=" bg-black hover:bg text-white px-4 py-2 rounded">
                           <Link to={`/order/edit/${order?._id}`} className="flex items-center">
