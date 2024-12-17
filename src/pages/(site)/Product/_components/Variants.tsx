@@ -261,10 +261,10 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
     try {
       if (isEditMode && currentItemId) {
         const currentItem = productItems.find((item) => item._id === currentItemId)
-        if (currentItem && payload.stock) {
-          payload.stock += currentItem.stock
+        if (currentItem && payload.inStock) {
+          currentItem.stock += payload.inStock
         }
-        await ProductItemService.update(currentItemId, payload)
+        await ProductItemService.update(currentItemId, currentItem)
         showToast('Thành công', 'Cập nhật biến thể thành công.', 'success')
       } else {
         await ProductItemService.create(payload)
@@ -289,8 +289,8 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
     setIsEditMode(true)
     setCurrentItemId(item._id || null)
     setValue('outStock', item.outStock || 0)
-    setValue('stock', 0)
-    setValue('inStock', item.stock || 0)
+    setValue('inStock', 0)
+    setValue('stock', item.stock || 0)
     setValue('price', item.price)
     setValue('image', image || item.image)
     setValue('SKU', item.SKU)
@@ -470,7 +470,7 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
                   <Input
                     type='number'
                     min={0}
-                    {...register('inStock', { valueAsNumber: true, required: 'Số lượng không được để trống', min: 0 })}
+                    {...register('stock', { valueAsNumber: true, required: 'Số lượng không được để trống', min: 0 })}
                     className='dark:bg-gray-700 dark:text-gray-100 my-2'
                     disabled
                   />
@@ -481,10 +481,14 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
                 <Input
                   type='number'
                   min={0}
-                  {...register('stock', { valueAsNumber: true, required: 'Số lượng không được để trống', min: 0 })}
+                  {...register('inStock', {
+                    valueAsNumber: true,
+                    required: 'Số lượng không được để trống',
+                    min: { value: 0, message: 'Số lượng thêm vào phải là số không âm' }
+                  })}
                   className='dark:bg-gray-700 dark:text-gray-100 my-2'
                 />
-                {errors.stock && <p className='text-red-500 py-2 text-sm'>Số lượng thêm vào phải là số không âm</p>}
+                {errors.inStock && <p className='text-red-500 py-2 text-sm'>{errors.inStock.message}</p>}
               </div>
               <div>
                 <Label className='dark:text-gray-100'>Giá</Label>
