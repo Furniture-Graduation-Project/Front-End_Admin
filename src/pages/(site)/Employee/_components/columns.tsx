@@ -51,7 +51,7 @@ export const columns: ColumnDef<IEmployee>[] = [
     cell: ({ row }) => {
       const roleMap: Record<string, string> = {
         admin: 'Quản trị viên',
-        product: 'Quản lý kho',
+        product: 'Nhân viên kho',
         order: 'Nhân viên bán hàng',
         support: 'Nhân viên hỗ trợ'
       }
