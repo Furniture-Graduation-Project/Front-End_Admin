@@ -263,8 +263,9 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
         const currentItem = productItems.find((item) => item._id === currentItemId)
         if (currentItem && payload.inStock) {
           currentItem.stock += payload.inStock
+          payload.stock = currentItem.stock
         }
-        await ProductItemService.update(currentItemId, currentItem)
+        await ProductItemService.update(currentItemId, payload)
         showToast('Thành công', 'Cập nhật biến thể thành công.', 'success')
       } else {
         await ProductItemService.create(payload)
