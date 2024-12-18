@@ -1,42 +1,42 @@
+import { AxiosResponse } from 'axios'
 import { axiosInstance } from '../config/axios'
 import { IReview } from '../interface/review'
+import { IApiResponse } from '@/interface/apiRespose'
+import { PaginationState } from '@tanstack/react-table'
 
-const API_URL = '/reviews'
+const API_URL = '/review'
 
 export const ReviewService = {
-  // Lấy tất cả review
   getAllReviews: async (): Promise<IReview[]> => {
     const response = await axiosInstance.get(API_URL)
     return response.data.data
   },
 
-  // Lấy review theo ID
   getReviewById: async (id: string): Promise<IReview> => {
     const response = await axiosInstance.get(`${API_URL}/${id}`)
     return response.data
   },
 
-  // Tạo review mới
   createReview: async (review: IReview): Promise<IReview> => {
     const response = await axiosInstance.post(API_URL, review)
     return response.data
   },
-
-  // Cập nhật review theo ID
   updateReviewById: async (id: string, updatedReview: IReview): Promise<IReview> => {
     const response = await axiosInstance.put(`${API_URL}/${id}`, updatedReview)
     return response.data
   },
-
-  // Xóa review theo ID
   deleteReviewById: async (id: string): Promise<IReview> => {
     const response = await axiosInstance.delete(`${API_URL}/${id}`)
     return response.data
   },
 
-  // Lấy review theo ID sản phẩm
-  getReviewsByProductId: async (productId: string): Promise<IReview[]> => {
-    const response = await axiosInstance.get(`${API_URL}/product/${productId}`)
-    return response.data.data
+  getReviewsByProductId: async (
+    productId: string,
+    pagination: PaginationState
+  ): Promise<AxiosResponse<IApiResponse<IReview[]>>> => {
+    const response = await axiosInstance.get(
+      `${API_URL}/product/${productId}?page=${pagination.pageIndex}&limit=${pagination.pageSize}&status=all`
+    )
+    return response
   }
 }
