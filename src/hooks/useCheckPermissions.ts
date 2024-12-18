@@ -1,11 +1,26 @@
+import { useEffect, useState } from 'react'
 import { useAuth } from '@/context/AuthContext'
 
-const useCheckPermissions = (requiredRoles: string[]): boolean => {
+const useCheckPermissions = (requiredRoles: string[]): boolean | null => {
   const { user } = useAuth()
-  const userRole = user?.role
+  const [hasPermission, setHasPermission] = useState<boolean | null>(null)
 
-  if (!userRole) return false
+  useEffect(() => {
+    if (user === null) {
+      const timeout = setTimeout(() => {
+        setHasPermission(false)
+      }, 10000)
+      return () => clearTimeout(timeout)
+    }
+    if (!user?.role) {
+      setHasPermission(false)
+      return
+    }
+    const isAllowed = requiredRoles.includes(user.role)
+    setHasPermission(isAllowed)
+  }, [user, requiredRoles])
 
-  return requiredRoles.includes(userRole)
+  return hasPermission
 }
+
 export default useCheckPermissions

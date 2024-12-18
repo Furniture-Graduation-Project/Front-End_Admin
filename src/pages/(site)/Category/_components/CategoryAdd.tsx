@@ -10,6 +10,7 @@ import { useState } from 'react'
 import { ICategory } from '@/interface/category'
 import { toast } from '@/hooks/use-toast'
 import { useNavigate } from 'react-router-dom'
+import { Textarea } from '@/components/ui/textarea'
 
 const FormSchema = z.object({
   categoryName: z.string().min(1, { message: 'Tên danh mục không được để trống.' }),
@@ -17,7 +18,7 @@ const FormSchema = z.object({
 })
 
 const AddCategoryForm = () => {
-  const [loading, setLoading] = useState(false)
+  const [, setLoading] = useState(false)
   const navigate = useNavigate()
   const form = useForm<ICategory>({
     resolver: zodResolver(FormSchema),
@@ -97,7 +98,7 @@ const AddCategoryForm = () => {
                   Mô tả
                 </Label>
                 <FormControl>
-                  <Input
+                  <Textarea
                     id='description'
                     placeholder='Mô tả danh mục'
                     {...field}

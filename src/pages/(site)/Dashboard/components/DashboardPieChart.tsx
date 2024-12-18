@@ -50,8 +50,8 @@ const DashboardPieChart = () => {
   return (
     <Card className='dark:bg-'>
       <CardHeader>
-        <CardTitle className='text-black'>Biểu đồ cột thống kê sản phẩm </CardTitle>
-        <CardDescription>Hiển thị tổng số hàng bán được trong 6 tháng </CardDescription>
+        <CardTitle className='text-black'>Biểu đồ cột thống kê danh mục</CardTitle>
+        <CardDescription>Hiển thị tổng số lượt truy cập trong 6 tháng qua</CardDescription>
       </CardHeader>
       <CardContent style={{ height: '500px' }}>
         <ResponsiveContainer width='100%' height='100%'>
@@ -76,18 +76,14 @@ const DashboardPieChart = () => {
             />
             <YAxis tick={{ fontSize: 12 }} />
             <Tooltip />
-            <Legend wrapperStyle={{ fontSize: '12px' }} /> {/* Font nhỏ hơn cho Legend */}
-            {/* Tự động render các cột dựa trên dữ liệu */}
-            {Object.keys(chartData[0] || {}) // Lấy các key từ phần tử đầu tiên của data
-          .filter((key) => key !== 'month') // Loại bỏ key "month"
+            {Object.keys(chartData[0] || {})
+          .filter((key) => key !== 'month')
           .map((key, index) => (
-            // Duyệt qua các item của chartData và kiểm tra nếu có giá trị > 0 cho cột key
             <Bar
               dataKey={key}
               fill={`hsl(${index * 50}, 60%, 50%)`}
               minPointSize={1}
             >
-              {/* Kiểm tra nếu có giá trị > 0 trong tất cả các item của chartData */}
                 <LabelList dataKey={key} position="top" />
             </Bar>
           ))}
@@ -98,7 +94,7 @@ const DashboardPieChart = () => {
         <div className='flex w-full items-start gap-2 text-sm'>
           <div className='grid gap-2'>
             <div className='flex items-center gap-2 font-medium leading-none'></div>
-            <div className='flex items-center gap-2 leading-none text-muted-foreground'>Tháng 7 - Tháng 12 Năm 2024</div>
+            <div className='flex items-center gap-2 leading-none text-muted-foreground'>Tháng 7 - Tháng 1 Năm 2025</div>
           </div>
         </div>
       </CardFooter>

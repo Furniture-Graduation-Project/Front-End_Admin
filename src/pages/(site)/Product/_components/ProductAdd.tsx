@@ -5,6 +5,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormMessage } 
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Textarea } from '@/components/ui/textarea'
 import { useMultipleCategoryQuery } from '@/hooks/querys/useCategoryQuery'
 import { useMultipleMaterialQuery } from '@/hooks/querys/useMaterialQuery'
 import { toast } from '@/hooks/use-toast'
@@ -248,7 +249,7 @@ const AddProductForm = () => {
                   Mô tả
                 </Label>
                 <FormControl>
-                  <Input
+                  <Textarea
                     disabled={isLoading}
                     id='description'
                     placeholder='Mô tả sản phẩm'
@@ -332,7 +333,7 @@ const AddProductForm = () => {
                   Chi tiết chất liệu
                 </Label>
                 <FormControl>
-                  <Input
+                  <Textarea
                     disabled={isLoading}
                     id='materialDetail'
                     placeholder='Chi tiết chất liệu'

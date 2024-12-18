@@ -7,10 +7,8 @@ import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-r
 const DataTablePagination = ({ table }: ITable<any>) => {
   return (
     <CardFooter className='flex flex-wrap items-center justify-between space-x-2 py-4 border-t'>
-      {/* <div className='flex-1 text-sm text-muted-foreground'>
-        {table.getFilteredSelectedRowModel().rows.length} trên {table.getRowCount()} hàng được chọn.
-      </div> */}
-      <div className='flex items-center space-x-6 lg:space-x-8 ml-auto'>
+      <div className='flex-1 text-sm text-muted-foreground'></div>
+      <div className='flex items-center space-x-6 lg:space-x-8'>
         <div className='flex w-[100px] items-center justify-center text-sm font-medium'>
           Trang {table.getState().pagination.pageIndex + 1} trên {table.getPageCount()}
         </div>

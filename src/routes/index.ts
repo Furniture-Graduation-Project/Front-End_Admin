@@ -2,7 +2,6 @@ import { IRoute } from '@/interface/route'
 import AuthLayout from '@/layouts/AuthLayout'
 import MainLayout from '@/layouts/MainLayout'
 import Signin from '@/pages/(auth)/Signin'
-import Signup from '@/pages/(auth)/Signup'
 import page404 from '@/pages/(site)/404/404'
 import MessageTexting from '@/pages/(site)/Conversation/components/MessageTexting/MessageTexting'
 import Conversation from '@/pages/(site)/Conversation/Conversation'
@@ -37,19 +36,22 @@ import BlogList from '@/pages/(site)/Blog/BlogList'
 import BlogAdd from '@/pages/(site)/Blog/BlogAdd'
 import BlogEdit from '@/pages/(site)/Blog/BlogEdit'
 import Blog from '@/pages/(site)/Blog/Blog'
-import Unauthorized from '@/pages/(site)/Unauthorized/unauthorized'
-import useCheckPermissions from '@/hooks/useCheckPermissions'
 import Material from '@/pages/(site)/Material/Material'
 import AddMaterialForm from '@/pages/(site)/Material/_components/MaterialAdd'
 import MaterialEdit from '@/pages/(site)/Material/_components/MaterialEdit'
 import MaterialList from '@/pages/(site)/Material/_components/MaterialList'
 import ProductInfo from '@/pages/(site)/Product/_components/ProductInfomation'
 import OrderReturn from '@/pages/(site)/Order/components/OrderReturn'
+import Unauthorized from '@/pages/(site)/Unauthorized/unauthorized'
 
 const routes: IRoute[] = [
   { path: '/', component: Signin, layout: AuthLayout },
-  { path: '/signup', component: Signup, layout: AuthLayout },
-  { path: '/dashboard', component: Dashboard, layout: MainLayout },
+  {
+    path: '/dashboard',
+    component: Dashboard,
+    layout: MainLayout,
+    guard: ['product', 'admin', 'support', 'order']
+  },
 
   {
     path: '/category',
@@ -59,17 +61,17 @@ const routes: IRoute[] = [
       {
         path: '',
         component: CategoryList,
-        guard: () => useCheckPermissions(['product', 'admin'])
+        guard: ['product', 'admin']
       },
       {
         path: 'add',
         component: CategoryAdd,
-        guard: () => useCheckPermissions(['product', 'admin'])
+        guard: ['product', 'admin']
       },
       {
         path: 'edit/:id',
         component: CategoryEdit,
-        guard: () => useCheckPermissions(['product', 'admin'])
+        guard: ['product', 'admin']
       }
     ]
   },
@@ -78,9 +80,9 @@ const routes: IRoute[] = [
     component: Material,
     layout: MainLayout,
     children: [
-      { path: '', component: MaterialList, guard: () => useCheckPermissions(['product', 'admin']) },
-      { path: 'add', component: AddMaterialForm, guard: () => useCheckPermissions(['product', 'admin']) },
-      { path: 'edit/:id', component: MaterialEdit, guard: () => useCheckPermissions(['product', 'admin']) }
+      { path: '', component: MaterialList, guard: ['product', 'admin'] },
+      { path: 'add', component: AddMaterialForm, guard: ['product', 'admin'] },
+      { path: 'edit/:id', component: MaterialEdit, guard: ['product', 'admin'] }
     ]
   },
   {
@@ -91,22 +93,22 @@ const routes: IRoute[] = [
       {
         path: '',
         component: ProductList,
-        guard: () => useCheckPermissions(['product', 'admin', 'support', 'order'])
+        guard: ['product', 'admin', 'support', 'order']
       },
       {
         path: 'add',
         component: ProductAdd,
-        guard: () => useCheckPermissions(['product', 'admin'])
+        guard: ['product', 'admin']
       },
       {
         path: 'edit/:id',
         component: ProductEdit,
-        guard: () => useCheckPermissions(['product', 'admin'])
+        guard: ['product', 'admin']
       },
       {
         path: 'info/:id',
         component: ProductInfo,
-        guard: () => useCheckPermissions(['product', 'admin', 'support', 'order'])
+        guard: ['product', 'admin', 'support', 'order']
       }
     ]
   },
@@ -118,12 +120,12 @@ const routes: IRoute[] = [
   //     {
   //       path: '',
   //       component: MessageList,
-  //       guard: () => useCheckPermissions(['support', 'admin'])
+  //       guard:['support', 'admin'])
   //     },
   //     {
   //       path: 'texting/:id',
   //       component: MessageTexting,
-  //       guard: () => useCheckPermissions(['support', 'admin'])
+  //       guard:['support', 'admin'])
   //     }
   //   ]
   // },
@@ -132,9 +134,9 @@ const routes: IRoute[] = [
   //   component: Voucher,
   //   layout: MainLayout,
   //   children: [
-  //     { path: '', component: VoucherList, guard: () => useCheckPermissions(['product', 'admin']) },
-  //     { path: 'add', component: VoucherAdd, guard: () => useCheckPermissions(['product', 'admin']) },
-  //     { path: ':id/edit', component: VoucherEdit, guard: () => useCheckPermissions(['product', 'admin']) }
+  //     { path: '', component: VoucherList, guard:['product', 'admin']) },
+  //     { path: 'add', component: VoucherAdd, guard:['product', 'admin']) },
+  //     { path: ':id/edit', component: VoucherEdit, guard:['product', 'admin']) }
   //   ]
   // },
   {
@@ -145,17 +147,17 @@ const routes: IRoute[] = [
       {
         path: '',
         component: OrderList,
-        guard: () => useCheckPermissions(['order', 'admin'])
+        guard: ['order', 'admin']
       },
       {
         path: 'edit/:id',
         component: OrderEdit,
-        guard: () => useCheckPermissions(['order', 'admin'])
+        guard: ['order', 'admin']
       },
       {
         path: 'return/:id',
         component: OrderReturn,
-        guard: () => useCheckPermissions(['order', 'admin'])
+        guard: ['order', 'admin']
       }
     ]
   },
@@ -165,9 +167,9 @@ const routes: IRoute[] = [
     component: Blog,
     layout: MainLayout,
     children: [
-      { path: '', component: BlogList, guard: () => useCheckPermissions(['support', 'admin']) },
-      { path: 'add', component: BlogAdd, guard: () => useCheckPermissions(['support', 'admin']) },
-      { path: 'edit/:id', component: BlogEdit, guard: () => useCheckPermissions(['support', 'admin']) }
+      { path: '', component: BlogList, guard: ['support', 'admin'] },
+      { path: 'add', component: BlogAdd, guard: ['support', 'admin'] },
+      { path: 'edit/:id', component: BlogEdit, guard: ['support', 'admin'] }
     ]
   },
   {
@@ -178,17 +180,17 @@ const routes: IRoute[] = [
       {
         path: '',
         component: EmployeeList,
-        guard: () => useCheckPermissions(['admin'])
+        guard: ['admin']
       },
       {
         path: 'add',
         component: AddEmployeeForm,
-        guard: () => useCheckPermissions(['admin'])
+        guard: ['admin']
       },
       {
         path: 'edit/:id',
         component: EmployeeEdit,
-        guard: () => useCheckPermissions(['admin'])
+        guard: ['admin']
       }
     ]
   },
@@ -215,12 +217,12 @@ const routes: IRoute[] = [
       {
         path: '',
         component: SettingAccount,
-        guard: () => useCheckPermissions(['support', 'admin', 'product', 'order'])
+        guard: ['support', 'admin', 'product', 'order']
       },
       {
         path: 'security',
         component: SettingPassword,
-        guard: () => useCheckPermissions(['support', 'admin', 'product', 'order'])
+        guard: ['support', 'admin', 'product', 'order']
       }
     ]
   },

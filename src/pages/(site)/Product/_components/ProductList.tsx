@@ -16,9 +16,7 @@ const ProductList = () => {
   const [pagination, setPagination] = useState<PaginationState>(DEFAULT_PAGE_SIZE)
   const [status, setStatus] = useState('all')
   const [selectedCategory, setSelectedCategory] = useState('all')
-
   const { data, isLoading, isError, refetch } = useMultipleProductQuery(pagination, status, selectedCategory)
-
   const auth = useAuth()
   const userRole = auth.user?.role
 
@@ -37,7 +35,7 @@ const ProductList = () => {
       pageIndex: 0
     }))
     refetch()
-  }, [status, selectedCategory])
+  }, [status, selectedCategory, pagination.pageSize])
 
   return (
     <>

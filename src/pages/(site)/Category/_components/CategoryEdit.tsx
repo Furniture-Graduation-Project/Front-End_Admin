@@ -10,6 +10,7 @@ import { z } from 'zod'
 import { CategoryService } from '@/services/category'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
 import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
 
 const FormSchema = z.object({
   categoryName: z.string().min(1, { message: 'Tên danh mục không được để trống.' }),
@@ -19,7 +20,7 @@ const FormSchema = z.object({
 const CategoryEdit = () => {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const [category, setCategory] = useState<ICategory | null>(null)
+  const [, setCategory] = useState<ICategory | null>(null)
   const [loading, setLoading] = useState(true)
 
   const form = useForm<ICategory>({
@@ -120,7 +121,7 @@ const CategoryEdit = () => {
                   Mô tả
                 </Label>
                 <FormControl>
-                  <Input
+                  <Textarea
                     id='description'
                     placeholder='Mô tả'
                     {...field}

@@ -60,7 +60,6 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
   const [showDeleted, setShowDeleted] = useState(false)
   const [restoreItemId, setRestoreItemId] = useState<string | null>(null)
   const [isRestoreDialogOpen, setIsRestoreDialogOpen] = useState(false)
-
   const queryClient = useQueryClient()
   const toggleShowDeleted = () => {
     setShowDeleted((prev) => !prev)
@@ -71,11 +70,44 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
     setIsRestoreDialogOpen(true)
   }
 
+  const showToast = (title: string, description: string, variant: 'success' | 'destructive') => {
+    toast({
+      title,
+      description,
+      variant,
+      duration: 3000
+    })
+  }
+
   const handleRestoreConfirmed = async () => {
     if (restoreItemId) {
       try {
         const response = await ProductItemService.getById(restoreItemId)
         const productItem = response.data
+        const isConflictWithVariantlessActiveProduct = productItems.some(
+          (item) => item.variants.length === 0 && item.status === 'active' && item.productId === productItem.productId
+        )
+
+        if (isConflictWithVariantlessActiveProduct) {
+          showToast(
+            'Lỗi',
+            'Không thể khôi phục sản phẩm vì đã có sản phẩm không có biến thể ở trạng thái "active".',
+            'destructive'
+          )
+          return
+        }
+        const isConflictWithActiveVariantProduct = productItems.some(
+          (item) => item.variants.length > 0 && item.status === 'active' && item.productId === productItem.productId
+        )
+
+        if (isConflictWithActiveVariantProduct && productItem.variants.length === 0) {
+          showToast(
+            'Lỗi',
+            'Không thể khôi phục sản phẩm vì đã có sản phẩm có biến thể ở trạng thái "active" .',
+            'destructive'
+          )
+          return
+        }
         const isExactDuplicate = productItems.some((item) => {
           const sortedExistingVariants = [...item.variants].sort((a, b) => a.variant.localeCompare(b.variant))
           const sortedInputVariants = [...productItem.variants].sort((a, b) => a.variant.localeCompare(b.variant))
@@ -93,30 +125,15 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
         })
 
         if (isExactDuplicate) {
-          toast({
-            title: 'Lỗi',
-            description: 'Không thể khôi phục sản phẩm vì đã có sản phẩm trùng lặp.',
-            variant: 'destructive',
-            duration: 3000
-          })
+          showToast('Lỗi', 'Không thể khôi phục sản phẩm vì đã có sản phẩm trùng lặp.', 'destructive')
           return
         }
         const updatedData = { ...productItem, status: 'active' }
         await ProductItemService.update(restoreItemId, updatedData)
-        toast({
-          title: 'Thành công',
-          description: 'Sản phẩm đã được khôi phục.',
-          variant: 'success',
-          duration: 3000
-        })
+        showToast('Thành công', 'Sản phẩm đã được khôi phục.', 'success')
         fetchProductItems()
       } catch (error) {
-        toast({
-          title: 'Lỗi',
-          description: 'Đã có lỗi xảy ra trong quá trình khôi phục.',
-          variant: 'destructive',
-          duration: 3000
-        })
+        showToast('Lỗi', 'Đã có lỗi xảy ra trong quá trình khôi phục.', 'destructive')
       } finally {
         setIsRestoreDialogOpen(false)
         setRestoreItemId(null)
@@ -134,34 +151,19 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
         const productItem = await ProductItemService.getById(deleteItemId)
         const updatedData = { ...productItem, status: 'deleted' }
         await ProductItemService.update(deleteItemId, updatedData)
-        toast({
-          title: 'Thành công',
-          description: 'Biến thể đã bị xóa.',
-          variant: 'success',
-          duration: 3000
-        })
+        showToast('Thành công', 'Biến thể đã bị xóa.', 'success')
         await fetchProductItems()
         const productItems = await ProductItemService.getByProductId(productId)
         const allDisabled = productItems?.data?.data.every((item: ProductItem) => item.status === 'deleted')
-        if (allDisabled) {
-          const product = await ProductService.getById(productId)
+        const product = await ProductService.getById(productId)
+        if (allDisabled && product?.data?.data.status !== 'creating') {
           const updatedData = { ...product, status: 'creating' }
           await ProductService.update(productId, updatedData as any)
-          toast({
-            title: 'Chuyển trạng thái thành công',
-            description: `Sản phẩm đã được chuyển sang danh sách " Chưa bán ".`,
-            variant: 'success',
-            duration: 3000
-          })
+          showToast('Chuyển trạng thái thành công', `Sản phẩm đã được chuyển sang danh sách " Chưa bán ".`, 'success')
           queryClient.invalidateQueries({ queryKey: ['PRODUCT', productId] })
         }
       } catch (error) {
-        toast({
-          title: 'Lỗi',
-          description: 'Đã có lỗi xảy ra trong quá trình xóa.',
-          variant: 'destructive',
-          duration: 3000
-        })
+        showToast('Lỗi', 'Đã có lỗi xảy ra trong quá trình xóa.', 'destructive')
       } finally {
         setIsDeleteDialogOpen(false)
         setDeleteItemId(null)
@@ -175,12 +177,7 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
       setProductExists(!!response.data)
     } catch {
       setProductExists(false)
-      toast({
-        title: 'Lỗi',
-        description: 'Không tìm thấy sản phẩm tương ứng.',
-        variant: 'destructive',
-        duration: 3000
-      })
+      showToast('Lỗi', 'Không tìm thấy sản phẩm tương ứng.', 'destructive')
     }
   }
 
@@ -211,6 +208,23 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
     setSelectedVariants((prev) => (prev.includes(variant) ? prev.filter((v) => v !== variant) : [...prev, variant]))
   }, [])
 
+  const isDuplicateProduct = (variantInputs: { variant: string; value: string }[], productId: string) => {
+    return productItems.some((item) => {
+      const sortedExistingVariants = [...item.variants].sort((a, b) => a.variant.localeCompare(b.variant))
+      const sortedInputVariants = [...variantInputs].sort((a, b) => a.variant.localeCompare(b.variant))
+      return (
+        sortedExistingVariants.length === sortedInputVariants.length &&
+        sortedExistingVariants.every(
+          (existingVariant, idx) =>
+            sortedInputVariants[idx] &&
+            existingVariant.variant === sortedInputVariants[idx].variant &&
+            existingVariant.value === sortedInputVariants[idx].value
+        ) &&
+        item.productId === productId
+      )
+    })
+  }
+
   const handleAddOrUpdate = async (data: ProductItem) => {
     const isBasicProduct = selectedVariants.length === 0
     const variantInputs = selectedVariants.map((variant, index) => ({
@@ -226,50 +240,20 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
     }
     setImage('')
     setPreview('')
-
     const isAnyBasicProductExists = productItems.some((item) => item.variants.length === 0 && item.status !== 'deleted')
     if (isAnyBasicProductExists && !isBasicProduct) {
-      toast({
-        title: 'Lỗi',
-        description: 'Không thể thêm sản phẩm biến thể khi đã có sản phẩm không có biến thể.',
-        variant: 'destructive',
-        duration: 3000
-      })
+      showToast('Lỗi', 'Không thể thêm sản phẩm biến thể khi đã có sản phẩm không có biến thể.', 'destructive')
       return
     }
     const isAnyVariantProductExists = productItems.some((item) => item.variants.length > 0 && item.status !== 'deleted')
     if (isAnyVariantProductExists && isBasicProduct) {
-      toast({
-        title: 'Lỗi',
-        description: 'Không thể thêm sản phẩm không có biến thể khi đã có sản phẩm biến thể.',
-        variant: 'destructive',
-        duration: 3000
-      })
+      showToast('Lỗi', 'Không thể thêm sản phẩm không có biến thể khi đã có sản phẩm biến thể.', 'destructive')
       return
     }
 
     if (!isEditMode) {
-      const isExactDuplicate = productItems.some((item) => {
-        const sortedExistingVariants = [...item.variants].sort((a, b) => a.variant.localeCompare(b.variant))
-        const sortedInputVariants = [...variantInputs].sort((a, b) => a.variant.localeCompare(b.variant))
-        return (
-          sortedExistingVariants.length === sortedInputVariants.length &&
-          sortedExistingVariants.every(
-            (existingVariant, idx) =>
-              sortedInputVariants[idx] &&
-              existingVariant.variant === sortedInputVariants[idx].variant &&
-              existingVariant.value === sortedInputVariants[idx].value
-          ) &&
-          item.productId === productId
-        )
-      })
-      if (isExactDuplicate) {
-        toast({
-          title: 'Lỗi',
-          description: 'Sản phẩm biến thể đã tồn tại.',
-          variant: 'destructive',
-          duration: 3000
-        })
+      if (isDuplicateProduct(variantInputs, productId)) {
+        showToast('Lỗi', 'Sản phẩm biến thể đã tồn tại.', 'destructive')
         return
       }
     }
@@ -277,24 +261,18 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
     try {
       if (isEditMode && currentItemId) {
         const currentItem = productItems.find((item) => item._id === currentItemId)
-        if (currentItem) {
-          payload.stock += currentItem.stock
+        if (currentItem && payload.inStock) {
+          currentItem.stock += payload.inStock
         }
-        await ProductItemService.update(currentItemId, payload)
-        toast({
-          title: 'Thành công',
-          description: 'Cập nhật biến thể thành công.',
-          variant: 'success',
-          duration: 3000
-        })
+        await ProductItemService.update(currentItemId, currentItem)
+        showToast('Thành công', 'Cập nhật biến thể thành công.', 'success')
       } else {
         await ProductItemService.create(payload)
-        toast({
-          title: 'Thành công',
-          description: isBasicProduct ? 'Sản phẩm không có biến thể đã được thêm.' : 'Biến thể mới đã được thêm.',
-          variant: 'success',
-          duration: 3000
-        })
+        showToast(
+          'Thành công',
+          isBasicProduct ? 'Sản phẩm không có biến thể đã được thêm.' : 'Biến thể mới đã được thêm.',
+          'success'
+        )
       }
       setIsDialogOpen(false)
       reset()
@@ -302,12 +280,7 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
       fetchProductItems()
     } catch (error: any) {
       const errorMessage = error?.response?.data?.message || 'Đã xảy ra lỗi khi thêm biến thể.'
-      toast({
-        title: 'Lỗi',
-        description: errorMessage,
-        variant: 'destructive',
-        duration: 3000
-      })
+      showToast('Lỗi', errorMessage, 'destructive')
     }
   }
 
@@ -316,7 +289,8 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
     setIsEditMode(true)
     setCurrentItemId(item._id || null)
     setValue('outStock', item.outStock || 0)
-    setValue('stock', 0)
+    setValue('inStock', 0)
+    setValue('stock', item.stock || 0)
     setValue('price', item.price)
     setValue('image', image || item.image)
     setValue('SKU', item.SKU)
@@ -368,7 +342,7 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
               <Label htmlFor={variant}>{variant}</Label>
             </div>
           ))}
-          <Button variant='outline' className='dark:bg-gray-700 dark:text-gray-100' onClick={openAddForm}>
+          <Button variant='outline' className='dark:bg-gray-700 dark:text-gray-100 my-2' onClick={openAddForm}>
             Thêm biến thể
           </Button>
         </div>
@@ -387,23 +361,29 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
             <div key={item._id} className='lg:flex lg:items-center lg:justify-between p-4 border rounded'>
               <div className='lg:flex lg:space-x-6 items-center'>
                 <img
-                  src={item.image || 'https://img.icons8.com/parakeet-line/48/image.png'}
+                  src={
+                    item.image ||
+                    'http://res.cloudinary.com/dfykg7wtt/image/upload/v1733647723/test/ldlnhcdhjd1z82run81q.png'
+                  }
                   width={100}
                   alt={item.SKU || 'Hình ảnh sản phẩm'}
                 />
                 {item.variants.map((variant) => (
                   <p key={variant.variant}>
-                    <span className='font-bold'>{variant.variant}:</span> {variant.value}
+                    <span className='font-bold'>{variant.variant} :</span> {variant.value}
                   </p>
                 ))}
                 <p>
-                  <span className='font-bold'>SKU:</span> {item.SKU}
+                  <span className='font-bold'>SKU :</span> {item.SKU}
                 </p>
                 <p>
-                  <span className='font-bold'>Giá:</span> {item.price.toLocaleString()} VNĐ
+                  <span className='font-bold'>Giá :</span> {item.price.toLocaleString()} VNĐ
                 </p>
                 <p>
-                  <span className='font-bold'>Số lượng:</span> {item.stock}
+                  <span className='font-bold'>Số lượng :</span> {item.stock}
+                </p>
+                <p>
+                  <span className='font-bold'>Đã bán :</span> {item.outStock}
                 </p>
               </div>
               <div className='flex space-x-2 lg:mt-0 mt-2'>
@@ -459,77 +439,99 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
             onSubmit={handleSubmit(handleAddOrUpdate)}
             className='space-y-4 mt-6 p-4 bg-[#f5f6fa] rounded-md dark:bg-gray-800'
           >
-            {!isEditMode && (
-              <div>
-                {selectedVariants.map((variant, index) => (
-                  <div key={variant}>
-                    <Label className='dark:text-gray-100'>{variant}</Label>
-                    <Controller
-                      name={`variants.${index}.value`}
-                      control={control}
-                      rules={{ required: `${variant} không được để trống` }}
-                      render={({ field }) => (
-                        <Input
-                          {...field}
-                          placeholder={`Nhập ${variant.toLowerCase()}`}
-                          className='dark:bg-gray-700 dark:text-gray-100'
-                        />
-                      )}
-                    />
-                    {errors.variants?.[index]?.value && (
-                      <p className='text-red-500 py-2 text-sm'>{errors.variants?.[index]?.value?.message}</p>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
             <div className='space-y-2'>
-              <Label className='dark:text-gray-100'>Thêm số lượng</Label>
-              <Input
-                type='number'
-                min={0}
-                {...register('stock', { valueAsNumber: true, required: 'Số lượng không được để trống', min: 0 })}
-                className='dark:bg-gray-700 dark:text-gray-100'
-              />
-              {errors.stock && <p className='text-red-500 py-2 text-sm'>Số lượng phải là số không âm</p>}
-
-              <Label className='dark:text-gray-100'>Giá</Label>
-              <Input
-                type='number'
-                min={0}
-                {...register('price', { valueAsNumber: true, required: 'Giá không được để trống', min: 1 })}
-                className='dark:bg-gray-700 dark:text-gray-100'
-              />
-              {errors.price && <p className='text-red-500 py-2 text-sm'>Giá phải là số lớn hơn 0</p>}
-
-              <Label className='dark:text-gray-100'>Ảnh</Label>
-              <Input
-                {...register('image')}
-                type='file'
-                className='dark:bg-gray-700 dark:text-gray-100'
-                onChange={onChangeImage}
-              />
-              {errors.image && <p className='text-red-500 py-2 text-sm'>{errors.image.message}</p>}
-              {loading ? (
-                <Skeleton className='w-20 h-20 rounded-lg mt-2' />
-              ) : (
-                preview && (
-                  <div className='mt-2'>
-                    <img src={preview} alt='preview' className='w-20 h-20 object-cover rounded-lg' />
-                  </div>
-                )
-              )}
-              {editImage && (
-                <div className='mt-2'>
-                  <img src={editImage} alt='preview' className='w-20 h-20 object-cover rounded-lg' />
+              {!isEditMode && (
+                <div>
+                  {selectedVariants.map((variant, index) => (
+                    <div key={variant}>
+                      <Label className='dark:text-gray-100'>{variant}</Label>
+                      <Controller
+                        name={`variants.${index}.value`}
+                        control={control}
+                        rules={{ required: `${variant} không được để trống` }}
+                        render={({ field }) => (
+                          <Input
+                            {...field}
+                            placeholder={`Nhập ${variant.toLowerCase()}`}
+                            className='dark:bg-gray-700 dark:text-gray-100 my-2'
+                          />
+                        )}
+                      />
+                      {errors.variants?.[index]?.value && (
+                        <p className='text-red-500 py-2 text-sm'>{errors.variants?.[index]?.value?.message}</p>
+                      )}
+                    </div>
+                  ))}
                 </div>
               )}
-              <Label className='dark:text-gray-100'>SKU</Label>
-              <Input
-                {...register('SKU', { required: 'SKU không được để trống' })}
-                className='dark:bg-gray-700 dark:text-gray-100'
-              />
-              {errors.SKU && <p className='text-red-500 py-2 text-sm'>{errors.SKU.message}</p>}
+              {isEditMode && (
+                <div>
+                  <Label className='dark:text-gray-100'>Số lượng hiện tại</Label>
+                  <Input
+                    type='number'
+                    min={0}
+                    {...register('stock', { valueAsNumber: true, required: 'Số lượng không được để trống', min: 0 })}
+                    className='dark:bg-gray-700 dark:text-gray-100 my-2'
+                    disabled
+                  />
+                </div>
+              )}{' '}
+              <div>
+                <Label className='dark:text-gray-100'>{isEditMode ? 'Thêm số lượng' : 'Số lượng'}</Label>
+                <Input
+                  type='number'
+                  min={0}
+                  {...register('inStock', {
+                    valueAsNumber: true,
+                    required: 'Số lượng không được để trống',
+                    min: { value: 0, message: 'Số lượng thêm vào phải là số không âm' }
+                  })}
+                  className='dark:bg-gray-700 dark:text-gray-100 my-2'
+                />
+                {errors.inStock && <p className='text-red-500 py-2 text-sm'>{errors.inStock.message}</p>}
+              </div>
+              <div>
+                <Label className='dark:text-gray-100'>Giá</Label>
+                <Input
+                  type='number'
+                  min={0}
+                  {...register('price', { valueAsNumber: true, required: 'Giá không được để trống', min: 1 })}
+                  className='dark:bg-gray-700 dark:text-gray-100 my-2'
+                />
+                {errors.price && <p className='text-red-500 py-2 text-sm'>Giá phải là số lớn hơn 0</p>}
+              </div>
+              <div>
+                <Label className='dark:text-gray-100'>Ảnh</Label>
+                <Input
+                  {...register('image')}
+                  type='file'
+                  className='dark:bg-gray-700 dark:text-gray-100 my-2'
+                  onChange={onChangeImage}
+                />
+                {errors.image && <p className='text-red-500 py-2 text-sm'>{errors.image.message}</p>}
+                {loading ? (
+                  <Skeleton className='w-20 h-20 rounded-lg mt-2' />
+                ) : (
+                  preview && (
+                    <div className='mt-2'>
+                      <img src={preview} alt='preview' className='w-20 h-20 object-cover rounded-lg' />
+                    </div>
+                  )
+                )}
+                {editImage && (
+                  <div className='mt-2'>
+                    <img src={editImage} alt='preview' className='w-20 h-20 object-cover rounded-lg' />
+                  </div>
+                )}
+              </div>
+              <div>
+                <Label className='dark:text-gray-100'>SKU</Label>
+                <Input
+                  {...register('SKU', { required: 'SKU không được để trống' })}
+                  className='dark:bg-gray-700 dark:text-gray-100 my-2'
+                />
+                {errors.SKU && <p className='text-red-500 py-2 text-sm'>{errors.SKU.message}</p>}
+              </div>
             </div>
             <DialogFooter>
               <Button type='submit'>Lưu</Button>

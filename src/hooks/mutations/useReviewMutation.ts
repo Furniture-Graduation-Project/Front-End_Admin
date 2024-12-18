@@ -1,9 +1,10 @@
 import { ReviewService } from '@/services/review' // Import ReviewService
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 type ReviewMutation = 'CREATE' | 'UPDATE' | 'DELETE'
 
 export const useReviewMutation = (key: ReviewMutation) => {
+  const queryClient = useQueryClient()
   const { mutate } = useMutation({
     mutationKey: ['Review'],
     mutationFn: async (params: { id?: string; data?: any }) => {
@@ -19,6 +20,11 @@ export const useReviewMutation = (key: ReviewMutation) => {
         default:
           throw new Error('Invalid mutation key')
       }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['Review']
+      })
     }
   })
 

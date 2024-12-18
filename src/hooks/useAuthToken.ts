@@ -9,14 +9,20 @@ export const useAuthToken = () => {
   const navigate = useNavigate()
   const { token, logout, setToken } = useAuth()
   const { mutate } = useEmployeeMutation({ action: 'LOGOUT' })
+
   useEffect(() => {
     const refreshAuthToken = async () => {
-      if (isTokenExpired(token) && token) {
-        console.log(isTokenExpired(token))
-        const refreshedToken = await EmployeeService.refreshToken()
-        if (refreshedToken) {
-          setToken(refreshedToken)
-        } else {
+      if (token && isTokenExpired(token)) {
+        try {
+          const refreshedToken = await EmployeeService.refreshToken()
+          if (refreshedToken) {
+            setToken(refreshedToken)
+          } else {
+            mutate(undefined)
+            navigate('/unauthorized', { replace: true })
+          }
+        } catch (error) {
+          console.error('Lỗi làm mới token:', error)
           mutate(undefined)
           navigate('/unauthorized', { replace: true })
         }
@@ -24,7 +30,7 @@ export const useAuthToken = () => {
     }
 
     refreshAuthToken()
-  }, [token, logout])
+  }, [token, logout, mutate, navigate, setToken])
 
   return token
 }

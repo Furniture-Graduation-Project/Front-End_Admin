@@ -19,6 +19,9 @@ import { FileInput, FileUploader } from '@/components/ui/file-upload'
 import { useSingleProductQuery } from '@/hooks/querys/useProductQuery'
 import { useMultipleCategoryQuery } from '@/hooks/querys/useCategoryQuery'
 import { useMultipleMaterialQuery } from '@/hooks/querys/useMaterialQuery'
+import { ProductItem } from '@/interface/productItem'
+import { ProductItemService } from '@/services/productItem'
+import { Textarea } from '@/components/ui/textarea'
 
 const FormSchema = z.object({
   name: z.string().min(3, { message: 'Tên sản phẩm phải có ít nhất 3 ký tự.' }),
@@ -26,6 +29,7 @@ const FormSchema = z.object({
   description: z.string().optional(),
   images: z.array(z.string()).min(1, { message: 'Phải có ít nhất một ảnh sản phẩm.' }),
   material: z.string().optional(),
+  materialDetail: z.string().optional(),
   status: z.enum(['creating', 'available', 'disable'], {
     required_error: 'Vui lòng chọn trạng thái sản phẩm.'
   })
@@ -73,6 +77,20 @@ const EditProductForm = () => {
     const finalImages = files && files.length > 0 ? files : productData?.data?.data.images
     try {
       if (id) {
+        const productItems = await ProductItemService.getByProductId(id)
+        const allDisabled = productItems?.data?.data.every((item: ProductItem) => item.status === 'deleted')
+        if (
+          (data.status === 'available' && productItems?.data?.data.length === 0) ||
+          (data.status === 'available' && allDisabled)
+        ) {
+          toast({
+            title: 'Đã xảy ra lỗi',
+            description: `Không thể chuyển trạng thái sang "Đang bán" khi chưa có biến thể sản phẩm nào !`,
+            variant: 'destructive',
+            duration: 3000
+          })
+          return
+        }
         await ProductService.update(id, { ...data, images: finalImages })
         toast({
           title: 'Cập nhật thành công',
@@ -248,7 +266,7 @@ const EditProductForm = () => {
                     Mô tả
                   </Label>
                   <FormControl>
-                    <Input
+                    <Textarea
                       disabled={isLoading}
                       id='description'
                       placeholder='Mô tả sản phẩm'
@@ -343,7 +361,7 @@ const EditProductForm = () => {
                     Chi tiết chất liệu
                   </Label>
                   <FormControl>
-                    <Input
+                    <Textarea
                       disabled={isLoading}
                       id='materialDetail'
                       placeholder='Chi tiết chất liệu'

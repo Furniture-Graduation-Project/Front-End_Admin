@@ -10,6 +10,7 @@ import { z } from 'zod'
 import { MaterialService } from '@/services/material'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
 import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
 
 const FormSchema = z.object({
   materialName: z.string().min(1, { message: 'Tên chất liệu không được để trống.' }),
@@ -19,7 +20,7 @@ const FormSchema = z.object({
 const MaterialEdit = () => {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const [material, setMaterial] = useState<IMaterial | null>(null)
+  const [, setMaterial] = useState<IMaterial | null>(null)
   const [loading, setLoading] = useState(true)
 
   const form = useForm<IMaterial>({
@@ -119,7 +120,7 @@ const MaterialEdit = () => {
                   Mô tả
                 </Label>
                 <FormControl>
-                  <Input
+                  <Textarea
                     id='description'
                     placeholder='Mô tả'
                     {...field}
