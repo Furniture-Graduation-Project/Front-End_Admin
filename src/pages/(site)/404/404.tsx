@@ -5,10 +5,10 @@ const ErrorPage = () => {
   return (
     <div className='flex items-center justify-center bg-white dark:bg-gray-900 sm:rounded-xl h-full sm:h-auto px-28 py-24'>
       <div className='text-center'>
-        <img src='/404.png' alt='404 Not Found' className='mb-16 hover:scale-105 transition transform duration-200' />
+        <img src='/404.png' alt='404 Not Found' className='mb-16 hover:scale-105 transition transform duration-200 w-full' />
         <div className='opacity-90'>
           <p className='sm:text-[32px] text-xl font-bold text-gray-900 dark:text-gray-100'>
-            Có vè như bạn đã đi nhầm trang
+            Có vẻ như bạn đã đi nhầm trang
           </p>
           <Link to='/dashboard' className='flex flex-col'>
             <Button
