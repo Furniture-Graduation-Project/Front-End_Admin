@@ -1,5 +1,6 @@
-import { ReviewService } from '@/services/review' // Import ReviewService
+import { ReviewService } from '@/services/review'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { toast } from '../use-toast'
 
 type ReviewMutation = 'CREATE' | 'UPDATE' | 'DELETE'
 
@@ -22,6 +23,12 @@ export const useReviewMutation = (key: ReviewMutation) => {
       }
     },
     onSuccess: () => {
+      toast({
+        title: 'Cập nhật thành công',
+        description: `Đánh giá đã được cập nhật trạng thái `,
+        variant: 'success',
+        duration: 3000
+      })
       queryClient.invalidateQueries({
         queryKey: ['Review']
       })
