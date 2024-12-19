@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { axiosInstance } from '@/config/axios'
 import { IApiResponse } from '@/interface/apiRespose'
 import { AxiosResponse } from 'axios'
@@ -6,6 +7,7 @@ export const AccountService = {
   lockUser: async (id: string, data: any) => {
     try {
       const response = await axiosInstance.put('/update/' + id, data)
+
       return response
     } catch (error) {
       console.log(error)
@@ -23,7 +25,7 @@ export const AccountService = {
       throw error
     }
   },
-  count: async (period : string): Promise<AxiosResponse<IApiResponse<any>>> => {
+  count: async (period: string): Promise<AxiosResponse<IApiResponse<any>>> => {
     try {
       const response: AxiosResponse<IApiResponse<any>> = await axiosInstance.get(`users/count?period=${period}`)
       return response

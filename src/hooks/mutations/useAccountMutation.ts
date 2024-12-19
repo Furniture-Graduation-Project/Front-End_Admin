@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { AccountService } from '@/services/account'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useToast } from '@/hooks/use-toast'
@@ -12,27 +13,27 @@ const useAccountMutation = ({ action }: MutationQueryProps) => {
 
   const handleSuccess = () => {
     queryClient.invalidateQueries({
-      queryKey: ['ACCOUNT'],
+      queryKey: ['ACCOUNT']
     })
     switch (action) {
       case 'LOCK':
         toast({
           title: 'Khóa tài khoản thành công!',
           description: 'Tài khoản đã được khóa.',
-          variant: 'success',
+          variant: 'success'
         })
         break
       case 'UNLOCK':
         toast({
           title: 'Mở khóa tài khoản thành công!',
           description: 'Tài khoản đã được mở khóa.',
-          variant: 'success',
+          variant: 'success'
         })
         break
       case 'DELETE':
         toast({
           title: 'Xóa tài khoản thành công!',
-          variant: 'success',
+          variant: 'success'
         })
         break
     }
@@ -43,17 +44,17 @@ const useAccountMutation = ({ action }: MutationQueryProps) => {
     toast({
       title: 'Có lỗi xảy ra!',
       description: message,
-      variant: 'destructive',
+      variant: 'destructive'
     })
     console.log('[ACCOUNT]', error)
   }
 
   const { mutate, ...rest } = useMutation({
     mutationKey: ['ACCOUNT'],
-    mutationFn: async (id: string) => {
+    mutationFn: async ({ id, data }: { id: string; data: any }) => {
       switch (action) {
         case 'LOCK':
-          return await AccountService.lockUser(id, { active: false })
+          return await AccountService.lockUser(id, { active: false, ...data })
         case 'UNLOCK':
           return await AccountService.lockUser(id, { active: true })
         case 'DELETE':
@@ -63,7 +64,7 @@ const useAccountMutation = ({ action }: MutationQueryProps) => {
       }
     },
     onSuccess: handleSuccess,
-    onError: handleError,
+    onError: handleError
   })
 
   return { mutate, ...rest }

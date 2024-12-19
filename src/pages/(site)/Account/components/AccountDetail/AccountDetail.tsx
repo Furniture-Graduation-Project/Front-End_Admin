@@ -3,8 +3,9 @@ import { useAuth } from '@/context/AuthContext'
 import useAccountMutation from '@/hooks/mutations/useAccountMutation'
 import useAccountQuery from '@/hooks/querys/useAccountQuery'
 import { toast } from '@/hooks/use-toast'
-import { Lock, Unlock } from 'lucide-react'
+import { Unlock } from 'lucide-react'
 import { useParams } from 'react-router-dom'
+import AccountLockPopup from './components/AccountLockPopup'
 
 const AccountDetail = () => {
   const { id } = useParams<{ id: string }>()
@@ -33,7 +34,10 @@ const AccountDetail = () => {
 
   const onUnlock = () => {
     if (id) {
-      unLockUser(id)
+      unLockUser({
+        id,
+        data: undefined
+      })
     } else {
       toast({
         title: 'Lỗi',
@@ -74,10 +78,11 @@ const AccountDetail = () => {
             <div className='flex gap-2'>
               {(userRole === 'admin' || userRole === 'support') &&
                 (user.data?.active ? (
-                  <Button onClick={onLock} variant='outline' color='yellow' className='mr-2'>
-                    <Lock size={18} className='mr-2 text-yellow-500' />
-                    Khóa tài khoản
-                  </Button>
+                  // <Button onClick={onLock} variant='outline' color='yellow' className='mr-2'>
+                  //   <Lock size={18} className='mr-2 text-yellow-500' />
+                  //   Khóa tài khoản
+                  // </Button>
+                  <AccountLockPopup user={user?.data} />
                 ) : (
                   <Button onClick={onUnlock} variant='outline' color='green' className='mr-2'>
                     <Unlock size={18} className='mr-2 text-green-500' />
