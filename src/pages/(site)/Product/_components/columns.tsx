@@ -1,6 +1,7 @@
 import { ColumnDef } from '@tanstack/react-table'
 import { CellAction } from './cell-action'
 import { IProduct } from '@/interface/product'
+import { formatCurrency } from '@/utils/formatCurrency'
 
 export const columns: ColumnDef<IProduct>[] = [
   {
@@ -69,12 +70,11 @@ export const columns: ColumnDef<IProduct>[] = [
       const prices = row.original.prices || []
       const minPrice = prices.length ? Math.min(...prices) : 0
       const maxPrice = prices.length ? Math.max(...prices) : 0
-      const formatPrice = (price: number) => price.toLocaleString('vi-VN')
       return (
         <div className='flex justify-start'>
           <div className='flex flex-col items-end'>
-            <p className='whitespace-nowrap'>{formatPrice(minPrice)} đ</p>
-            <p className='whitespace-nowrap'>{formatPrice(maxPrice)} đ</p>
+            <p className='whitespace-nowrap'>{formatCurrency(minPrice)}</p>
+            <p className='whitespace-nowrap'>{formatCurrency(maxPrice)}</p>
           </div>
         </div>
       )
