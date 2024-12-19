@@ -113,7 +113,9 @@ const SettingAccount = () => {
           name='fullName'
           render={({ field }) => (
             <FormItem>
-              <FormLabel className='text-sm text-gray-700 dark:text-gray-300'>Tên đầy đủ</FormLabel>
+              <FormLabel className='text-sm text-gray-700 dark:text-gray-300'>
+                Tên đầy đủ <span className='text-red-500'>*</span>{' '}
+              </FormLabel>
               <FormControl>
                 <Input
                   type='text'
@@ -132,7 +134,9 @@ const SettingAccount = () => {
           name='username'
           render={({ field }) => (
             <FormItem>
-              <FormLabel className='text-sm text-gray-700 dark:text-gray-300'>Tên tài khoản</FormLabel>
+              <FormLabel className='text-sm text-gray-700 dark:text-gray-300'>
+                Tên tài khoản <span className='text-red-500'>*</span>
+              </FormLabel>
               <FormControl>
                 <Input
                   type='text'
@@ -151,7 +155,9 @@ const SettingAccount = () => {
           name='phoneNumber'
           render={({ field }) => (
             <FormItem>
-              <FormLabel className='text-sm text-gray-700 dark:text-gray-300'>Số điện thoại</FormLabel>
+              <FormLabel className='text-sm text-gray-700 dark:text-gray-300'>
+                Số điện thoại <span className='text-red-500'>*</span>
+              </FormLabel>
               <FormControl>
                 <Input
                   className='max-w-xs bg-gray-100 dark:bg-gray-700 h-10 text-gray-900 dark:text-gray-100'
@@ -169,7 +175,9 @@ const SettingAccount = () => {
           name='address'
           render={({ field }) => (
             <FormItem>
-              <FormLabel className='text-sm text-gray-700 dark:text-gray-300'>Địa chỉ</FormLabel>
+              <FormLabel className='text-sm text-gray-700 dark:text-gray-300'>
+                Địa chỉ <span className='text-red-500'>*</span>
+              </FormLabel>
               <FormControl>
                 <Textarea
                   className='bg-gray-100 dark:bg-gray-700 h-32 text-gray-900 dark:text-gray-100'
