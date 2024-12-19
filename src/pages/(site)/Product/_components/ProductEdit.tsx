@@ -29,6 +29,7 @@ const FormSchema = z.object({
   description: z.string().optional(),
   images: z.array(z.string()).min(1, { message: 'Phải có ít nhất một ảnh sản phẩm.' }),
   material: z.string().optional(),
+  materialDetail: z.string().optional(),
   status: z.enum(['creating', 'available', 'disable'], {
     required_error: 'Vui lòng chọn trạng thái sản phẩm.'
   })

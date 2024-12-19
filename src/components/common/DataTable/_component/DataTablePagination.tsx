@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from '@/components/ui/button'
 import { CardFooter } from '@/components/ui/card'
 import { ITable } from '@/interface/table'
@@ -36,7 +37,7 @@ const DataTablePagination = ({ table }: ITable<any>) => {
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >
-            <span className='sr-only'>Đến trang tiêp theo</span>
+            <span className='sr-only'>Đến trang tiếp theo</span>
             <ChevronRight className='h-4 w-4' />
           </Button>
           <Button
