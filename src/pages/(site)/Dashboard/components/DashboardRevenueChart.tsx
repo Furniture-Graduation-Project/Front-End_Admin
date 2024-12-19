@@ -76,7 +76,7 @@ const RevenueChart = () => {
     <Card className='dark:bg-'>
       <CardHeader>
         <CardTitle className='text-black'>Biểu đồ diện tích thống kê danh mục </CardTitle>
-        <CardDescription>Hiển thị tổng số lượt truy cập trong 6 tháng qua</CardDescription>
+        <CardDescription>Hiển thị tổng số danh mục sản phẩm trong 6 tháng qua</CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
