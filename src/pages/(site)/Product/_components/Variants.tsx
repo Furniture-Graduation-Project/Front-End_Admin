@@ -14,6 +14,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Edit3, Eye, RefreshCw, Trash2 } from 'lucide-react'
 import AlertAcitonDialog from '@/components/modals/AlertDialog'
 import { useQueryClient } from '@tanstack/react-query'
+import { formatCurrency } from '@/utils/formatCurrency'
 
 interface AddVariantsProps {
   productId: string
@@ -263,8 +264,9 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
         const currentItem = productItems.find((item) => item._id === currentItemId)
         if (currentItem && payload.inStock) {
           currentItem.stock += payload.inStock
+          payload.stock = currentItem.stock
         }
-        await ProductItemService.update(currentItemId, currentItem)
+        await ProductItemService.update(currentItemId, payload)
         showToast('Thành công', 'Cập nhật biến thể thành công.', 'success')
       } else {
         await ProductItemService.create(payload)
@@ -377,7 +379,7 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
                   <span className='font-bold'>SKU :</span> {item.SKU}
                 </p>
                 <p>
-                  <span className='font-bold'>Giá :</span> {item.price.toLocaleString()} VNĐ
+                  <span className='font-bold'>Giá :</span> {formatCurrency(item.price)}
                 </p>
                 <p>
                   <span className='font-bold'>Số lượng :</span> {item.stock}

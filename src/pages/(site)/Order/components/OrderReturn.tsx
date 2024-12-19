@@ -297,7 +297,7 @@ const OrderReturn = () => {
 
             <Button
               onClick={() => handleChangeStatus('finished')}
-              className={` gap-2 ${data?.data.data.returnInfo?.status == 'refunded' || (!data?.data?.data?.returnInfo?.items.some((item) => item.status !== 'approved') && data?.data.data.returnInfo?.status == 'resolved') ? 'flex' : 'hidden'}`}
+              className={` gap-2 ${data?.data.data.returnInfo?.status == 'refunded' || (!data?.data?.data?.returnInfo?.items.some((item) => item.status == 'approved') && data?.data.data.returnInfo?.status == 'resolved') ? 'flex' : 'hidden'}`}
             >
               <FileCheck2 /> Đóng yêu cầu
             </Button>
