@@ -142,7 +142,7 @@ const AddProductForm = () => {
             render={({ field }) => (
               <FormItem>
                 <Label htmlFor='name' className='font-bold dark:text-gray-100'>
-                  Tên sản phẩm
+                  Tên sản phẩm<span className='text-red-500'> *</span>
                 </Label>
                 <FormControl>
                   <Input
@@ -166,7 +166,7 @@ const AddProductForm = () => {
               render={({ field }) => (
                 <FormItem>
                   <Label htmlFor='category' className='font-bold dark:text-gray-100'>
-                    Danh mục -
+                    Danh mục<span className='text-red-500'> *</span> -
                   </Label>
                   <FormControl className='ml-2 rounded-sm'>
                     <select
@@ -194,7 +194,7 @@ const AddProductForm = () => {
               render={({ field }) => (
                 <FormItem>
                   <Label htmlFor='material' className='font-bold dark:text-gray-100'>
-                    Chất liệu -
+                    Chất liệu<span className='text-red-500'> *</span> -
                   </Label>
                   <FormControl className='ml-2 rounded-sm'>
                     <select
@@ -221,7 +221,7 @@ const AddProductForm = () => {
               render={({ field }) => (
                 <FormItem>
                   <Label htmlFor='status' className='font-bold dark:text-gray-100'>
-                    Trạng thái -
+                    Trạng thái<span className='text-red-500'> *</span> -
                   </Label>
                   <FormControl className='ml-2 rounded-sm'>
                     <select

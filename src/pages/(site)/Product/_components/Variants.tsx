@@ -446,7 +446,10 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
                 <div>
                   {selectedVariants.map((variant, index) => (
                     <div key={variant}>
-                      <Label className='dark:text-gray-100'>{variant}</Label>
+                      <Label className='dark:text-gray-100'>
+                        {variant}
+                        <span className='text-red-500'> *</span>
+                      </Label>
                       <Controller
                         name={`variants.${index}.value`}
                         control={control}
@@ -480,20 +483,24 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
               )}{' '}
               <div>
                 <Label className='dark:text-gray-100'>{isEditMode ? 'Thêm số lượng' : 'Số lượng'}</Label>
+                {!isEditMode ? <span className='text-red-500'> *</span> : ''}
                 <Input
                   type='number'
                   min={0}
                   {...register('inStock', {
                     valueAsNumber: true,
                     required: 'Số lượng không được để trống',
-                    min: { value: 0, message: 'Số lượng thêm vào phải là số không âm' }
+                    min: { value: 0, message: 'Số lượng phải là số không âm' },
+                    validate: (value: any) => isEditMode || value > 0 || 'Số lượng phải lớn hơn 0'
                   })}
                   className='dark:bg-gray-700 dark:text-gray-100 my-2'
                 />
                 {errors.inStock && <p className='text-red-500 py-2 text-sm'>{errors.inStock.message}</p>}
               </div>
               <div>
-                <Label className='dark:text-gray-100'>Giá</Label>
+                <Label className='dark:text-gray-100'>
+                  Giá<span className='text-red-500'> *</span>
+                </Label>
                 <Input
                   type='number'
                   min={0}
@@ -503,7 +510,9 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
                 {errors.price && <p className='text-red-500 py-2 text-sm'>Giá phải là số lớn hơn 0</p>}
               </div>
               <div>
-                <Label className='dark:text-gray-100'>Ảnh</Label>
+                <Label className='dark:text-gray-100'>
+                  Ảnh<span className='text-gray-500'> *</span>
+                </Label>
                 <Input
                   {...register('image')}
                   type='file'
@@ -527,7 +536,9 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
                 )}
               </div>
               <div>
-                <Label className='dark:text-gray-100'>SKU</Label>
+                <Label className='dark:text-gray-100'>
+                  SKU<span className='text-red-500'> *</span>
+                </Label>
                 <Input
                   {...register('SKU', { required: 'SKU không được để trống' })}
                   className='dark:bg-gray-700 dark:text-gray-100 my-2'
