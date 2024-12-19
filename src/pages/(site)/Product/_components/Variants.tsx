@@ -14,6 +14,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Edit3, Eye, RefreshCw, Trash2 } from 'lucide-react'
 import AlertAcitonDialog from '@/components/modals/AlertDialog'
 import { useQueryClient } from '@tanstack/react-query'
+import { formatCurrency } from '@/utils/formatCurrency'
 
 interface AddVariantsProps {
   productId: string
@@ -378,7 +379,7 @@ const AddVariants: FC<AddVariantsProps> = ({ productId }) => {
                   <span className='font-bold'>SKU :</span> {item.SKU}
                 </p>
                 <p>
-                  <span className='font-bold'>Giá :</span> {item.price.toLocaleString()} VNĐ
+                  <span className='font-bold'>Giá :</span> {formatCurrency(item.price)}
                 </p>
                 <p>
                   <span className='font-bold'>Số lượng :</span> {item.stock}
