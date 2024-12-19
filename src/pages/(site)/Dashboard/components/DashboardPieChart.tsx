@@ -50,8 +50,8 @@ const DashboardPieChart = () => {
   return (
     <Card className='dark:bg-'>
       <CardHeader>
-        <CardTitle className='text-black'>Biểu đồ cột thống kê danh mục</CardTitle>
-        <CardDescription>Hiển thị tổng số lượt truy cập trong 6 tháng qua</CardDescription>
+        <CardTitle className='text-black'>Biểu đồ cột thống kê đơn hàng</CardTitle>
+        <CardDescription>Hiển thị tổng số đơn hàng trong 6 tháng qua</CardDescription>
       </CardHeader>
       <CardContent style={{ height: '500px' }}>
         <ResponsiveContainer width='100%' height='100%'>
