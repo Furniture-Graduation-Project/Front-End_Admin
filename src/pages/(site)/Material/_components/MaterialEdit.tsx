@@ -96,7 +96,7 @@ const MaterialEdit = () => {
             render={({ field }) => (
               <FormItem>
                 <Label htmlFor='materialName' className='font-bold dark:text-gray-100'>
-                  Tên chất liệu
+                  Tên chất liệu<span className='text-red-500'> *</span>
                 </Label>
                 <FormControl>
                   <Input

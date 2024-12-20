@@ -73,7 +73,7 @@ const AddCategoryForm = () => {
             render={({ field }) => (
               <FormItem>
                 <Label htmlFor='categoryName' className='font-bold dark:text-gray-100'>
-                  Tên danh mục
+                  Tên danh mục<span className='text-red-500'> *</span>
                 </Label>
                 <FormControl>
                   <Input

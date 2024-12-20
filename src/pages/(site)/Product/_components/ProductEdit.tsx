@@ -80,12 +80,12 @@ const EditProductForm = () => {
         const productItems = await ProductItemService.getByProductId(id)
         const allDisabled = productItems?.data?.data.every((item: ProductItem) => item.status === 'deleted')
         if (
-          (data.status === 'available' && productItems?.data?.data.length === 0) ||
-          (data.status === 'available' && allDisabled)
+          (data.status !== 'creating' && productItems?.data?.data.length === 0) ||
+          (data.status !== 'creating' && allDisabled)
         ) {
           toast({
             title: 'Đã xảy ra lỗi',
-            description: `Không thể chuyển trạng thái sang "Đang bán" khi chưa có biến thể sản phẩm nào !`,
+            description: `Không thể chuyển trạng thái khi chưa có biến thể sản phẩm nào !`,
             variant: 'destructive',
             duration: 3000
           })
@@ -160,7 +160,7 @@ const EditProductForm = () => {
               render={({ field }) => (
                 <FormItem>
                   <Label htmlFor='name' className='font-bold dark:text-gray-100'>
-                    Tên sản phẩm
+                    Tên sản phẩm<span className='text-red-500'> *</span>
                   </Label>
                   <FormControl>
                     <Input
@@ -184,7 +184,7 @@ const EditProductForm = () => {
                 render={({ field }) => (
                   <FormItem>
                     <Label htmlFor='category' className='font-bold dark:text-gray-100'>
-                      Danh mục -
+                      Danh mục<span className='text-red-500'> *</span> -
                     </Label>
                     <FormControl className='ml-2 rounded-sm'>
                       <select
@@ -211,7 +211,7 @@ const EditProductForm = () => {
                 render={({ field }) => (
                   <FormItem>
                     <Label htmlFor='material' className='font-bold dark:text-gray-100'>
-                      Chất liệu -
+                      Chất liệu<span className='text-red-500'> *</span> -
                     </Label>
                     <FormControl className='ml-2 rounded-sm'>
                       <select
@@ -237,7 +237,7 @@ const EditProductForm = () => {
                 render={({ field }) => (
                   <FormItem>
                     <Label htmlFor='status' className='font-bold dark:text-gray-100'>
-                      Trạng thái -
+                      Trạng thái<span className='text-red-500'> *</span> -
                     </Label>
                     <FormControl className='ml-2 rounded-sm'>
                       <select
