@@ -84,7 +84,9 @@ const SettingPassword = () => {
           name='oldPassword'
           render={({ field }) => (
             <FormItem>
-              <FormLabel className='text-sm text-gray-700 dark:text-gray-300'>Mật khẩu cũ</FormLabel>
+              <FormLabel className='text-sm text-gray-700 dark:text-gray-300'>
+                Mật khẩu cũ <span className='text-red-500'>*</span>
+              </FormLabel>
               <FormControl>
                 <Input
                   type='password'
@@ -102,7 +104,9 @@ const SettingPassword = () => {
           name='newPassword'
           render={({ field }) => (
             <FormItem>
-              <FormLabel className='text-sm text-gray-700 dark:text-gray-300'>Mật khẩu mới</FormLabel>
+              <FormLabel className='text-sm text-gray-700 dark:text-gray-300'>
+                Mật khẩu mới <span className='text-red-500'>*</span>
+              </FormLabel>
               <FormControl>
                 <Input
                   type='password'
@@ -120,7 +124,9 @@ const SettingPassword = () => {
           name='confirmPassword'
           render={({ field }) => (
             <FormItem>
-              <FormLabel className='text-sm text-gray-700 dark:text-gray-300'>Xác nhận mật khẩu</FormLabel>
+              <FormLabel className='text-sm text-gray-700 dark:text-gray-300'>
+                Xác nhận mật khẩu <span className='text-red-500'>*</span>
+              </FormLabel>
               <FormControl>
                 <Input
                   type='password'

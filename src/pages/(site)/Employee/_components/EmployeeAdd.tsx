@@ -75,7 +75,7 @@ const AddEmployeeForm = () => {
             render={({ field }) => (
               <FormItem>
                 <Label htmlFor='fullName' className='font-bold dark:text-gray-100'>
-                  Tên đầy đủ
+                  Tên đầy đủ <span className='text-red-500'>*</span>
                 </Label>
                 <FormControl>
                   <Input
@@ -97,7 +97,7 @@ const AddEmployeeForm = () => {
             render={({ field }) => (
               <FormItem>
                 <Label htmlFor='username' className='font-bold dark:text-gray-100'>
-                  Tên đăng nhập
+                  Tên đăng nhập <span className='text-red-500'>*</span>
                 </Label>
                 <FormControl>
                   <Input
@@ -119,7 +119,7 @@ const AddEmployeeForm = () => {
             render={({ field }) => (
               <FormItem>
                 <Label htmlFor='password' className='font-bold dark:text-gray-100'>
-                  Mật khẩu
+                  Mật khẩu <span className='text-red-500'>*</span>
                 </Label>
                 <FormControl>
                   <Input
@@ -142,7 +142,7 @@ const AddEmployeeForm = () => {
             render={({ field }) => (
               <FormItem>
                 <Label htmlFor='phoneNumber' className='font-bold dark:text-gray-100'>
-                  Số điện thoại
+                  Số điện thoại <span className='text-red-500'>*</span>
                 </Label>
                 <FormControl>
                   <Input
@@ -163,7 +163,7 @@ const AddEmployeeForm = () => {
             render={({ field }) => (
               <FormItem>
                 <Label htmlFor='address' className='font-bold dark:text-gray-100'>
-                  Địa chỉ
+                  Địa chỉ <span className='text-red-500'>*</span>
                 </Label>
                 <FormControl>
                   <Textarea
@@ -184,7 +184,7 @@ const AddEmployeeForm = () => {
             render={({ field }) => (
               <FormItem>
                 <Label htmlFor='role' className='font-bold mr-5 dark:text-gray-100'>
-                  Vai trò
+                  Vai trò <span className='text-red-500'>*</span>
                 </Label>
                 <FormControl>
                   <select
