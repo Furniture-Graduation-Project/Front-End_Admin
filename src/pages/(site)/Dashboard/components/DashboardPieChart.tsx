@@ -50,8 +50,8 @@ const DashboardPieChart = () => {
   return (
     <Card className='dark:bg-'>
       <CardHeader>
-        <CardTitle className='text-black'>Biểu đồ cột thống kê danh mục</CardTitle>
-        <CardDescription>Hiển thị tổng số lượt truy cập trong 6 tháng qua</CardDescription>
+        <CardTitle className='text-black'>Biểu đồ cột thống kê đơn hàng</CardTitle>
+        <CardDescription>Hiển thị tổng số đơn hàng trong 6 tháng qua</CardDescription>
       </CardHeader>
       <CardContent style={{ height: '500px' }}>
         <ResponsiveContainer width='100%' height='100%'>
@@ -94,7 +94,7 @@ const DashboardPieChart = () => {
         <div className='flex w-full items-start gap-2 text-sm'>
           <div className='grid gap-2'>
             <div className='flex items-center gap-2 font-medium leading-none'></div>
-            <div className='flex items-center gap-2 leading-none text-muted-foreground'>Tháng 7 - Tháng 1 Năm 2025</div>
+            <div className='flex items-center gap-2 leading-none text-muted-foreground'>Tháng 7 - Tháng 12 Năm 2024</div>
           </div>
         </div>
       </CardFooter>
